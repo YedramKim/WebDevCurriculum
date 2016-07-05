@@ -3,12 +3,14 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<title>GitHub</title>
 		<!-- TODO: 또 무엇이 필요할까요? -->
+		<!-- 타이틀이 필요합니다. -->
+		<title>GitHub</title>
 	</head>
 	<body>
 		<header>
 			<!-- TODO: 상단의 회색 부분은 어떻게 처리하면 좋을까요? -->
+			<!-- wrap이라는 요소로 감싸 중앙에 정렬합니다. -->
 			<div class="wrap">
 				<h1 id="logo">
 					<img src="./img/logo.png" alt="깃허브 로고" title="깃허브 로고">
@@ -63,7 +65,7 @@
 			<section class="main-detail">
 				<div>
 					<!-- TODO: 메인의 왼쪽 부분 -->
-					<p>
+					<p id="main-head">
 						KnowRe web development curriculum for noobs
 					</p>
 					<div id="repository-info">
@@ -81,7 +83,6 @@
 								<span class="number">1 </span>contributor
 							</li>
 						</ul>
-						<div class="repository-info-bottom"></div>
 					</div>
 					<div id="repository-links">
 						<button id="change">change</button>
@@ -101,9 +102,9 @@
 						</div>
 						<table>
 							<colgroup>
-								<col style="width: 40%;">
-								<col style="width: 30%;">
-								<col style="width: 30%;">
+								<col>
+								<col>
+								<col>
 							</colgroup>
 							<thead>
 								<tr>
@@ -147,21 +148,21 @@
 				<aside>
 					<!-- TODO: 메인의 오른쪽 메뉴 부분 -->
 					<ul id="side_gnb">
-						<li>
+						<li class="side-code">
 							<a href="#">Code</a>
 						</li>
-						<li>
+						<li class="side-issue">
 							<a href="#">Issue</a>
 							<span class="number">0</span>
 						</li>
-						<li>
+						<li class="side-req">
 							<a href="#">Pull requests</a>
 							<span class="number">0</span>
 						</li>
-						<li>
+						<li class="side-pulse">
 							<a href="#">Pulse</a>
 						</li>
-						<li>
+						<li class="side-graph">
 							<a href="#">Graphs</a>
 						</li>
 					</ul>
@@ -194,7 +195,7 @@
 
 		<footer>
 			<!-- TODO: 하단의 Copyright, Terms, Privacy 등은 어떻게 처리하면 좋을까요? -->
-			<ul id="footer-menu1">
+			<ul id="footer-menu-right">
 				<li><a href="#">Status</a></li>
 				<li><a href="#">API</a></li>
 				<li><a href="#">Training</a></li>
@@ -203,7 +204,7 @@
 				<li><a href="#">About</a></li>
 				<li><a href="#">Pricing</a></li>
 			</ul>
-			<ul id="footer-menu2">
+			<ul id="footer-menu-left">
 				<li class="copyright">&copy; 2015 GitHub, inc.</li>
 				<li><a href="#">Terms</a></li>
 				<li><a href="#">Privacy</a></li>
@@ -211,7 +212,7 @@
 				<li><a href="#">Contact</a></li>
 				<li><a href="#">Help</a></li>
 			</ul>
-			<a href="#">
+			<a href="#" class="logo-link">
 				<img src="github.png" alt="gitbut 이미지" title="gitbut 이미지">
 			</a>
 		</footer>
