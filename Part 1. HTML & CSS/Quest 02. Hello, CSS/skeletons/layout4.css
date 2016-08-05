@@ -12,38 +12,44 @@ body {
 	/* TODO: 이 곳을 채우세요! */
 	height:calc(100% - 50px);
 	display: -webkit-flex;
-	display: -moz-flex;
-	display: -ms-flex;
-	display: -o-flex;
 	display: flex;
 }
 
 .main {
 	background-color: skyblue;
 	/* TODO: 이 곳을 채우세요! */
+	-webkit-flex-grow: 1;
 	flex-grow: 1;
 }
 
 .main header {
 	background-color: lightgray;
 	/* TODO: 이 곳을 채우세요! */
+	height: 30px;
+	overflow: hidden;
 }
 
 .left {
 	background-color: pink;
 	/* TODO: 이 곳을 채우세요! */
-	width: 200px;
 	overflow: hidden;
+	-webkit-flex-basis: 200px;
+	flex-basis: 200px;
+	-webkit-flex-grow: 0;
 	flex-grow: 0;
+	-webkit-flex-shrink : 0;
 	flex-shrink : 0;
 }
 
 .right {
 	background-color: greenyellow;
 	/* TODO: 이 곳을 채우세요! */
-	width: 300px;
 	overflow: hidden;
+	-webkit-flex-basis: 300px;
+	flex-basis: 300px;
+	-webkit-flex-grow: 0;
 	flex-grow: 0;
+	-webkit-flex-shrink : 0;
 	flex-shrink : 0;
 }
 
@@ -51,4 +57,5 @@ footer {
 	background-color: yellow;
 	/* TODO: 이 곳을 채우세요! */
 	height: 50px;
+	overflow: hidden;
 }
