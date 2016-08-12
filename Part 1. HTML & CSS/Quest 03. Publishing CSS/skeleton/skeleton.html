@@ -1,10 +1,233 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 	<head>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="./skeleton.css">
+		<title>GitHub</title>
 	</head>
 	<body>
 		<!-- TODO: Quest 1에서 완성한 HTML을 바탕으로 필요한 부분을 수정해 보세요 -->
+		<header>
+			<!-- TODO: 상단의 회색 부분은 어떻게 처리하면 좋을까요? -->
+			<!-- wrap이라는 요소로 감싸 중앙에 정렬합니다. -->
+			<div class="wrap list">
+				<h1 id="logo">
+					<a href="#">
+						<span class="octicons github">&nbsp;</span>
+					</a>
+				</h1>
+				<label for="search" class="search">
+					<input type="text" name="search" id="search" placeholder="search">
+					<span>This repository</span>
+				</label>
+				<nav class="gnb">
+					<ul class="list">
+						<li><a href="#">Explore</a></li>
+						<li><a href="#">Features</a></li>
+						<li><a href="#">Enterprise</a></li>
+						<li><a href="#">Pricing</a></li>
+					</ul>
+				</nav>
+				<div class="sign_buttons fr">
+					<a href="#" class="signup">Sign up</a>
+					<a href="#" class="signin">Sign in</a>
+				</div>
+			</div>
+		</header>
+		<!-- 메인 -->
+		<section class="main">
+			<h2 class="dn">웹표준 통과용</h2>
+			<article class="main_header">
+				<h2 class="dn">웹표준 통과용</h2>
+				<!-- TODO: 메인의 헤더 부분 -->
+				<div class="wrap list">
+					<!-- watch, star, fork 버튼 -->
+					<div class="option_buttons fr list">
+						<div class="watch">
+							<a href="#">
+								<span class="octicons watch"></span>
+								watch
+							</a>
+							<span class="number">20</span>
+						</div>
+						<div class="star">
+							<a href="#">
+								<span class="octicons star"></span>
+								star
+							</a>
+							<span class="number">47</span>
+						</div>
+						<div class="Fork">
+							<a href="#">
+								<span class="octicons fork"></span>
+								Fork
+							</a>
+							<span class="number">6</span>
+						</div>
+					</div>
+					<div id="repositoryname">
+						<span class="octicons book"></span>
+						<a href="#">KnowRe</a>
+						/
+						<a href="#" class="fb">WebDevCurriculum</a>
+					</div>
+				</div>
+			</article>
+
+			<article class="main-detail">
+				<h2 class="dn">웹표준 통과용</h2>
+				<div>
+					<!-- TODO: 메인의 왼쪽 부분 -->
+					<p id="main-head">
+						KnowRe web development curriculum for noobs
+					</p>
+					<div id="repository-info">
+						<ul>
+							<li>
+								<span class="number">26 </span>commits
+							</li>
+							<li>
+								<span class="number">2 </span>branches
+							</li>
+							<li>
+								<span class="number">0 </span>releases
+							</li>
+							<li>
+								<span class="number">1 </span>contributor
+							</li>
+						</ul>
+					</div>
+					<div id="repository-links">
+						<button id="change">change</button>
+						<button id="branch">branch</button>
+						<a href="#">WebDevCurriculum</a>
+						/<span class="font-bold">+</span>
+						<button id="show_list">list</button>
+					</div>
+					<div id="repository_list">
+						<div id="repository-notice">
+							This branch is 5 commits ahead of master.
+							<a href="#">Pull request</a>
+							<a href="#">Compare</a>
+						</div>
+						<div id="root_document">
+							<a href="#">...</a>
+						</div>
+						<table>
+							<colgroup>
+								<col>
+								<col>
+								<col>
+							</colgroup>
+							<thead>
+								<tr>
+									<td><span class="font-bold">Kivol</span> authored 19 hours ago</td>
+									<td>&nbsp;</td>
+									<td>latest commit <span class="last_commit">5ead7a7a36</span></td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="folder">
+									<td>Part 0. git/<span class="file">Quest 0. Hello, git</span></td>
+									<td>Quest 0 - added checklist</td>
+									<td>19 hours ago</td>
+								</tr>
+								<tr class="folder">
+									<td><span class="file">old</span></td>
+									<td>New curriculum 2016 - started</td>
+									<td>5 hours ago</td>
+								</tr>
+								<tr class="file">
+									<td><span class="file">LICENCE</span></td>
+									<td>New curriculum 2016 - started</td>
+									<td>5 hours ago</td>
+								</tr>
+								<tr class="file">
+									<td><span class="file">README.md</span></td>
+									<td></td>
+									<td>19 hours ago</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div id="repository-file">
+						<div id="file-title">README.md</div>
+						<div id="file-content">
+							<p>KnowRe web development curriculum 2016</p>
+						</div>
+					</div>
+				</div>
+
+				<aside>
+					<!-- TODO: 메인의 오른쪽 메뉴 부분 -->
+					<ul id="side_gnb">
+						<li class="side-code">
+							<a href="#">Code</a>
+						</li>
+						<li class="side-issue">
+							<a href="#">Issue</a>
+							<span class="number">0</span>
+						</li>
+						<li class="side-req">
+							<a href="#">Pull requests</a>
+							<span class="number">0</span>
+						</li>
+						<li class="side-pulse">
+							<a href="#">Pulse</a>
+						</li>
+						<li class="side-graph">
+							<a href="#">Graphs</a>
+						</li>
+					</ul>
+					<div id="repository-http">
+						<span id="http-head">
+							<span class="font-bold">Https</span> clone URL
+						</span>
+						<label for="http">
+							<input type="text" name="http" id="http" value="https://github.com/">
+							<a href="#" class="http-copy">copy(복사 버튼)</a>
+						</label>
+						<span id="http-foot">
+							You can clone with <span>HTTPS</span> or Subversion
+							<img src="question_mark.png" alt="물음표 이미지" title="물음표 이미지">
+						</span>
+					</div>
+					<div id="download_button">
+						<a href="#">
+							<img src="clone_button.png" alt="clone button" title="clone button">
+							Clone in Desktop
+						</a>
+						<a href="#">
+							<img src="download_button.png" alt="download button" title="download button">
+							Download ZIP
+						</a>
+					</div>
+				</aside>
+			</article>
+		</section>
+
+		<footer>
+			<!-- TODO: 하단의 Copyright, Terms, Privacy 등은 어떻게 처리하면 좋을까요? -->
+			<ul id="footer-menu-right">
+				<li><a href="#">Status</a></li>
+				<li><a href="#">API</a></li>
+				<li><a href="#">Training</a></li>
+				<li><a href="#">Shop</a></li>
+				<li><a href="#">Blog</a></li>
+				<li><a href="#">About</a></li>
+				<li><a href="#">Pricing</a></li>
+			</ul>
+			<ul id="footer-menu-left">
+				<li class="copyright">&copy; 2015 GitHub, inc.</li>
+				<li><a href="#">Terms</a></li>
+				<li><a href="#">Privacy</a></li>
+				<li><a href="#">Security</a></li>
+				<li><a href="#">Contact</a></li>
+				<li><a href="#">Help</a></li>
+			</ul>
+			<a href="#" class="logo-link">
+				<img src="github.png" alt="gitbut 이미지" title="gitbut 이미지">
+			</a>
+		</footer>
 	</body>
 </html>
