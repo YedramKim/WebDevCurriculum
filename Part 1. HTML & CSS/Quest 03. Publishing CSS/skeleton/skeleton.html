@@ -13,7 +13,7 @@
 			<div class="wrap list">
 				<h1 id="logo">
 					<a href="#">
-						<span class="octicons github">&nbsp;</span>
+						<span class="octicons octicon-github">&nbsp;</span>
 					</a>
 				</h1>
 				<label for="search" class="search">
@@ -29,8 +29,8 @@
 					</ul>
 				</nav>
 				<div class="sign_buttons fr">
-					<a href="#" class="signup">Sign up</a>
-					<a href="#" class="signin">Sign in</a>
+					<a href="#" class="signup green_btn btn">Sign up</a>
+					<a href="#" class="signin gray_btn btn">Sign in</a>
 				</div>
 			</div>
 		</header>
@@ -45,28 +45,28 @@
 					<div class="option_buttons fr list">
 						<div class="watch">
 							<a href="#">
-								<span class="octicons watch"></span>
-								watch
+								<span class="octicons octicon-watch"></span>
+								Watch
 							</a>
 							<span class="number">20</span>
 						</div>
 						<div class="star">
 							<a href="#">
-								<span class="octicons star"></span>
-								star
+								<span class="octicons octicon-star"></span>
+								Star
 							</a>
 							<span class="number">47</span>
 						</div>
 						<div class="Fork">
 							<a href="#">
-								<span class="octicons fork"></span>
+								<span class="octicons octicon-fork"></span>
 								Fork
 							</a>
 							<span class="number">6</span>
 						</div>
 					</div>
 					<div id="repositoryname">
-						<span class="octicons book"></span>
+						<span class="octicons octicon-book1"></span>
 						<a href="#">KnowRe</a>
 						/
 						<a href="#" class="fb">WebDevCurriculum</a>
@@ -74,131 +74,176 @@
 				</div>
 			</article>
 
-			<article class="main-detail">
+			<!-- 저장소 메인 -->
+			<article class="main_detail wrap list">
 				<h2 class="dn">웹표준 통과용</h2>
-				<div>
+				<div class="repository_body fl">
 					<!-- TODO: 메인의 왼쪽 부분 -->
-					<p id="main-head">
+					<p class="repository_explain">
 						KnowRe web development curriculum for noobs
 					</p>
-					<div id="repository-info">
-						<ul>
-							<li>
-								<span class="number">26 </span>commits
-							</li>
-							<li>
-								<span class="number">2 </span>branches
-							</li>
-							<li>
-								<span class="number">0 </span>releases
-							</li>
-							<li>
-								<span class="number">1 </span>contributor
-							</li>
-						</ul>
-					</div>
-					<div id="repository-links">
-						<button id="change">change</button>
-						<button id="branch">branch</button>
+					<ul class="repository_info list">
+						<li>
+							<span class="octicons octicon-history"></span>
+							<span class="number">26</span>
+							commits
+						</li>
+						<li>
+							<span class="octicons octicon-git-branch"></span>
+							<span class="number">2</span>
+							branches
+						</li>
+						<li>
+							<span class="octicons octicon-tag"></span>
+							<span class="number">0</span>
+							releases
+						</li>
+						<li>
+							<span class="octicons octicon-person"></span>
+							<span class="number">1</span>
+							contributor
+						</li>
+					</ul>
+					<div class="repository_links">
+						<button class="change w btn green_btn"><span class="octicon-git-compare octicons"></span></button>
+						<button class="branch btn gray_btn">
+							<span>branch</span>
+							2016
+							<span class="octicons octicon-triangle-down"></span>
+						</button>
 						<a href="#">WebDevCurriculum</a>
-						/<span class="font-bold">+</span>
-						<button id="show_list">list</button>
+						/<span class="fb">+</span>
+						<button class="change fr btn gray_btn"><span class="octicons octicon-list-unordered"></span></button>
 					</div>
-					<div id="repository_list">
-						<div id="repository-notice">
+					<div class="repository_list">
+						<div class="repository_notice">
 							This branch is 5 commits ahead of master.
-							<a href="#">Pull request</a>
-							<a href="#">Compare</a>
+							<a href="#" class="fr">
+								<span class="octicons octicon-diff"></span>
+								Compare
+							</a>
+							<a href="#" class="fr">
+								<span class="octicons octicon-git-pull-request"></span>
+								Pull request
+							</a>
 						</div>
-						<div id="root_document">
+						<div class="root_document">
 							<a href="#">...</a>
 						</div>
-						<table>
+						<table class="repository_table">
 							<colgroup>
-								<col>
-								<col>
-								<col>
+								<col style="width: 33.33%;">
+								<col style="width: 33.33%;">
+								<col style="width: 33.33%;">
 							</colgroup>
 							<thead>
 								<tr>
-									<td><span class="font-bold">Kivol</span> authored 19 hours ago</td>
+									<td>
+										<img src="./repository_graph.png" alt="그래프 이미지" title="그래프 이미지">
+										<span class="fb">Kivol</span> 
+										authored 19 hours ago
+									</td>
 									<td>&nbsp;</td>
-									<td>latest commit <span class="last_commit">5ead7a7a36</span></td>
+									<td>latest commit <span class="last_commit">5ead7a7a36</span>
+										<span class="octicons octicon-clippy"></span>
+									</td>
 								</tr>
 							</thead>
 							<tbody>
 								<tr class="folder">
-									<td>Part 0. git/<span class="file">Quest 0. Hello, git</span></td>
+									<td>
+									<span class="octicons octicon-file-directory"></span>
+									Part 0. git/<span class="file_text">Quest 0. Hello, git</span>
+									</td>
 									<td>Quest 0 - added checklist</td>
 									<td>19 hours ago</td>
 								</tr>
 								<tr class="folder">
-									<td><span class="file">old</span></td>
+									<td>
+										<span class="octicons octicon-file-directory"></span>
+										<span class="file_text">old</span>
+									</td>
 									<td>New curriculum 2016 - started</td>
 									<td>5 hours ago</td>
 								</tr>
 								<tr class="file">
-									<td><span class="file">LICENCE</span></td>
+									<td>
+										<span class="octicons octicon-file"></span>
+										<span class="file_text">LICENCE</span>
+									</td>
 									<td>New curriculum 2016 - started</td>
 									<td>5 hours ago</td>
 								</tr>
 								<tr class="file">
-									<td><span class="file">README.md</span></td>
-									<td></td>
+									<td>
+										<span class="octicons octicon-file"></span>
+										<span class="file_text">README.md</span>
+									</td>
+									<td>...</td>
 									<td>19 hours ago</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
-					<div id="repository-file">
-						<div id="file-title">README.md</div>
-						<div id="file-content">
-							<p>KnowRe web development curriculum 2016</p>
+					<div class="repository_file">
+						<div class="file_title fb">
+							<span class="octicons octicon-book"></span>
+							README.md
+						</div>
+						<div class="file_content">
+							<p class="fb">KnowRe web development curriculum 2016</p>
 						</div>
 					</div>
 				</div>
 
-				<aside>
+				<aside class="repository_aside fr">
 					<!-- TODO: 메인의 오른쪽 메뉴 부분 -->
-					<ul id="side_gnb">
-						<li class="side-code">
+					<ul class="side_gnb">
+						<li class="side_code">
+							<span class="octicons octicon-code"></span>
 							<a href="#">Code</a>
 						</li>
-						<li class="side-issue">
+						<li class="side_issue">
+							<span class="octicons octicon-issue-opened"></span>
 							<a href="#">Issue</a>
 							<span class="number">0</span>
 						</li>
-						<li class="side-req">
+						<li class="side_req">
+							<span class="octicons octicon-git-pull-request"></span>
 							<a href="#">Pull requests</a>
 							<span class="number">0</span>
 						</li>
-						<li class="side-pulse">
+						<li class="side_pulse">
+							<span class="octicons octicon-pulse"></span>
 							<a href="#">Pulse</a>
 						</li>
-						<li class="side-graph">
+						<li class="side_graph">
+							<span class="octicons octicon-graph"></span>
 							<a href="#">Graphs</a>
 						</li>
 					</ul>
-					<div id="repository-http">
-						<span id="http-head">
-							<span class="font-bold">Https</span> clone URL
-						</span>
-						<label for="http">
-							<input type="text" name="http" id="http" value="https://github.com/">
-							<a href="#" class="http-copy">copy(복사 버튼)</a>
+					<div class="repository_http">
+						<p class="http_head">
+							<span class="fb">Https</span> clone URL
+						</p>
+						<label for="http" class="clone_url">
+							<input type="text" id="http" name="http" class="http" value="https://github.com/" readonly>
+							<a href="#" class="http_copy btn gray_btn">
+								<span class="octicons octicon-clippy"></span>
+							</a>
 						</label>
-						<span id="http-foot">
-							You can clone with <span>HTTPS</span> or Subversion
-							<img src="question_mark.png" alt="물음표 이미지" title="물음표 이미지">
+						<span class="http_foot">
+							You can clone with <span>HTTPS</span> or <span>Subversion</span>
+							<span class="octicons octicon-question"></span>
 						</span>
 					</div>
-					<div id="download_button">
-						<a href="#">
-							<img src="clone_button.png" alt="clone button" title="clone button">
+					<div class="download_button">
+						<a href="#" class="btn gray_btn dib">
+							<span class="octicons octicon-desktop-download"></span>
 							Clone in Desktop
 						</a>
-						<a href="#">
-							<img src="download_button.png" alt="download button" title="download button">
+						<a href="#" class="btn gray_btn dib">
+							<span class="octicons octicon-cloud-download"></span>
 							Download ZIP
 						</a>
 					</div>
@@ -206,9 +251,9 @@
 			</article>
 		</section>
 
-		<footer>
+		<footer class="wrap tac">
 			<!-- TODO: 하단의 Copyright, Terms, Privacy 등은 어떻게 처리하면 좋을까요? -->
-			<ul id="footer-menu-right">
+			<ul class="footer_menu_right fr list">
 				<li><a href="#">Status</a></li>
 				<li><a href="#">API</a></li>
 				<li><a href="#">Training</a></li>
@@ -217,7 +262,7 @@
 				<li><a href="#">About</a></li>
 				<li><a href="#">Pricing</a></li>
 			</ul>
-			<ul id="footer-menu-left">
+			<ul class="footer_menu_left fl list	">
 				<li class="copyright">&copy; 2015 GitHub, inc.</li>
 				<li><a href="#">Terms</a></li>
 				<li><a href="#">Privacy</a></li>
@@ -226,7 +271,7 @@
 				<li><a href="#">Help</a></li>
 			</ul>
 			<a href="#" class="logo-link">
-				<img src="github.png" alt="gitbut 이미지" title="gitbut 이미지">
+				<span class="octicons octicon-mark-github"></span>
 			</a>
 		</footer>
 	</body>

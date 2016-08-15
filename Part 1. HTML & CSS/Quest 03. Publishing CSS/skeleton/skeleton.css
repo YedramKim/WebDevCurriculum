@@ -9,6 +9,7 @@
 	padding: 0;
 	box-sizing: border-box;
 	color: #333;
+	color: inherit;
 }
 
 html {
@@ -26,6 +27,9 @@ body {
 li{list-style-type: none;}
 a{text-decoration: none;}
 input,button{border: 1px #aaa solid; background: #fff;}
+button{cursor: pointer;}
+img{vertical-align: middle;}
+table{border-collapse: collapse;}
 
 /*레이아웃 중앙 정렬*/
 .wrap{margin: 0 auto; width: 1000px;} 
@@ -38,6 +42,9 @@ input,button{border: 1px #aaa solid; background: #fff;}
 .tal{text-align: left;}
 .tac{text-align: center;}
 .tar{text-align: right;}
+
+/* 글자색 설정 */
+.w{color: #fff;}
 
 /*디스플레이 설정*/
 .dn{display: none;}
@@ -60,13 +67,54 @@ input,button{border: 1px #aaa solid; background: #fff;}
 .pof{position: fixed;}
 
 /*아이콘*/
-.octicons{font-family: 'octicons';}
-.octicons.nyan::before{content:'\f008';}
-.octicons.github::before{content:'\f092';}
-.octicons.book::before{content:'\f001';}
-.octicons.watch::before{content:'\f04e';}
-.octicons.star::before{content:'\f02a';}
-.octicons.fork::before{content:'\f002';}
+.octicons{font-family: 'octicons'; vertical-align: middle;}
+.octicons.octicon-nyan::before{content:'\f008';}
+.octicons.octicon-github::before{content:'\f092';}
+.octicons.octicon-book1::before{content:'\f001';}
+.octicons.octicon-watch::before{content:'\f04e';}
+.octicons.octicon-star::before{content:'\f02a';}
+.octicons.octicon-fork::before{content:'\f002';}
+.octicons.octicon-history::before{content:'\f07e';}
+.octicons.octicon-git-branch::before{content:'\f020';}
+.octicons.octicon-tag::before{content:'\f015';}
+.octicons.octicon-person::before{content:'\f037';}
+.octicons.octicon-git-compare::before{content:'\f0ac';}
+.octicons.octicon-list-unordered::before{content:'\f061';}
+.octicons.octicon-triangle-down::before{content:'\f05b';}
+.octicons.octicon-git-pull-request::before{content:'\f009';}
+.octicons.octicon-diff::before{content:'\f04d';}
+.octicons.octicon-file-directory::before{content:'\f016';}
+.octicons.octicon-file::before{content:'\f011';}
+.octicons.octicon-clippy::before{content:'\f035';}
+.octicons.octicon-book::before{content:'\f007';}
+.octicons.octicon-code::before{content:'\f05f';}
+.octicons.octicon-issue-opened::before{content:'\f026';}
+.octicons.octicon-pulse::before{content:'\f085';}
+.octicons.octicon-graph::before{content:'\f043';}
+.octicons.octicon-question::before{content:'\f02c';}
+.octicons.octicon-desktop-download::before{content:'\f0dc';}
+.octicons.octicon-cloud-download::before{content:'\f00b';}
+.octicons.octicon-mark-github::before{content:'\f00a';}
+
+/* 버튼 */
+.btn{
+	font-size: .9em;
+	border: 1px solid;
+	border-radius: 3px;
+	line-height: 32px;
+	text-align: center;
+	display: inline-block;
+}
+.green_btn{
+	color: #fff;
+	border-color: #69b04f;
+	background: linear-gradient(#87da6a, #60b044);
+}
+.gray_btn{
+	border-color: #dcdcdc;
+	background: linear-gradient(#fafafa, #ebebeb);
+	color: #333;
+}
 
 /* 헤더 */
 header{
@@ -77,6 +125,7 @@ header{
 }
 header #logo{
 	margin-right: 15px;
+	font-weight: normal;
 }
 
 header .search{
@@ -118,22 +167,8 @@ header .sign_buttons a{
 	display: inline-block;
 	width: 75px;
 	height: 34px;
-	border: 1px solid;
-	border-radius: 2px;
-	line-height: 32px;
-	text-align: center;
 	margin-left: 8px;
 	font-weight: bold;
-	font-size: .9em;
-}
-header .sign_buttons .signup{
-	color: #fff;
-	border-color: #69b04f;
-	background: linear-gradient(#87da6a, #60b044);
-}
-header .sign_buttons .signin{
-	border-color: #dcdcdc;
-	background: linear-gradient(#fafafa, #ebebeb);
 }
 
 
@@ -154,7 +189,7 @@ header .sign_buttons .signin{
 #repositoryname a{
 	color: #4078c0;
 }
-#repositoryname .octicons.book{
+#repositoryname .octicons.octicon-book1{
 	color: #bbbbbb;
 	font-size: 1.7em;
 	margin-top: 2px;
@@ -169,7 +204,7 @@ header .sign_buttons .signin{
 .option_buttons div{
 	border: 1px solid #dfdfdf;
 	overflow: hidden;
-	border-radius: 2px;
+	border-radius: 3px;
 	height: 28px;
 	line-height: 26px;
 	margin-left: 15px;
@@ -196,4 +231,326 @@ header .sign_buttons .signin{
 	width: 26px;
 	text-align: center;
 	display: inline-block;
+	font-size: .9em;
+}
+
+/*저장소 페이지 메인*/
+.main_detail{
+	padding-bottom: 70px; 
+	border-bottom: 1px solid #f2f2f2;
+	margin-bottom: 35px;
+}
+
+.repository_body{
+	width: 815px; 
+	padding-right: 15px;}
+.repository_explain{
+	line-height: 45px; 
+	color: #888; 
+	font-size: 1.1em;}
+.repository_info{
+	border:1px solid #ebebeb; 
+	overflow: hidden; 
+	border-radius:3px;
+}
+.repository_info li{
+	width:25%; 
+	height: 38px; 
+	line-height: 38px; 
+	text-align: center;
+	color: #888;
+}
+.repository_info li .number{
+	font-weight: bold;
+	margin-right: 3px;
+}
+.repository_info::after{
+	display: block;
+	background: #f1e05a;
+	height: 8px;
+}
+.repository_info .octicons{
+	color: #9b9b9b;
+}
+
+.repository_links{
+	margin: 10px 0; 
+	color: #767676;
+}
+.repository_links .btn{
+	height: 27px;
+	line-height: 25px;
+}
+.repository_links .change{
+	width: 36px;
+}
+.repository_links .branch{
+	width: 111px;
+	font-weight: bold;
+}
+.repository_links .branch span{
+	color: #b0b0b0;
+	font-weight: normal;
+}
+.repository_links .branch .octicons{
+	color: #333;
+}
+.repository_links .change{font-size: 1.0em;}
+.repository_links a{
+	color: #4078c0;
+ 	font-weight: bold;
+}
+
+.repository_list{
+	border: 1px #eaeaea solid;
+	border-radius: 3px;
+	line-height: 34px;
+	margin-bottom: 10px;
+}
+
+.repository_notice{
+	height: 34px;
+	background: #fafafa;
+	color: #a0a0a0;
+	font-size: .8em;
+	padding:0 10px;
+}
+.repository_notice a{
+	margin-left: 10px;
+	font-size: 1.2em;
+}
+
+.root_document{
+	background: #e6f1f6;
+	padding:0 10px;
+	border-top: 1px #c4d2d9 solid;
+}
+
+.repository_table{
+	width: 100%;
+	color: #9d9d9d;
+	font-size: .9em;
+}
+.repository_table tr{
+	border-bottom: 1px solid #f0f0f0;
+}
+.repository_table thead tr{
+	background: #f8f8f8;
+}
+.repository_table tbody tr:hover{
+	background: #f5f5f5;
+}
+
+.repository_table td{
+	padding:0 10px;
+	font-size: .9em;
+}
+
+.repository_table thead td span{
+	color: #333;
+}
+
+.repository_table .octicons{
+	font-size: 1.2em;
+	vertical-align: top;
+}
+.repository_table td .file_text, .repository_table td .octicon-file-directory,.repository_table .octicon-clippy{
+	color: #80a4d3;	
+}
+
+.repository_table td:last-child{
+	text-align: right;
+}
+
+.repository_file{
+	overflow: hidden;
+	border-radius: 3px;
+	border: 1px #e7e7e7 solid;
+}
+
+.repository_file .file_title{
+	line-height: 36px;
+	height: 37px;
+	border-bottom: 1px #e7e7e7 solid;
+	padding:0 10px;
+	background: #f5f5f5;
+}
+.repository_file .file_title .octicons.octicon-book{
+	font-size: 1.1em;
+}
+
+.repository_file .file_content{
+	padding:36px 30px;
+	font-size: 2.3em;
+}
+.repository_file .file_content p{
+	padding-bottom: 20px;
+	border-bottom: 1px #f2f2f2 solid;
+}
+
+.repository_aside{
+	width: 185px;
+}
+
+/*저장소 사이드 영역*/
+.repository_aside{
+	padding-top: 20px;
+}
+
+.side_gnb{
+	padding: 10px 0;
+	border-left: 1px #f3f3f3 solid;
+	margin-bottom: 20px;
+	overflow: hidden;
+}
+.side_gnb::after{
+	content: '';
+	display: block;
+	width: 1px;
+	height: 100%;
+	position: absolute;
+	left: -3px;
+	top: 0;
+	box-shadow: 0 0 10px rgba(0,0,0,.8);
+}
+
+.side_gnb li{
+	padding-left: 15px;
+	height: 50px; 
+	line-height: 50px;
+	overflow: hidden;
+}
+.side_gnb .side_code{
+	background: #fff;
+	box-shadow: 2px 0 5px rgba(0,0,0,.3);
+	margin-left: -1px;
+	border-radius: 0 3px 3px 0;
+	z-index: 1000;
+	height: 35px;
+	line-height: 33px;
+}
+.side_gnb .side_code::after{
+	display: block;
+	content: '';
+	float: right;
+	height: 100%;
+	background: #d26911;
+	width: 4px;
+}
+.side_gnb li.side_pulse::after{
+	content: '';
+	display: block; 
+	position: absolute;
+	width: 100%;
+	height: 1px;
+	left: 0;
+	top: -2px;
+	box-shadow: -6px 0 7px rgba(0,0,0,.6);
+}
+
+.side_gnb .octicons{
+	color: #d4d4d4;
+}
+.side_gnb a{
+	color: #6492cc;
+}
+.side_gnb .number{
+	float: right;
+	color: #919191;
+	background: #eeeeee;
+	border-radius: 10px;
+	width: 20px;
+	text-align: center;
+	height: 20px;
+	line-height: 20px;
+	margin-top: 15px;
+	margin-right: 10px;
+	display: inline-block;
+	font-size: .9em;
+}
+.side_gnb .side_code *{
+	color: #4c4c4c;
+}
+
+.repository_http{
+	line-height: 20px;
+}
+
+.repository_http p{
+	font-size: .8em;
+}
+
+.repository_http .clone_url{
+	display: inline-block;
+	width: 100%;
+	border: 1px #d9d9d9 solid;
+	box-shadow: 0 0 2px rgba(0,0,0,.2);
+	height: 26px;
+	line-height: 24px;
+	border-radius: 4px;
+}
+.repository_http .clone_url::after{
+	content: '';
+	display: block;
+	clear: both;
+}
+.repository_http .clone_url input{
+	border: 0;
+	border-right: 1px #d9d9d9 solid;
+	padding-left: 8px;
+	height: 100%;
+	width: 149px;
+	float: left;
+}
+.repository_http .clone_url .btn{
+	width: 34px;
+	border: 0;
+	height: 100%;
+	float: left;
+	line-height: 24px;
+}
+
+.repository_http .http_foot{
+	font-size: .8em;
+}
+
+.repository_http .http_foot span{
+	color: #86aad7;
+}
+
+.repository_http .http_foot .octicons{
+	color: #333;
+}
+
+.download_button{
+	margin-top: 10px;
+}
+.download_button .btn{
+	margin-bottom: 10px;
+	width: 100%;
+	font-size: 0.9em;
+	font-weight: bold;
+	height: 26px;
+	line-height: 24px;
+}
+
+/* 푸터 */
+footer{
+	color: #cccccc;
+}
+footer::after{
+	content: '';
+	display: block;
+	display: block;
+}
+footer li{
+	margin:0 5px;
+}
+footer li a{
+	color: #86aad7;
+	font-size: .8em;
+	font-weight: 700;
+}
+footer .octicons{
+	font-size: 2.0em;
 }
