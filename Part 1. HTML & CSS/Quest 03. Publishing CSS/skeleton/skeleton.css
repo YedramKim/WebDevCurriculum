@@ -1,6 +1,6 @@
 @font-face{
 	font-family: 'octicons';
-	src:url(./octicons.ttf);
+	src:url(./octicons.ttf) format('truetype');
 }
 * {
 	/* TODO: 어떤 코드가 들어가야 할까요? */
@@ -127,7 +127,7 @@ header #logo{
 	margin-right: 15px;
 	font-weight: normal;
 }
-
+/* 헤더 상단 검색 폼 */
 header .search{
 	display: inline-block;
 	width: 360px; 
@@ -158,11 +158,13 @@ header .search span{
 	text-align: center;
 }
 
+/* 메인 메뉴 */
 header .gnb li{
 	margin-left: 16px;
 	font-weight: bold;
 }
 
+/* 회원가입, 로그인 버튼 */
 header .sign_buttons a{
 	display: inline-block;
 	width: 75px;
@@ -172,7 +174,7 @@ header .sign_buttons a{
 }
 
 
-/* 메인 헤더*/
+/* 저장소의 헤더 부분 */
 .main_header{
 	height: 70px;
 	line-height: 69px;
@@ -180,6 +182,7 @@ header .sign_buttons a{
 }
 .main_header>.wrap{height: 100%;}
 
+/* 저장소 이름 */
 #repositoryname{
 	font-size: 1.1em;
 	position: absolute;
@@ -196,6 +199,7 @@ header .sign_buttons a{
 	vertical-align: middle;
 }
 
+/* watch, star, fork 버튼 */
 .option_buttons{
 	line-height: 69px;
 	height: 100%;
@@ -241,13 +245,18 @@ header .sign_buttons a{
 	margin-bottom: 35px;
 }
 
+/* 디렉토리, 파일 목록 및 저장소 상태 표시 영역 */
 .repository_body{
 	width: 815px; 
-	padding-right: 15px;}
+	padding-right: 15px;
+}
 .repository_explain{
 	line-height: 45px; 
 	color: #888; 
-	font-size: 1.1em;}
+	font-size: 1.1em;
+}
+
+/* git 저장소 정보 */
 .repository_info{
 	border:1px solid #ebebeb; 
 	overflow: hidden; 
@@ -273,6 +282,7 @@ header .sign_buttons a{
 	color: #9b9b9b;
 }
 
+/* git 저장소 조작 영역 */
 .repository_links{
 	margin: 10px 0; 
 	color: #767676;
@@ -301,6 +311,7 @@ header .sign_buttons a{
  	font-weight: bold;
 }
 
+/* git 저장소 파일 표시 영역 */
 .repository_list{
 	border: 1px #eaeaea solid;
 	border-radius: 3px;
@@ -362,12 +373,12 @@ header .sign_buttons a{
 	text-align: right;
 }
 
+/* 파일 내용 표시 영역 */
 .repository_file{
 	overflow: hidden;
 	border-radius: 3px;
 	border: 1px #e7e7e7 solid;
 }
-
 .repository_file .file_title{
 	line-height: 36px;
 	height: 37px;
@@ -397,6 +408,7 @@ header .sign_buttons a{
 	padding-top: 20px;
 }
 
+/* 사이드 메뉴 */
 .side_gnb{
 	padding: 10px 0;
 	border-left: 1px #f3f3f3 solid;
@@ -413,7 +425,6 @@ header .sign_buttons a{
 	top: 0;
 	box-shadow: 0 0 10px rgba(0,0,0,.8);
 }
-
 .side_gnb li{
 	padding-left: 15px;
 	height: 50px; 
@@ -447,7 +458,6 @@ header .sign_buttons a{
 	top: -2px;
 	box-shadow: -6px 0 7px rgba(0,0,0,.6);
 }
-
 .side_gnb .octicons{
 	color: #d4d4d4;
 }
@@ -472,14 +482,13 @@ header .sign_buttons a{
 	color: #4c4c4c;
 }
 
+/* git 저장소 주소 표시 영역 */
 .repository_http{
 	line-height: 20px;
 }
-
 .repository_http p{
 	font-size: .8em;
 }
-
 .repository_http .clone_url{
 	display: inline-block;
 	width: 100%;
@@ -497,7 +506,7 @@ header .sign_buttons a{
 .repository_http .clone_url input{
 	border: 0;
 	border-right: 1px #d9d9d9 solid;
-	padding-left: 8px;
+	padding:0 8px;
 	height: 100%;
 	width: 149px;
 	float: left;
@@ -509,7 +518,6 @@ header .sign_buttons a{
 	float: left;
 	line-height: 24px;
 }
-
 .repository_http .http_foot{
 	font-size: .8em;
 }
@@ -522,6 +530,7 @@ header .sign_buttons a{
 	color: #333;
 }
 
+/* 다운로드 링크 */
 .download_button{
 	margin-top: 10px;
 }
@@ -533,6 +542,7 @@ header .sign_buttons a{
 	height: 26px;
 	line-height: 24px;
 }
+
 
 /* 푸터 */
 footer{

@@ -16,10 +16,13 @@
 						<span class="octicons octicon-github">&nbsp;</span>
 					</a>
 				</h1>
-				<label for="search" class="search">
-					<input type="text" name="search" id="search" placeholder="search">
-					<span>This repository</span>
-				</label>
+				<form action="#" class="search_form">
+					<label for="search" class="search">
+						<input type="text" name="search" id="search" placeholder="search">
+						<span>This repository</span>
+					</label>
+				</form>
+				<!-- 메인 메뉴 -->
 				<nav class="gnb">
 					<ul class="list">
 						<li><a href="#">Explore</a></li>
@@ -28,6 +31,7 @@
 						<li><a href="#">Pricing</a></li>
 					</ul>
 				</nav>
+				<!-- 회원가입, 로그인 버튼 -->
 				<div class="sign_buttons fr">
 					<a href="#" class="signup green_btn btn">Sign up</a>
 					<a href="#" class="signin gray_btn btn">Sign in</a>
@@ -40,6 +44,7 @@
 			<article class="main_header">
 				<h2 class="dn">웹표준 통과용</h2>
 				<!-- TODO: 메인의 헤더 부분 -->
+				<!-- 저장소의 헤더 부분 -->
 				<div class="wrap list">
 					<!-- watch, star, fork 버튼 -->
 					<div class="option_buttons fr list">
@@ -65,6 +70,7 @@
 							<span class="number">6</span>
 						</div>
 					</div>
+					<!-- 저장소 이름 -->
 					<div id="repositoryname">
 						<span class="octicons octicon-book1"></span>
 						<a href="#">KnowRe</a>
@@ -79,9 +85,11 @@
 				<h2 class="dn">웹표준 통과용</h2>
 				<div class="repository_body fl">
 					<!-- TODO: 메인의 왼쪽 부분 -->
+					<!-- 디렉토리, 파일 목록 및 저장소 상태 표시 영역 -->
 					<p class="repository_explain">
 						KnowRe web development curriculum for noobs
 					</p>
+					<!-- git 저장소 정보 -->
 					<ul class="repository_info list">
 						<li>
 							<span class="octicons octicon-history"></span>
@@ -104,6 +112,7 @@
 							contributor
 						</li>
 					</ul>
+					<!-- git 저장소 조작 영역 -->
 					<div class="repository_links">
 						<button class="change w btn green_btn"><span class="octicon-git-compare octicons"></span></button>
 						<button class="branch btn gray_btn">
@@ -115,6 +124,7 @@
 						/<span class="fb">+</span>
 						<button class="change fr btn gray_btn"><span class="octicons octicon-list-unordered"></span></button>
 					</div>
+					<!-- git 저장소 파일 표시 영역 -->
 					<div class="repository_list">
 						<div class="repository_notice">
 							This branch is 5 commits ahead of master.
@@ -185,6 +195,7 @@
 							</tbody>
 						</table>
 					</div>
+					<!-- 파일 내용 표시 영역 -->
 					<div class="repository_file">
 						<div class="file_title fb">
 							<span class="octicons octicon-book"></span>
@@ -198,6 +209,7 @@
 
 				<aside class="repository_aside fr">
 					<!-- TODO: 메인의 오른쪽 메뉴 부분 -->
+					<!-- 사이드 메뉴 -->
 					<ul class="side_gnb">
 						<li class="side_code">
 							<span class="octicons octicon-code"></span>
@@ -222,12 +234,13 @@
 							<a href="#">Graphs</a>
 						</li>
 					</ul>
+					<!-- git 저장소 주소 표시 영역 -->
 					<div class="repository_http">
 						<p class="http_head">
 							<span class="fb">Https</span> clone URL
 						</p>
 						<label for="http" class="clone_url">
-							<input type="text" id="http" name="http" class="http" value="https://github.com/" readonly>
+							<input type="text" id="http" name="http" class="http" value="https://github.com/KnowRe/WebDevCurriculum" readonly>
 							<a href="#" class="http_copy btn gray_btn">
 								<span class="octicons octicon-clippy"></span>
 							</a>
@@ -237,6 +250,7 @@
 							<span class="octicons octicon-question"></span>
 						</span>
 					</div>
+					<!-- 다운로드 링크 -->
 					<div class="download_button">
 						<a href="#" class="btn gray_btn dib">
 							<span class="octicons octicon-desktop-download"></span>
@@ -250,7 +264,7 @@
 				</aside>
 			</article>
 		</section>
-
+		<!-- 푸터 -->
 		<footer class="wrap tac">
 			<!-- TODO: 하단의 Copyright, Terms, Privacy 등은 어떻게 처리하면 좋을까요? -->
 			<ul class="footer_menu_right fr list">
