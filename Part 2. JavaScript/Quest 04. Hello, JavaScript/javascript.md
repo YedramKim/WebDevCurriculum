@@ -26,6 +26,7 @@ document.addEventListener('load', function(){
 ```
 ```javascript
 /*즉시 실행 함수*/
+//즉시 실행 함수는 함수를 정의하고 저장하는 기존에 함수 선언과 달리 같은 과정을 거치지 않고 즉시 실행 된다는 특징이 있습니다.
 (function(){
 	console.log('즉시 실행 함수 실행');
 })();
