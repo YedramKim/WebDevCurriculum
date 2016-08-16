@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<title>Star</title>
+</head>
+<body>
+
+<script>
+window.onload=function(){
+	var num=null;
+	while(isNaN(num) || num == '' || num == {} || num == null){
+		num=prompt("숫자를 입력하세요. (숫자가 아닌 것을 입력하면 새로 고침 됩니다.)");
+	}
+
+	var colnum=num*2-1;
+	var str='';
+	for(var i=0; i<num; i++){
+		var starnum=(i+1)*2-1;
+		var startnum=Math.ceil(colnum/2)-i-1;
+		for(var j=0; j<colnum; j++){
+			if(startnum<=j && j<startnum+starnum){
+				str+='*';
+			}else{
+				str+=' ';
+			}
+		}
+		str+="\n";
+	}
+	console.log(str);
+};
+</script>
+</body>
+</html>
