@@ -38,6 +38,14 @@
 			for(var i = 0; i < row1Squares.length; i++) {
 				var node = row1Squares[i];
 				/* TODO: node 변수를 어떻게 조작해야 할까요? */
+				node.onclick = function(e){
+					this.style.transition="none";
+					this.style.background="yellow";
+					setTimeout(function(node){
+						node.style.transition="background 0.5s";
+						node.style.background="white";
+					}, 200 ,this);
+				}
 			}
 
 			var row2Squares = document.querySelectorAll('.row2 .square');
@@ -45,6 +53,10 @@
 			for(var i = 0; i < row2Squares.length; i++) {
 				var node = row2Squares[i];
 				/* TODO: node 변수를 어떻게 조작해야 할까요? */
+				node.onclick = function(e){
+					this.classList.toggle('enabled');
+					e.preventDefault();
+				}
 			}
 		</script>
 	</body>
