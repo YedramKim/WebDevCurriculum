@@ -27,7 +27,8 @@
  		console.log(num);
  	}
  }
- var stack=stackClosure(10); //stackClosure를 실행하면 매개변수값을 내부의 num이란 변수에 대입하게 되는데, 반환값으로 매개변수만큼 내부의 num을 증가시키고 console창에 출력하는 함수를 반환합니다.
+ //stackClosure를 실행하면 매개변수값을 내부의 num이란 변수에 대입하게 되는데, 반환값으로 매개변수만큼 내부의 num을 증가시키고 console창에 출력하는 함수를 반환합니다.
+ var stack=stackClosure(10); 
  stack(5); //num값이 15가 되고 console창에 15가 출력 
  stack(6); //num값이 21가 되고 console창에 21이 출력 
  ```
