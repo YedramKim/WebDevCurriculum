@@ -40,7 +40,7 @@ var Child=function(){
 	Parent.apply(this, arguments);
 }
 
-//Child의 프로토타입을 Parent의 프로토타입에 넣습니다.
+//Child의 프로토타입에 Parent의 프로토타입을 넣습니다.
 //아래의 코드 처럼 Prototype이란 객체를 따로 만들어 넣은 이유는 Child의 prototype의 멤버변수의 변경 및 추가가 Parent의 prototype에 영향을 미치지 않기 위해서 입니다.
 var ChildPrototype = function(){};
 ChildPrototype.prototype = Parent.prototype;
