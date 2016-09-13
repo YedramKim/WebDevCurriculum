@@ -11,8 +11,8 @@
 * 자바스크립트의 객체에서는 private가 자체적으로 지원되어 있지 않지만 클로저를 이용해서 비슷하게 구현할 수 있습니다.
 생성자 함수에 `private`로 사용할 함수를 `this`가 아닌 var로 선언을 하고 `private` 값을 얻거나 조절할 수 있는 함수를 `this`로 객체의 멤버변수로 선언하면 됩니다.
 ```javascript
-var object=function(){
-	var number=0;
+var Object=function(n){
+	var number=n;
 	this.setnum=function(num){
 		number=num;
 	}
