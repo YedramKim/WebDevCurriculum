@@ -31,6 +31,8 @@ var Object=function(n){
 
 * 그리고 부모 객체의 prototype을 자식 객체의 prototype에 넣습니다.
 
+* 그리고 객체의 prototype의 `constructor`변수를 자기자신으로 지정합니다.
+
 ```javascript
 //부모 객체
 var Parent=function(){
