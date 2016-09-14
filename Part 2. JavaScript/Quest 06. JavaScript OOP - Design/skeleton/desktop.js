@@ -19,26 +19,30 @@ var Icon = function(name) {
 
 
 	/* 드래그 이벤트 관련 변수 */
-	this.firstPointX=0; //최초로 마우스를 클릭했을 때 마우스의 X좌표
-	this.firstPointY=0; //최초로 마우스를 클릭했을 때 마우스의 Y좌표
+	this.firstPointX = 0; //최초로 마우스를 클릭했을 때 마우스의 X좌표
+	this.firstPointY = 0; //최초로 마우스를 클릭했을 때 마우스의 Y좌표
+	this.x = 0; // Icon의 X좌표(상대적)
+	this.y = 0; // Icon의 Y좌표(상대적)
 
 	/* 드래그 이벤트 세팅 관련 함수 */
 	//아이콘을 클릭했을시의 이벤트 클릭했을 시 this.drag가 true가 된다.
-	function iconMouseDown() {}
+	function iconMouseDown(e) {}
 	//아이콘을 드래그시키게 하는 이벤트 함수 this.drag가 false 이면 실행되지 않는다.
-	function iconMouseMove() {}
+	function iconMouseMove(e) {}
 	//아이콘에서 마우스를 때면 발생하는 이벤트 this.drag가 false가 된다.
+	function iconMouseUp(e) {}
 
 };
 
-var Folder = function(name, contents) {
+var Folder = function(name) {
 	/* TODO: Folder 클래스는 어떤 멤버함수와 멤버변수를 가져야 할까요? */
 	Icon.apply(this, arguments);
 	this.windowContents = contents; // 폴더의 창에 표시할 내용
 	this.folderWindow = null; // 해당 폴더의 창 객체
+	this.icons=[]; //폴더에 넣을 아이콘들
 
 	/* 폴더를 더블클릭했을 때 창을 여는 버튼 */
-	function FolderDblclick() {}
+	function FolderDblclick(e) {}
 
 };
 //Folder는 Icon 객체를 상속합니다. 아래는 Folder 객체의 prototype에 Icon 객체의 prototype을 상속시키는 과정입니다.
@@ -47,22 +51,25 @@ FolderPrototype.prototype = Icon.prototype;
 Folder.prototype = new FolderPrototype();
 Folder.prototype.constructor = Folder;
 
-var Window = function(title, content) {
+var Window = function(title, icons) {
 	/* TODO: Window 클래스는 어떤 멤버함수와 멤버변수를 가져야 할까요? */
 	this.title=title; // 폴더의 창의 타이틀 
-	this.content=content; // 폴더의 창의 내용
+	this.icons; // 폴더의 창의 아이콘들
 	this.windowDom = null; //폴더의 창을 구현한 DOM
 	this.windowHeader = null; // 폴더의 창의 헤더부분 DOM
 	this.windowContent = null; // 폴더의 창의 컨텐츠부분 DOM
 
 	/* 드래그 이벤트 관련 변수 */
-	this.firstPointX=0; //최초로 마우스를 클릭했을 때 마우스의 X좌표
-	this.firstPointY=0; //최초로 마우스를 클릭했을 때 마우스의 Y좌표
+	this.firstPointX = 0; //최초로 마우스를 클릭했을 때 마우스의 X좌표
+	this.firstPointY = 0; //최초로 마우스를 클릭했을 때 마우스의 Y좌표
+	this.x = 0; // Icon의 X좌표(상대적)
+	this.y = 0; // Icon의 Y좌표(상대적)
 
 	/* 드래그 이벤트 세팅 관련 함수 */
 	//아이콘을 클릭했을시의 이벤트 클릭했을 시 this.drag가 true가 된다.
-	function iconMouseDown() {}
+	function windowMouseDown(e) {}
 	//아이콘을 드래그시키게 하는 이벤트 함수 this.drag가 false 이면 실행되지 않는다.
-	function iconMouseMove() {}
+	function windowMouseMove(e) {}
 	//아이콘에서 마우스를 때면 발생하는 이벤트 this.drag가 false가 된다.
+	function windowMouseUp(e) {}
 };
