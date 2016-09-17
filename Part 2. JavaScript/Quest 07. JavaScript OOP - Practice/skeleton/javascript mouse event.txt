@@ -1,0 +1,4 @@
+no button pressed:      e.which = 1   e.button = 0
+left button pressed:    e.which = 1   e.button = 0
+middle button pressed:  e.which = 2   e.button = 1
+right button pressed:   e.which = 3   e.button = 2
