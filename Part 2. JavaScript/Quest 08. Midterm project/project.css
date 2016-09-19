@@ -1,0 +1,24 @@
+/* 초기화 */
+*{margin: 0; padding: 0; box-sizing: border-box; position: relative; color: inherit;}
+html,body{font-size: 16px; min-width: 100%; min-height: 955px; background: #B0DAFF;}
+a{text-decoration: none;}
+li{list-style-type: none;}
+table{border-collapse: collapse;}
+input, button{background: #fff; border: 1px #aaa solid;}
+button { cursor: pointer; }
+
+/* 자주 쓰는 기능들 */
+.wrap{width: 100%; max-width: 1000px; margin: 0 auto; }
+.tac{text-align: center;}
+.tal{text-align: left;}
+.tar{text-align: right;}
+.fb{font-weight: bold;}
+.fn{font-weight: normal;}
+.db{display: block;}
+.dib{display: inline-block;}
+.dn{display: none;}
+.list > *{float: left;}
+.list::after{content:''; clear: both; display: block;}
+.fl{float: left;}
+.fr{float: right;}
+
