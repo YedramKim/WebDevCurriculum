@@ -6,8 +6,22 @@ var Desktop = function(selector, iconNum = 1, folderNum = 2) {
 	this.desktopDom = document.querySelector(selector); 
 	this.icons = []; // 폴더와 일반 아이콘의 모음
 
-	//데스크톱에 폴더와 파일들을 추가합니다.
+	//아이콘의 크기와 모양의 정보를 보관한 변수들
+	this.desktopStyle = document.createElement('style'); // 아이콘의 스타일이 변경될 경우 적용시킬 style 태그
+	this.iconWidth = 120; //아이콘 이미지 공간의 넓이
+	this.iconHeight = 100; //아이콘 이미지 공간의 높이
+	this.iconImage = './file.png'; // 아이콘 이미지
+	this.folderImage = './folder.png'; // 폴더 이미지
 
+	//변수를 초기화 합니다. (데스크톱에 폴더와 파일을 추가)
+	this._initialize(iconNum, folderNum);
+
+	//데스크톱에 폴더와 파일을 출력합니다.
+	this.displayIcons();
+};
+//객체 내의 변수들을 초기화 합니다.
+Desktop.prototype._initialize = function(iconNum, folderNum) {
+	//데스크톱에 폴더와 파일들을 추가합니다.
 	for(var i = 1; i <= iconNum; i++) {
 		var icon = new Icon("아이콘" + i);
 		this.icons.push(icon);
@@ -21,17 +35,7 @@ var Desktop = function(selector, iconNum = 1, folderNum = 2) {
 		}
 		this.icons.push(folder);
 	}
-
-	//아이콘의 크기와 모양의 정보를 보관한 변수들
-	this.desktopStyle = document.createElement('style'); // 아이콘의 스타일이 변경될 경우 적용시킬 style 태그
-	this.iconWidth = 120; //아이콘 이미지 공간의 넓이
-	this.iconHeight = 100; //아이콘 이미지 공간의 높이
-	this.iconImage = './file.png'; // 아이콘 이미지
-	this.folderImage = './folder.png'; // 폴더 이미지
-
-	//데스크톱에 폴더와 파일을 출력합니다.
-	this.displayIcons();
-};
+}
 //객체에 있는 폴더와 일반 아이콘을 보여주는 함수
 Desktop.prototype.displayIcons = function() {
 	this.desktopDom.innerHTML="";
@@ -109,6 +113,11 @@ var Icon = function(name) {
 	this.iconText.innerHTML=name;
 	this.displayIconDom.appendChild(this.iconText);
 
+	//이벤트 설정
+	this.bindEvents();
+};
+//Icon 객체의 이벤트를 설정하는 함수
+Icon.prototype.bindEvents = function() {
 	//폴더 hover 이벤트 (이번 장에서 새로 추가한 부분)
 	(function(node) {
 		node.displayIconDom.addEventListener("mouseenter", iconMouseEnter);
@@ -123,12 +132,12 @@ var Icon = function(name) {
 
 	/* 드래그 이벤트 관련 변수 */
 	this.drag = false; //지금 아이콘의 드래그 이동이 가능한 상태인지 확인하는 변수
+	this.posX = 0; // Icon의 X좌표(position:relative)
+	this.posY = 0; // Icon의 Y좌표(position:relative)
 	var firstPointX = 0; //최초로 마우스를 클릭했을 때 마우스의 X좌표
 	var firstPointY = 0; //최초로 마우스를 클릭했을 때 마우스의 Y좌표
 	var currentPosX = 0; //마우스를 이동했을 때의 X좌표
 	var currentPosY = 0; //마우스를 이동했을 때의 Y좌표
-	this.posX = 0; // Icon의 X좌표(position:relative)
-	this.posY = 0; // Icon의 Y좌표(position:relative)
 
 	/* 드래그 이벤트 세팅 관련 함수 */
 	//아이콘을 클릭했을시의 이벤트 클릭했을 시 this.drag가 true가 된다.
@@ -140,55 +149,60 @@ var Icon = function(name) {
 			firstPointX = e.pageX;
 			firstPointY = e.pageY;
 			node.drag = true;
-		}
-		//아이콘을 드래그시키게 하는 이벤트 함수 this.drag가 false 이면 실행되지 않는다.
-		document.body.addEventListener("mousemove", iconMouseMove);
-		function iconMouseMove(e) {
-			e.preventDefault();
-			if(node.drag == false){
-				return;
+
+			//마우스를 다운시킬때마다 이벤트가 추가되고 업되면 이벤트가 사라집니다.
+			//아이콘을 드래그시키게 하는 이벤트 함수 this.drag가 false 이면 실행되지 않는다.
+			document.body.addEventListener("mousemove", iconMouseMove);
+			function iconMouseMove(e) {
+				if(node.drag == false){
+					return;
+				}
+				e.preventDefault();
+
+				//마우스가 영역 밖으로 나갔을 경우 이벤트가 발동이 되지 않도록 함
+				//부모 HTML 요소의 위치
+				var parentPosition = node.displayIconDom.parentNode.getBoundingClientRect();
+				if(e.pageX < parentPosition.left) {
+					return;
+				}else if(parentPosition.right < e.pageX) {
+					return;
+				}else if(e.pageY < parentPosition.top) {
+					return;
+				}else if(parentPosition.bottom < e.pageY) {
+					return;
+				}
+
+				//왼쪽 마우스가 눌러져 있는 상태에서만 작동이 되도록 함
+				if(e.which == 1 && e.button == 0) {
+					currentPosX = node.posX + e.pageX - firstPointX;
+					currentPosY = node.posY + e.pageY - firstPointY;
+
+					node.displayIconDom.style.left = currentPosX + "px";
+					node.displayIconDom.style.top = currentPosY + "px";
+				}else{
+					node.displayIconDom.classList.remove("drag");
+
+					node.posX = currentPosX;
+					node.posY = currentPosY;
+					node.drag = false;
+				}
 			}
-
-			//마우스가 영역 밖으로 나갔을 경우 이벤트가 발동이 되지 않도록 함
-			//부모 HTML 요소의 위치
-			var parentPosition = node.displayIconDom.parentNode.getBoundingClientRect();
-			if(e.pageX < parentPosition.left) {
-				return;
-			}else if(parentPosition.right < e.pageX) {
-				return;
-			}else if(e.pageY < parentPosition.top) {
-				return;
-			}else if(parentPosition.bottom < e.pageY) {
-				return;
-			}
-
-			//왼쪽 마우스가 눌러져 있는 상태에서만 작동이 되도록 함
-			if(e.which == 1 && e.button == 0) {
-				currentPosX = node.posX + e.pageX - firstPointX;
-				currentPosY = node.posY + e.pageY - firstPointY;
-
-				node.displayIconDom.style.left = currentPosX + "px";
-				node.displayIconDom.style.top = currentPosY + "px";
-			}else{
+			//아이콘에서 마우스를 때면 발생하는 이벤트 this.drag가 false가 된다.
+			document.body.addEventListener("mouseup", iconMouseUp);
+			function iconMouseUp(e) {
 				node.displayIconDom.classList.remove("drag");
 
 				node.posX = currentPosX;
 				node.posY = currentPosY;
 				node.drag = false;
+
+				//이벤트를 해재합니다.
+				document.body.removeEventListener("mousemove", iconMouseMove);
+				document.body.removeEventListener("mouseup", iconMouseUp);
 			}
 		}
-		//아이콘에서 마우스를 때면 발생하는 이벤트 this.drag가 false가 된다.
-		document.body.addEventListener("mouseup", iconMouseUp);
-		function iconMouseUp(e) {
-			node.displayIconDom.classList.remove("drag");
-
-			node.posX = currentPosX;
-			node.posY = currentPosY;
-			node.drag = false;
-		}
 	})(this);
-
-};
+}
 
 var Folder = function(name, desktop) {
 	/* TODO: Folder 클래스는 어떤 멤버함수와 멤버변수를 가져야 할까요? */
@@ -199,19 +213,12 @@ var Folder = function(name, desktop) {
 	this.displayIconDom.classList.add("folder");
 
 	// 해당 폴더의 창 객체
+	this.desktop = desktop; //창을 표시할 데스크톱(자신이 위치한 데스크톱)
 	this.icons = []; //폴더에 넣을 아이콘들
 	this.folderWindow = null;
 
-	/* 폴더를 더블클릭했을 때 창을 여는 버튼 */
-	(function(node) {
-		node.displayIconDom.addEventListener("dblclick", FolderDblclick);
-		function FolderDblclick(e) {
-			if(node.folderWindow === null) {
-				node.folderWindow = new Window(desktop, name, node.icons);
-			}
-			node.folderWindow.showWindow();
-		}
-	})(this);
+	//이벤트 설정
+	this.bindEvents(name, desktop);
 };
 //Folder는 Icon 객체를 상속합니다. 아래는 Folder 객체의 prototype에 Icon 객체의 prototype을 상속시키는 과정입니다.
 function FolderPrototype() {}
@@ -223,7 +230,25 @@ Folder.prototype.constructor = Folder;
 Folder.prototype.addIcon = function(name) {
 	var icon=new Icon(name);
 	this.icons.push(icon);
+	if(this.folderWindow !== null){
+		this.folderWindow._initialize();
+	}
 	return this;
+}
+//이벤트를 추가하는 함수
+Folder.prototype.bindEvents = function(name, desktop) {
+	Icon.prototype.bindEvents.apply(this, arguments);
+
+	/* 폴더를 더블클릭했을 때 창을 여는 버튼 */
+	(function(node) {
+		node.displayIconDom.addEventListener("dblclick", FolderDblclick);
+		function FolderDblclick(e) {
+			if(node.folderWindow === null) {
+				node.folderWindow = new Window(node.desktop, node.name, node.icons);
+			}
+			node.folderWindow.showWindow();
+		}
+	})(this);
 }
 
 var Window = function(desktop, title, icons) {
@@ -257,6 +282,33 @@ var Window = function(desktop, title, icons) {
 	this.windowHeader.innerHTML += "<p>"+title+"</p>";
 	this.windowDom.appendChild(this.windowHeader);
 
+	// 폴더의 창의 컨텐츠부분 DOM
+	this.windowContent = document.createElement("div");
+	this.windowContent.classList.add("windowContent");
+	this.windowDom.appendChild(this.windowContent);
+
+	//객체 초기화(창에 폴더와 파일을 추가)
+	this._initialize();
+
+	//이벤트를 설정합니다.
+	this.bindEvents();
+};
+//Window 객체로 구현한 DOM 에 넣을 zindex값 쓸 때마다 1씩 올라간다 (이번 장에서 새로 추가한 부분)
+Window.zIndex=10000;
+
+//Window 객체에 넣은 Window의 일련번호
+Window.winNum=1;
+
+//변수를 초기화하는 함수
+Window.prototype._initialize = function() {
+	//창에 저장해 놓은 아이콘을 저장
+	var length = this.icons.length;
+	for(var i = 0; i < length; i++) {
+		this.windowContent.appendChild(this.icons[i].displayIconDom);
+	}
+}
+//이벤트를 설정하는 함수
+Window.prototype.bindEvents = function() {
 	//닫기버튼 클릭 이벤트
 	//button 태그에 click 이벤트가 직접 먹히지 않아 부모 태그에서 이벤트를 실행시키도록 했습니다.
 	(function(node) {
@@ -268,17 +320,6 @@ var Window = function(desktop, title, icons) {
 			}
 		}
 	})(this);
-
-	// 폴더의 창의 컨텐츠부분 DOM
-	this.windowContent = document.createElement("div");
-	this.windowContent.classList.add("windowContent");
-	this.windowDom.appendChild(this.windowContent);
-
-	//창에 저장해 놓은 아이콘을 저장
-	var length = this.icons.length;
-	for(var i = 0; i < length; i++) {
-		this.windowContent.appendChild(icons[i].displayIconDom);
-	}
 
 	/* 드래그 이벤트 관련 변수 */
 	this.drag = false; //지금 아이콘의 드래그 이동이 가능한 상태인지 확인하는 변수
@@ -299,57 +340,58 @@ var Window = function(desktop, title, icons) {
 			firstPointX = e.pageX;
 			firstPointY = e.pageY;
 			node.drag = true;
-		}
-		//아이콘을 드래그시키게 하는 이벤트 함수 this.drag가 false 이면 실행되지 않는다.
-		document.body.addEventListener("mousemove", windowMouseMove);
-		function windowMouseMove(e) {
-			e.preventDefault();
-			if(node.drag == false) { return; }
 
-			//마우스가 영역 밖으로 나갔을 경우 이벤트가 발동이 되지 않도록 함
-			//부모 HTML 요소의 위치
-			var parentPosition = node.windowDom.parentNode.getBoundingClientRect();
-			if(e.pageX < parentPosition.left) {
-				return;
-			}else if(parentPosition.right < e.pageX) {
-				return;
-			}else if(e.pageY < parentPosition.top) {
-				return;
-			}else if(parentPosition.bottom < e.pageY) {
-				return;
+			//마우스를 다운시킬때마다 이벤트가 추가되고 업되면 이벤트가 사라집니다.
+			//아이콘을 드래그시키게 하는 이벤트 함수 this.drag가 false 이면 실행되지 않는다.
+			document.body.addEventListener("mousemove", windowMouseMove);
+			function windowMouseMove(e) {
+				e.preventDefault();
+				if(node.drag == false) { return; }
+
+				//마우스가 영역 밖으로 나갔을 경우 이벤트가 발동이 되지 않도록 함
+				//부모 HTML 요소의 위치
+				var parentPosition = node.windowDom.parentNode.getBoundingClientRect();
+				if(e.pageX < parentPosition.left) {
+					return;
+				}else if(parentPosition.right < e.pageX) {
+					return;
+				}else if(e.pageY < parentPosition.top) {
+					return;
+				}else if(parentPosition.bottom < e.pageY) {
+					return;
+				}
+
+				//왼쪽 마우스가 눌러져 있는 상태에서만 작동이 되도록 함
+				if(e.which == 1 && e.button == 0) {
+					currentPosX = node.posX + e.pageX - firstPointX;
+					currentPosY = node.posY + e.pageY - firstPointY;
+
+					node.windowDom.style.left = currentPosX + "px";
+					node.windowDom.style.top = currentPosY + "px";
+				}else{
+					node.windowDom.classList.remove("drag");
+
+					node.posX = currentPosX;
+					node.posY = currentPosY;
+					node.drag = false;
+				}
 			}
-
-			//왼쪽 마우스가 눌러져 있는 상태에서만 작동이 되도록 함
-			if(e.which == 1 && e.button == 0) {
-				currentPosX = node.posX + e.pageX - firstPointX;
-				currentPosY = node.posY + e.pageY - firstPointY;
-
-				node.windowDom.style.left = currentPosX + "px";
-				node.windowDom.style.top = currentPosY + "px";
-			}else{
+			//아이콘에서 마우스를 때면 발생하는 이벤트 this.drag가 false가 된다.
+			document.body.addEventListener("mouseup", windowMouseUp);
+			function windowMouseUp(e) {
 				node.windowDom.classList.remove("drag");
 
 				node.posX = currentPosX;
 				node.posY = currentPosY;
 				node.drag = false;
+
+				//이벤트를 해제합니다.
+				document.body.removeEventListener("mousemove", windowMouseMove);
+				document.body.removeEventListener("mouseup", windowMouseUp);
 			}
 		}
-		//아이콘에서 마우스를 때면 발생하는 이벤트 this.drag가 false가 된다.
-		document.body.addEventListener("mouseup", windowMouseUp);
-		function windowMouseUp(e) {
-			node.windowDom.classList.remove("drag");
-
-			node.posX = currentPosX;
-			node.posY = currentPosY;
-			node.drag = false;
-		}
 	})(this);
-};
-//Window 객체로 구현한 DOM 에 넣을 zindex값 쓸 때마다 1씩 올라간다 (이번 장에서 새로 추가한 부분)
-Window.zIndex=10000;
-
-//Window 객체에 넣은 Window의 일련번호
-Window.winNum=1;
+}
 
 //Window 객체를 화면에 출력하는 함수
 Window.prototype.showWindow = function() {
