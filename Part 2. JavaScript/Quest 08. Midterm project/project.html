@@ -4,10 +4,131 @@
 	<meta charset="UTF-8">
 	<title>Document</title>
 	<link rel="stylesheet" href="./project.css">
+	<link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
 </head>
 <body>
-	<section class="wrap diary">
-		<h2 class="tac">단어장</h2>
+	<section class="wrap voca">
+		<h1 class="tac title">단어장</h1>
+		<!-- 단어 입력장 -->
+		<form action="#" class="wordForm">
+			<div class="notice">
+				<p class="explain">일본어를 넣는 경우 한자는 다음과 같은 방법으로 넣으면 됩니다.</p>
+				<p>
+					家庭(かてい) -> 
+					<ruby>家庭<rp>(</rp><rt>かてい</rt><rp>)</rp></ruby>
+				</p>
+			</div>
+			<label class="db">
+				<input type="text" class="wordInput" placeholder="단어">
+			</label>
+			<label class="db">
+				<input type="text" class="meanInput" placeholder="뜻">
+			</label>
+			<button type="submit">
+				<span class="octicons octicon-plus"></span>
+				단어추가
+			</button>
+		</form>
+
+		<article class="template">
+			<div class="wordCard">
+				<div class="word">
+					<ruby>家庭<rp>(</rp><rt>かてい</rt><rp>)</rp></ruby>
+				</div>
+				<div class="wordMean">
+					가정
+				</div>
+				<div class="setBtns list">
+					<button class="modified">
+						<span class="octicons octicon-keyboard"></span>
+						수정하기
+					</button>
+					<button class="remove">
+						<span class="octicons octicon-trashcan"></span>
+						삭제하기
+					</button>
+				</div>
+				<!-- 단어 수정 폼 -->
+				<form action="#" class="modifyForm">
+					<label class="db">
+						<input type="text" class="wordInput" placeholder="수정할 단어" value="家庭(かてい)">
+					</label>
+					<label class="db">
+						<input type="text" class="meanInput" placeholder="수정할 뜻" value="가정">
+					</label>
+					<div class="modifyBtns list">
+						<button class="modified">
+							<span class="octicons octicon-keyboard"></span>
+							수정하기
+						</button>
+						<button class="cancle" type="reset">
+							<span class="octicons octicon-x"></span>
+							취소하기
+						</button>
+					</div>
+				</form>
+				<button class="examView">
+					<span class="octicons octicon-chevron-down"></span>
+					예시 보기
+				</button>
+				<div class="exam_area">
+					<ul class="exams">
+						<li>
+							<div class="exam">
+								<div class="word">
+									<ruby>家庭<rp>(</rp><rt>かてい</rt><rp>)</rp>生活<rt>せいかつ</rt></ruby>
+								</div>
+								<p>가정생활</p>
+							</div>
+							<div class="examSetBtns poa">
+								<button>
+									<span class="octicons octicon-keyboard"></span>
+								</button>
+								<button>
+									<span class="octicons octicon-trashcan"></span>
+								</button>
+							</div>
+							<!-- 예시 수정 폼 -->
+							<form action="#" class="meanModifyForm">
+								<label class="db">
+									<input type="text" class="examInput" placeholder="예시 문장" value="家庭(かてい)生活(せいかつ)" class="wordInput">
+								</label>
+								<label class="db">
+									<input type="text" class="meanInput" placeholder="예시 뜻" value="가정생활">
+								</label>
+								<div class="meanModifyBtns list">
+									<button class="modified">
+										<span class="octicons octicon-keyboard"></span>
+										수정하기
+									</button>
+									<button class="cancle" type="button">
+										<span class="octicons octicon-x"></span>
+										취소하기
+									</button>
+								</div>
+							</form>
+						</li>
+					</ul>
+					<!-- 예시 추가 폼 -->
+					<form action="#" class="examForm">
+						<label class="db">
+							<input type="text" placeholder="예시 단어" class="wordInput">
+						</label>
+						<label class="db">
+							<input type="text" placeholder="예시 뜻"  class="meanInput">
+						</label>
+						<button type="submit">
+							<span class="octicons octicon-plus"></span>
+							예시추가
+						</button>
+					</form>
+					<button class="addExam">
+						<span class="octicons octicon-plus"></span>
+						예시추가
+					</button>
+				</div>
+			</div>
+		</article>
 	</section>
 	<script src="./project.js"></script>
 </body>
