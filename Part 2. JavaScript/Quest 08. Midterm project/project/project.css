@@ -65,9 +65,9 @@ rt{font-size: 0.6em; color: #ff2f2f; text-align: center; font-weight: bold;}
 #all:checked ~ .wordCard{display: block;}
 #english:checked ~ .eword{display: block;}
 #japanese:checked ~ .jword{display: block;}
-.wordCard > .wordIdx, .wordCard > .wordMean{height: 35px; line-height: 34px; border-bottom: 1px #ddd solid; padding:0 10px;}
+.wordCard > .wordMean{height: 35px; line-height: 34px; border-bottom: 1px #ddd solid; padding:0 10px;}
 .wordCard > .word{padding: 10px 10px; font-size: 2.0em; border-bottom: 1px #ddd solid;}
-			 .word{font-family: 'PT Sans', sans-serif; font-weight: bold; word-break: break-word;}
+			.word{font-family: 'PT Sans', sans-serif; font-weight: bold; word-break: break-word;}
 .wordCard > .wordMean{border-bottom: 0;}
 .wordCard > .modifyForm {display: none;}
 .wordCard > .modifyForm > label {width: 100%; height: 35px; border-bottom: 1px #aaa solid;}

@@ -1,8 +1,4 @@
 //DOM 함수 추가
-HTMLElement.prototype.width = function() {
-	var pos = this.getBoundingClientRect();
-	return pos.right - pos.left;
-}
 HTMLElement.prototype.height = function() {
 	var pos = this.getBoundingClientRect();
 	return pos.bottom - pos.top;
@@ -19,7 +15,6 @@ var Vocabulary = function(selector) {
 
 	//데이터 저장소
 	this.wordList = new Store("word");
-	this.exampleList = new Store("example");
 
 	//템플릿들 (밑의 함수에서 초기화)
 	this.wordExampleTemplate = null;
@@ -27,13 +22,11 @@ var Vocabulary = function(selector) {
 
 	//단어와 예시문들
 	this.words = this.wordList.getData();
-	this.examples = this.exampleList.getData();
 
 	//단어를 표시할 HTML 요소들
 	this.wordNodes = [];
 
 	//한글 정규식(단어 추가시 검사용)
-	var g='';
 	this.koreanReg =/[가-힣ㅂㅈㄷㄱ쇼ㅕㅑㅐㅔㅁㄴㅇㄹ호ㅓㅏㅣㅋㅌㅊ퓨ㅜㅡ]/g;
 
 	//객체 초기화
@@ -45,11 +38,11 @@ var Vocabulary = function(selector) {
 //단어장 초기화 함수
 Vocabulary.prototype._initialize = function() {
 	//템플릿 초기화
-	var node = this.diaryNode.querySelector(".exams>li");
+	var node = this.diaryNode.querySelector(".exams>li"); //단어 예재 템플릿
 	this.wordExampleTemplate = node.cloneNode(true);
 	node.parentNode.removeChild(node);
 
-	node = this.diaryNode.querySelector(".wordCard");
+	node = this.diaryNode.querySelector(".wordCard"); //단어 템플릿
 	this.wordTemplate = node.cloneNode(true);
 	node.parentNode.removeChild(node);
 
@@ -62,7 +55,6 @@ Vocabulary.prototype._initialize = function() {
 		this.wordNodes[i] = new Word(parent, wordTemplate, wExamTemplate, data);
 	}
 }
-
 //단어장 이벤트 설정 함수
 Vocabulary.prototype.bindEvents = function(){
 	(function(node) {
@@ -429,19 +421,13 @@ var WordExample = function(parent, template, data){
 	this.japaneseReg = new RegExp("[" + this.hanzaRegStr + "]+", "gim");
 	this.rubyReg = new RegExp("[" + this.hanzaRegStr + "]+\\([" + this.kanaRegStr + "]+\\)", "gim");
 
-	//객체 초기화
-	this._initialize();
-
 	//HTML 요소 설정
 	this.setNode();
 
 	//이벤트 설정
 	this.bindEvents();
-
 }
-WordExample.prototype._initialize = function() {
-	
-}
+//HTML 요소 초기화
 WordExample.prototype.setNode = function() {
 	var exam = this.data.exam;
 	var mean = this.data.mean;
