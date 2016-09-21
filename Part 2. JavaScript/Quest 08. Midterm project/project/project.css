@@ -97,7 +97,7 @@ rt{font-size: 0.6em; color: #ff2f2f; text-align: center; font-weight: bold;}
 .examForm > label > textarea{width: 100%; height: 100%; border: 0; padding: 10px;}
 
 /* 예시 수정 폼 */
-.meanModifyForm{display: none;}
+.meanModifyForm{display: none; position: absolute; width: 100%; height: 100%; left: 0; top: 0;}
 .meanModifyForm > label{height: 50%; border-bottom: 1px #aaa solid; padding-right: 50px;}
 .meanModifyForm > label:last-of-type{border-bottom: 0;}
 .meanModifyForm > label > textarea{padding: 10px; width: 100%; height: 100%; border: 0;}

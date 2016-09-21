@@ -474,16 +474,10 @@ WordExample.prototype.bindEvents = function() {
 		//예시 수정 버튼 이벤트
 		modifyBtn.addEventListener("click", meanModifyFormShow);
 		function meanModifyFormShow(e) {
-			var height = exam.height();
-
-			exam.style.display = "none";
-			examSetBtns.style.display = "none";
-
 			examInput.value = node.data.exam;
 			meanInput.value = node.data.mean;
 
 			meanModifyForm.style.display = "block";
-			meanModifyForm.style.height = height + "px";
 		}
 
 		//예시 수정 이벤트
@@ -522,9 +516,6 @@ WordExample.prototype.bindEvents = function() {
 		//예시 수정 취소 이벤트
 		meanModifyForm.querySelector(".cancle").addEventListener("click", meanModifyFormHide);
 		function meanModifyFormHide(e) {
-			exam.style.display = "block";
-			examSetBtns.style.display = "block";
-
 			meanModifyForm.style.display = "none";
 		}
 
