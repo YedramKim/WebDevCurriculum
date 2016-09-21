@@ -63,7 +63,7 @@
 						</button>
 						<button class="cancle" type="reset">
 							<span class="octicons octicon-x"></span>
-							취소하기
+							수정취소
 						</button>
 					</div>
 				</form>
@@ -71,39 +71,48 @@
 					<span class="octicons octicon-chevron-down"></span>
 					예시 보기
 				</button>
-				<div class="exam_area">
+				<button class="examClose">
+					<span class="octicons octicon-x"></span>
+					예시 닫기
+				</button>
+				<div class="examArea">
 					<ul class="exams">
 						<li>
 							<div class="exam">
 								<div class="word">
 									<ruby>家庭<rp>(</rp><rt>かてい</rt><rp>)</rp>生活<rt>せいかつ</rt></ruby>
 								</div>
-								<p>가정생활</p>
+								<div class="examMean">
+									<span class="octicons octicon-comment poa"></span>
+									<p>가정생활</p>
+								</div>
 							</div>
 							<div class="examSetBtns poa">
-								<button>
+								<button class="modifyBtn">
 									<span class="octicons octicon-keyboard"></span>
+									<p>수정</p>
 								</button>
-								<button>
+								<button class="removeBtn">
 									<span class="octicons octicon-trashcan"></span>
+									<p>삭제</p>
 								</button>
 							</div>
 							<!-- 예시 수정 폼 -->
 							<form action="#" class="meanModifyForm">
 								<label class="db">
-									<input type="text" class="examInput" placeholder="예시 문장" value="家庭(かてい)生活(せいかつ)" class="wordInput">
+									<textarea cols="30" placeholder="예시 문장" rows="10" class="examInput"></textarea>
 								</label>
 								<label class="db">
-									<input type="text" class="meanInput" placeholder="예시 뜻" value="가정생활">
+									<textarea cols="30" rows="10" class="meanInput" value="가정생활"></textarea>
 								</label>
-								<div class="meanModifyBtns list">
-									<button class="modified">
+								<div class="meanModifyBtns list poa">
+									<button class="modified" type="submit">
 										<span class="octicons octicon-keyboard"></span>
-										수정하기
+										<p>수정</p>
 									</button>
-									<button class="cancle" type="button">
+									<button class="cancle" type="reset">
 										<span class="octicons octicon-x"></span>
-										취소하기
+										<p>취소</p>
 									</button>
 								</div>
 							</form>
@@ -112,10 +121,10 @@
 					<!-- 예시 추가 폼 -->
 					<form action="#" class="examForm">
 						<label class="db">
-							<input type="text" placeholder="예시 단어" class="wordInput">
+							<textarea cols="30" rows="10" placeholder="예시 문장" class="wordInput"></textarea>
 						</label>
 						<label class="db">
-							<input type="text" placeholder="예시 뜻"  class="meanInput">
+							<textarea cols="30" rows="10" placeholder="예시 뜻"  class="meanInput"></textarea>
 						</label>
 						<button type="submit">
 							<span class="octicons octicon-plus"></span>
