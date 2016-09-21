@@ -53,10 +53,19 @@ rt{font-size: 0.6em; color: #ff2f2f; text-align: center; font-weight: bold;}
 .wordForm > label > input { width: 100%; height: 100%; border: 0; padding-left: 15px;}
 .wordForm > button{width: 100%; height: 40px; border: 0; background: #ffc559; color: #fff;}
 
+/*단어 선택 라벨*/
+.labels{height: 50px; margin-bottom: 20px; border-radius: 5px; background: #fff; overflow: hidden;}
+.labels > label{width: 33.33%; height: 100%; line-height: 50px; cursor: pointer; font-weight: bold;}
+#all:checked ~ .labels .alabel{background: #ffa759; color: #fff;}
+#english:checked ~ .labels .elabel{background: #ffa759; color: #fff;}
+#japanese:checked ~ .labels .jlabel{background: #ffa759; color: #fff;}
+
 /* 단어 */
-.wordCard{width: 100%; background: #fff; margin-bottom: 20px; box-shadow: 0 1px 1px 2px rgba(0, 0, 0, .1); overflow: hidden;}
+.wordCard{display: none; width: 100%; background: #fff; margin-bottom: 20px; box-shadow: 0 1px 1px 2px rgba(0, 0, 0, .1); overflow: hidden;}
+#all:checked ~ .wordCard{display: block;}
+#english:checked ~ .eword{display: block;}
+#japanese:checked ~ .jword{display: block;}
 .wordCard > .wordIdx, .wordCard > .wordMean{height: 35px; line-height: 34px; border-bottom: 1px #ddd solid; padding:0 10px;}
-.wordCard > .wordIdx{background: #000;color: #fff;}
 .wordCard > .word{padding: 10px 10px; font-size: 2.0em; border-bottom: 1px #ddd solid;}
 			 .word{font-family: 'PT Sans', sans-serif; font-weight: bold; word-break: break-word;}
 .wordCard > .wordMean{border-bottom: 0;}
@@ -74,11 +83,12 @@ rt{font-size: 0.6em; color: #ff2f2f; text-align: center; font-weight: bold;}
 .exams > li{background: #fff; border-bottom: 1px #ff7575 solid;}
 .exams > li:last-child{border-bottom: 0;}
 .exams .exam{padding: 10px; font-size: 1.5em; padding-right: 60px; min-height: 130px;}
+.exams .exam > .word{font-size: 1.1em;}
 .exams .exam > .examMean{font-size: .7em; margin-top: 5px; color: #666;}
 .exams .exam > .examMean > p{padding-left: 30px;}
 .exams .examSetBtns{right: 0; top: 0; background: #ff7575; height: 100%; width: 50px;}
 .exams .examSetBtns > button{height: 50%; width: 100%; text-align: center; font-size: 1.1em; background: #ff7575; color: #fff; border: 0;}
-.exams .examSetBtns > button > p{font-size: .8em;}
+.exams .examSetBtns > button > .db{font-size: .8em;}
 .examArea > .addExam, .examForm > button{width: 100%; height: 40px; border: 0; background: #ffc559; color: #fff;}
 
 /* 예시 추가 폼 */
@@ -92,4 +102,5 @@ rt{font-size: 0.6em; color: #ff2f2f; text-align: center; font-weight: bold;}
 .meanModifyForm > label:last-of-type{border-bottom: 0;}
 .meanModifyForm > label > textarea{padding: 10px; width: 100%; height: 100%; border: 0;}
 .meanModifyBtns{right: 0; top: 0; width: 50px; height: 100%;}
-.meanModifyBtns > button{ height: 50%; width: 100%; border: 0; color: #fff; background: #ff7575;}
+.meanModifyBtns > button{font-size: 1.1em; height: 50%; width: 100%; border: 0; color: #fff; background: #ff7575;}
+.meanModifyBtns > button > .db{font-size: .8em;}

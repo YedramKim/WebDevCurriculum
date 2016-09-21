@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>단어장(영어, 일본어)</title>
 	<link rel="stylesheet" href="./project.css">
 	<link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
 </head>
@@ -29,7 +29,13 @@
 				단어추가
 			</button>
 		</form>
-
+		<input type="radio" name="lang" id="all" class="dn" checked>
+		<input type="radio" name="lang" id="english" class="dn">
+		<input type="radio" name="lang" id="japanese" class="dn">
+		<!-- 단어 선택 라벨 -->
+		<div class="labels">
+			<label for="all" class="dib tac alabel">전체</label><label for="english" class="dib tac elabel">영어</label><label for="japanese" class="dib tac jlabel">일본어</label>
+		</div>
 		<article class="template">
 			<div class="wordCard">
 				<div class="word">
@@ -90,11 +96,11 @@
 							<div class="examSetBtns poa">
 								<button class="modifyBtn">
 									<span class="octicons octicon-keyboard"></span>
-									<p>수정</p>
+									<span class="db">수정</span>
 								</button>
 								<button class="removeBtn">
 									<span class="octicons octicon-trashcan"></span>
-									<p>삭제</p>
+									<span class="db">삭제</span>
 								</button>
 							</div>
 							<!-- 예시 수정 폼 -->
@@ -108,11 +114,11 @@
 								<div class="meanModifyBtns list poa">
 									<button class="modified" type="submit">
 										<span class="octicons octicon-keyboard"></span>
-										<p>수정</p>
+										<span class="db">수정</span>
 									</button>
 									<button class="cancle" type="reset">
 										<span class="octicons octicon-x"></span>
-										<p>취소</p>
+										<span class="db">취소</span>
 									</button>
 								</div>
 							</form>
@@ -129,6 +135,10 @@
 						<button type="submit">
 							<span class="octicons octicon-plus"></span>
 							예시추가
+						</button>
+						<button type="button" class="addExamCancle">
+							<span class="octicons octicon-x"></span>
+							추가취소
 						</button>
 					</form>
 					<button class="addExam">

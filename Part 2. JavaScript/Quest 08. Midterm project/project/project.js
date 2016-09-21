@@ -33,6 +33,7 @@ var Vocabulary = function(selector) {
 	this.wordNodes = [];
 
 	//한글 정규식(단어 추가시 검사용)
+	var g='';
 	this.koreanReg =/[가-힣ㅂㅈㄷㄱ쇼ㅕㅑㅐㅔㅁㄴㅇㄹ호ㅓㅏㅣㅋㅌㅊ퓨ㅜㅡ]/g;
 
 	//객체 초기화
@@ -40,9 +41,6 @@ var Vocabulary = function(selector) {
 
 	//이벤트 설정
 	this.bindEvents();
-
-	//console.log(this.words);
-	console.log(this.examples);
 }
 //단어장 초기화 함수
 Vocabulary.prototype._initialize = function() {
@@ -61,7 +59,7 @@ Vocabulary.prototype._initialize = function() {
 	var length = this.words.length;
 	for(var i = 0; i < length; i++){
 		var data = this.words[i];
-		this.wordNodes[i] = new Word(parent, wordTemplate, wExamTemplate, this.wordList, this.exampleList, data);
+		this.wordNodes[i] = new Word(parent, wordTemplate, wExamTemplate, data);
 	}
 }
 
@@ -84,7 +82,7 @@ Vocabulary.prototype.bindEvents = function(){
 				alert("단어를 입력하세요.");
 				return false;
 			}else if(addData.word.search(node.koreanReg) !== -1){
-				alert("단어에는 한글을 넣지 못합니다.");
+				alert("단어에는 한글과 특수기호를 넣지 못합니다.");
 				return false;
 			}else if(addData.mean == ""){
 				alert("단어의 뜻을 입력하세요.");
@@ -93,7 +91,7 @@ Vocabulary.prototype.bindEvents = function(){
 
 			node.wordList.add(addData);
 			alert("단어가 무사히 추가되었습니다.");
-			node.wordNodes[node.wordNodes.length] = new Word(node.diaryNode, node.wordTemplate, node.wordExampleTemplate, node.wordList, node.exampleList, addData);
+			node.wordNodes[node.wordNodes.length] = new Word(node.diaryNode, node.wordTemplate, node.wordExampleTemplate, addData);
 		}
 	})(this);
 }
@@ -119,6 +117,7 @@ Store.prototype._initialize = function() {
 }
 //저장소에 데이터를 삽입
 Store.prototype.add = function(data) {
+	this.reload();
 	var insert_idx = this._store.database.length;
 	data.idx = this._store.autoIncrement++;
 	this._store.database[insert_idx] = data;
@@ -130,6 +129,7 @@ Store.prototype.add = function(data) {
 }
 //삭제 하는 함수 조건을 검사하기 위해 함수를 넣거나 삭제해야 할 인덱스 번호 삽입
 Store.prototype.remove = function(idx) {
+	this.reload();
 	var length = this._store.database.length;
 	for(var i = 0; i < length; i++){
 		var data = this._store.database[i];
@@ -143,12 +143,13 @@ Store.prototype.remove = function(idx) {
 	this.modify();
 }
 //저장소의 데이터를 변경
-Store.prototype.update = function(idx, data){
+Store.prototype.update = function(idx, update){
+	this.reload();
 	var length = this._store.database.length;
 	for(var i = 0; i < length; i++){
 		var data = this._store.database[i];
 		if(data.idx === idx){
-			this._store.database[i] = data;
+			this._store.database[i] = update;
 			break;
 		}
 	}
@@ -158,6 +159,7 @@ Store.prototype.update = function(idx, data){
 }
 //저장소에서 데이터를 얻음 (함수가 들어가면 함수를 통해 반환할 데이터를 결정)
 Store.prototype.getData = function(checkFunc) {
+	this.reload();
 	var dataList = this._store.database;
 	if(typeof checkFunc === "function"){
 		var length = dataList.length;
@@ -172,10 +174,21 @@ Store.prototype.getData = function(checkFunc) {
 	}
 	return dataList;
 }
-//데이터를 변경하는 함수
+//로컬스토리지 데이터를 변경하는 함수
 Store.prototype.modify = function() {
 	var json = JSON.stringify(this._store);
 	localStorage.setItem("Hello, " + this.storeName, json);
+}
+//데이터를 다시 불러오는 함수
+Store.prototype.reload = function(){
+	this._store = localStorage.getItem("Hello, " + this.storeName); //저장소
+	if(this._store == null){
+		this._store = {};
+		this._store.autoIncrement = 0; // 데이터를 삽입할 때 쓸 idx 번호
+		this._store.database = []; //데이터 목록
+	}else{
+		this._store = JSON.parse(this._store);
+	}
 }
 //데이터를 완전히 초기화하는 함수
 Store.prototype.reset = function() {
@@ -192,13 +205,16 @@ Store.prototype.reset = function() {
 //data : 자신의 정보
 //wordStore : 단어 저장소
 //exampleStore : 예시 문장 저장소
-var Word = function(parent, template, exampleTemplate, wordStore, exampleStore, data) {
+var Word = function(parent, template, exampleTemplate, data) {
 	this.parent = parent;
 	this.template = template.cloneNode(true);
 	this.exampleTemplate = exampleTemplate.cloneNode(true);
-	this.wordStore = wordStore;
-	this.exampleStore = exampleStore;
+	this.wordStore = new Store("word");
+	this.exampleStore = new Store("example");
 	this.data = data;
+	
+	//정규식
+	this.japaneseReg = new RegExp("[\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF]", "gim");
 
 	//예시문 객체들
 	this.examples = [];
@@ -231,7 +247,7 @@ Word.prototype._initialize = function() {
 		exampleStore = this.exampleStore;
 	}
 	for(var i = 0; i < length; i++){
-		this.examples[i] = new WordExample(parentNode, template, exampleStore, exampleList[i]);
+		this.examples[i] = new WordExample(parentNode, template, exampleList[i]);
 	}
 }
 //단어장에 넣을 노드를 만드는 함수
@@ -242,9 +258,13 @@ Word.prototype.setNode = function() {
 	var template = this.template;
 
 	//일본어인지 검사
-	if(word.search(Word.japaneseReg) !== -1){
+	if(word.search(this.japaneseReg) !== -1){
+		template.classList.add("jword");
+
 		word = "<ruby>" + word.replaceAll("(", "<rp>(</rp><rt>").replaceAll(")", "</rt><rp>)</rp></ruby><ruby>") + "</ruby>";
 		word = word.replaceAll("<ruby></ruby>", "");
+	}else{
+		template.classList.add("eword");
 	}
 	template.querySelector(".word").innerHTML = word;
 	template.querySelector(".wordMean").innerHTML = mean;
@@ -306,7 +326,7 @@ Word.prototype.bindEvents = function() {
 			node.data.word = wordInput.value.trim();
 			node.data.mean = meanInput.value.trim();
 
-			node.wordStore.update(node.data.idx, node);
+			node.wordStore.update(node.data.idx, node.data);
 
 			alert("단어가 수정되었습니다.");
 			this.style.display = "none";
@@ -320,6 +340,9 @@ Word.prototype.bindEvents = function() {
 		//삭제 버튼 이벤트
 		setBtns.querySelector(".remove").addEventListener("click", deleteEvent);
 		function deleteEvent(e) {
+			if(confirm("해당 단어를 삭제하시겠습니까?") === false){
+				return;
+			}
 			node.wordStore.remove(node.data.idx);
 
 			alert("단어가 삭제되었습니다.");
@@ -352,6 +375,15 @@ Word.prototype.bindEvents = function() {
 			examForm.querySelector(".wordInput").value = node.data.word;
 		});
 
+		examForm.querySelector(".addExamCancle").addEventListener("click", examFormHide);
+		function examFormHide(e) {
+			addExam.style.display = "inline-block";
+
+			examForm.style.display = "none";
+			examForm.querySelector(".wordInput").value = node.data.word;
+			examForm.querySelector(".meanInput").value = "";
+		}
+
 		//예시추가 이벤트
 		examForm.addEventListener("submit", function(e){
 			e.preventDefault();
@@ -375,8 +407,7 @@ Word.prototype.bindEvents = function() {
 			//데이터 표시 및 폼 가리기
 			var parent = node.template.querySelector(".exams");
 			var template = node.exampleTemplate;
-			var exampleStore = node.exampleStore;
-			node.examples[node.examples.length] = new WordExample(parent, template, exampleStore, addData);
+			node.examples[node.examples.length] = new WordExample(parent, template, addData);
 			addExam.style.display = "block";
 			this.style.display = "none";
 
@@ -384,17 +415,19 @@ Word.prototype.bindEvents = function() {
 	})(this);
 }
 //일본어 정규식
-Word.hanzaRegStr = "\u2E80-\u2EFF\u3400-\u4DBF\u4E00-\u9FBF\uF900-\uFAFF\u20000-\u2A6DF\u2F800-\u2FA1F";
-Word.kanaRegStr = "\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF";
-Word.japaneseReg = new RegExp("[\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF]", "gim");
-Word.rubyReg = new RegExp("[" + Word.hanzaRegStr + "]+\\([" + Word.kanaRegStr + "]+\\)", "gim");
 
 //단어 예시 객체
-var WordExample = function(parent, template, exampleStore, data){
+var WordExample = function(parent, template, data){
 	this.parent = parent;
 	this.template = template.cloneNode(true);
-	this.exampleStore = exampleStore;
+	this.exampleStore = new Store("example");
 	this.data = data;
+
+	//정규식 (밑의 initialize 함수에서 해결)
+	this.hanzaRegStr = "\u2E80-\u2EFF\u3400-\u4DBF\u4E00-\u9FBF\uF900-\uFAFF\u20000-\u2A6DF\u2F800-\u2FA1F";
+	this.kanaRegStr = "\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF";
+	this.japaneseReg = new RegExp("[" + this.hanzaRegStr + "]+", "gim");
+	this.rubyReg = new RegExp("[" + this.hanzaRegStr + "]+\\([" + this.kanaRegStr + "]+\\)", "gim");
 
 	//객체 초기화
 	this._initialize();
@@ -419,7 +452,7 @@ WordExample.prototype.setNode = function() {
 	template.querySelector(".meanModifyForm .meanInput").value = mean;
 
 	//일본어인지 검사
-	var match = exam.match(Word.rubyReg);
+	var match = exam.match(this.rubyReg);
 	if(match !== null){
 		var length = match.length;
 		for(var i = 0; i < length; ++i){
@@ -430,7 +463,6 @@ WordExample.prototype.setNode = function() {
 
 		exam = "<ruby>" + exam + "</ruby>";
 		exam = exam.replaceAll("<ruby></ruby>", "");
-		console.log(exam);
 	}
 	template.querySelector(".exam>.word").innerHTML = exam;
 	template.querySelector(".exam p").innerHTML = mean;
@@ -480,7 +512,7 @@ WordExample.prototype.bindEvents = function() {
 			node.data.mean = mean;
 
 			//일본어인지 검사
-			var match = examWord.match(Word.rubyReg);
+			var match = examWord.match(node.rubyReg);
 			if(match !== null){
 				var length = match.length;
 				for(var i = 0; i < length; ++i){
@@ -513,6 +545,10 @@ WordExample.prototype.bindEvents = function() {
 		//예시 삭제 이벤트
 		removeBtn.addEventListener("click", examRemove);
 		function examRemove(e) {
+			if(confirm("해당 해당 예시를 삭제하시겠습니까?") === false){
+				return;
+			}
+
 			node.exampleStore.remove(node.data.idx);
 			alert("예시가 삭제되었습니다.");
 			template.parentNode.removeChild(template);
@@ -521,15 +557,3 @@ WordExample.prototype.bindEvents = function() {
 }
 
 var app = new Vocabulary(".voca");
-
-var arr =[1,2,3,4,100,5,6,100,7,8,100,9,10];
-
-var length = arr.length
-for(var i = 0; i < length; i++){
-	//console.log(arr[i])
-	if(arr[i] == 100){
-		arr.splice(i,1);
-		length--;
-		i--;
-	}
-}
