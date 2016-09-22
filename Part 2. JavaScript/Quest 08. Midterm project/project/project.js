@@ -31,20 +31,21 @@ var Vocabulary = function(selector) {
 
 	//객체 초기화
 	this._initialize();
-
-	//이벤트 설정
-	this.bindEvents();
 }
 //단어장 초기화 함수
 Vocabulary.prototype._initialize = function() {
 	//템플릿 초기화
-	var node = this.diaryNode.querySelector(".exams>li"); //단어 예재 템플릿
+	var template = this.diaryNode.querySelector('.template');
+
+	var node = template.querySelector(".exams>li"); //단어 예재 템플릿
 	this.wordExampleTemplate = node.cloneNode(true);
 	node.parentNode.removeChild(node);
 
-	node = this.diaryNode.querySelector(".wordCard"); //단어 템플릿
+	node = template.querySelector(".wordCard"); //단어 템플릿
 	this.wordTemplate = node.cloneNode(true);
 	node.parentNode.removeChild(node);
+
+	template.parentNode.removeChild(template);
 
 	var wordTemplate = this.wordTemplate;
 	var wExamTemplate = this.wordExampleTemplate;
@@ -52,8 +53,17 @@ Vocabulary.prototype._initialize = function() {
 	var length = this.words.length;
 	for(var i = 0; i < length; i++){
 		var data = this.words[i];
-		this.wordNodes[i] = new Word(parent, wordTemplate, wExamTemplate, data);
+		var word = new Word(wordTemplate, wExamTemplate, data);
+		word.template.addEventListener("append", function() {
+			parent.appendChild(this);
+		});
+		word._initialize();
+
+		this.wordNodes[i] = word;
 	}
+
+	//이벤트 설정
+	this.bindEvents();
 }
 //단어장 이벤트 설정 함수
 Vocabulary.prototype.bindEvents = function(){
@@ -83,7 +93,14 @@ Vocabulary.prototype.bindEvents = function(){
 
 			node.wordList.add(addData);
 			alert("단어가 무사히 추가되었습니다.");
-			node.wordNodes[node.wordNodes.length] = new Word(node.diaryNode, node.wordTemplate, node.wordExampleTemplate, addData);
+
+			var word = new Word(node.wordTemplate, node.wordExampleTemplate, addData);
+			word.template.addEventListener("append", function() {
+				node.diaryNode.appendChild(this);
+			});
+			word._initialize();
+
+			node.wordNodes[node.wordNodes.length] = word;
 		}
 	})(this);
 }
@@ -197,8 +214,7 @@ Store.prototype.reset = function() {
 //data : 자신의 정보
 //wordStore : 단어 저장소
 //exampleStore : 예시 문장 저장소
-var Word = function(parent, template, exampleTemplate, data) {
-	this.parent = parent;
+var Word = function(template, exampleTemplate, data) {
 	this.template = template.cloneNode(true);
 	this.exampleTemplate = exampleTemplate.cloneNode(true);
 	this.wordStore = new Store("word");
@@ -210,15 +226,6 @@ var Word = function(parent, template, exampleTemplate, data) {
 
 	//예시문 객체들
 	this.examples = [];
-
-	//객체 설정
-	this._initialize();
-
-	//템플릿 설정
-	this.setNode();
-
-	//이벤트 설정
-	this.bindEvents();
 }
 //단어 객체 초기화
 Word.prototype._initialize = function() {
@@ -239,8 +246,20 @@ Word.prototype._initialize = function() {
 		exampleStore = this.exampleStore;
 	}
 	for(var i = 0; i < length; i++){
-		this.examples[i] = new WordExample(parentNode, template, exampleList[i]);
+		var wordExample = new WordExample(template, exampleList[i]);
+		wordExample.template.addEventListener("append", function(){
+			parentNode.appendChild(this);
+		});
+		wordExample._initialize();
+
+		this.examples[i] = wordExample;
 	}
+
+	//템플릿 설정
+	this.setNode();
+
+	//이벤트 설정
+	this.bindEvents();
 }
 //단어장에 넣을 노드를 만드는 함수
 Word.prototype.setNode = function() {
@@ -262,7 +281,8 @@ Word.prototype.setNode = function() {
 	template.querySelector(".wordMean").innerHTML = mean;
 
 	if(template.parentNode === null){
-		this.parent.appendChild(template);
+		var event = new Event("append");
+		template.dispatchEvent(event);
 	}
 }
 //이벤트 설정
@@ -290,24 +310,16 @@ Word.prototype.bindEvents = function() {
 		//단어 수정 폼 표시
 		setBtns.querySelector(".modified").addEventListener("click", modifiedFormShow);
 		function modifiedFormShow(e){
-			this.parentNode.style.display = "none";
-			word.style.display = "none";
-			wordMean.style.display = "none";
+			template.classList.add("modifyMode");
 
 			wordInput.value = node.data.word;
 			meanInput.value = node.data.mean;
-
-			modifyForm.style.display = "block";
 		}
 
 		//단어 수정 취소
 		template.querySelector(".modifyBtns .cancle").addEventListener("click", modifieCancle);
 		function modifieCancle(e){
-			setBtns.style.display = "block";
-			word.style.display = "block";
-			wordMean.style.display = "block";
-
-			modifyForm.style.display = "none";
+			template.classList.remove("modifyMode");
 		}
 
 		//단어수정 이벤트
@@ -321,10 +333,7 @@ Word.prototype.bindEvents = function() {
 			node.wordStore.update(node.data.idx, node.data);
 
 			alert("단어가 수정되었습니다.");
-			this.style.display = "none";
-			setBtns.style.display = "block";
-			word.style.display = "block";
-			wordMean.style.display = "block";
+			template.classList.remove("modifyMode");
 
 			node.setNode();
 		}
@@ -345,33 +354,24 @@ Word.prototype.bindEvents = function() {
 		//예시보기 이벤트
 		examView.addEventListener("click", exampleViewShow);
 		function exampleViewShow(e) {
-			examArea.style.display = "block";
-			examView.style.display = "none";
-			examClose.style.display = "inline-block";
+			template.classList.add("examView");
 		}
 
 		//예시닫기 이벤트
 		examClose.addEventListener("click", exampleViewHide);
 		function exampleViewHide(e) {
-			examArea.style.display = "none";
-			examView.style.display = "inline-block";
-			examClose.style.display = "none";
+			template.classList.remove("examView");
 		}
 
 		//예시추가 버튼 이벤트
 		addExam.addEventListener("click", function(e) {
-			this.style.display = "none";
-
-			//예시추가 폼 표시
-			examForm.style.display = "block";
+			examArea.classList.add("examAdd");
 			examForm.querySelector(".wordInput").value = node.data.word;
 		});
 
 		examForm.querySelector(".addExamCancle").addEventListener("click", examFormHide);
 		function examFormHide(e) {
-			addExam.style.display = "inline-block";
-
-			examForm.style.display = "none";
+			examArea.classList.remove("examAdd");
 			examForm.querySelector(".wordInput").value = node.data.word;
 			examForm.querySelector(".meanInput").value = "";
 		}
@@ -399,18 +399,22 @@ Word.prototype.bindEvents = function() {
 			//데이터 표시 및 폼 가리기
 			var parent = node.template.querySelector(".exams");
 			var template = node.exampleTemplate;
-			node.examples[node.examples.length] = new WordExample(parent, template, addData);
-			addExam.style.display = "block";
-			this.style.display = "none";
 
+			var wordExample = new WordExample(template, addData);
+			wordExample.template.addEventListener("append", function(){
+				parent.appendChild(this);
+			});
+			wordExample._initialize();
+
+			node.examples[node.examples.length] = wordExample;
+			examArea.classList.remove("examAdd");
 		});
 	})(this);
 }
 //일본어 정규식
 
 //단어 예시 객체
-var WordExample = function(parent, template, data){
-	this.parent = parent;
+var WordExample = function(template, data){
 	this.template = template.cloneNode(true);
 	this.exampleStore = new Store("example");
 	this.data = data;
@@ -420,7 +424,8 @@ var WordExample = function(parent, template, data){
 	this.kanaRegStr = "\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF";
 	this.japaneseReg = new RegExp("[" + this.hanzaRegStr + "]+", "gim");
 	this.rubyReg = new RegExp("[" + this.hanzaRegStr + "]+\\([" + this.kanaRegStr + "]+\\)", "gim");
-
+}
+WordExample.prototype._initialize = function() {
 	//HTML 요소 설정
 	this.setNode();
 
@@ -453,8 +458,10 @@ WordExample.prototype.setNode = function() {
 	template.querySelector(".exam>.word").innerHTML = exam;
 	template.querySelector(".exam p").innerHTML = mean;
 
-	if(template.parentNode === null){
-		this.parent.appendChild(template);
+	//삽입 이벤트 실행
+	if(this.template.parentNode === null){
+		var event = new Event("append");
+		this.template.dispatchEvent(event);
 	}
 }
 //이벤트 설정
@@ -462,14 +469,14 @@ WordExample.prototype.bindEvents = function() {
 	(function(node) {
 		var template = node.template;
 
-		var exam = template.querySelector('.exam'); // 예시 설정 버튼 영역
-		var examSetBtns = template.querySelector('.examSetBtns'); // 예시 설정 버튼 영역
-		var modifyBtn = examSetBtns.querySelector('.modifyBtn'); //예시 수정 버튼
-		var removeBtn = examSetBtns.querySelector('.removeBtn'); //예시 삭제 버튼
+		var exam = template.querySelector(".exam"); // 예시 설정 버튼 영역
+		var examSetBtns = template.querySelector(".examSetBtns"); // 예시 설정 버튼 영역
+		var modifyBtn = examSetBtns.querySelector(".modifyBtn"); //예시 수정 버튼
+		var removeBtn = examSetBtns.querySelector(".removeBtn"); //예시 삭제 버튼
 
-		var meanModifyForm = template.querySelector('.meanModifyForm'); //예시 수정 폼
-		var examInput = meanModifyForm.querySelector('.examInput'); // 예시 수정 인풋
-		var meanInput = meanModifyForm.querySelector('.meanInput'); // 뜻 수정 인풋
+		var meanModifyForm = template.querySelector(".meanModifyForm"); //예시 수정 폼
+		var examInput = meanModifyForm.querySelector(".examInput"); // 예시 수정 인풋
+		var meanInput = meanModifyForm.querySelector(".meanInput"); // 뜻 수정 인풋
 
 		//예시 수정 버튼 이벤트
 		modifyBtn.addEventListener("click", meanModifyFormShow);
@@ -477,7 +484,7 @@ WordExample.prototype.bindEvents = function() {
 			examInput.value = node.data.exam;
 			meanInput.value = node.data.mean;
 
-			meanModifyForm.style.display = "block";
+			meanModifyForm.classList.add("show");
 		}
 
 		//예시 수정 이벤트
@@ -516,7 +523,7 @@ WordExample.prototype.bindEvents = function() {
 		//예시 수정 취소 이벤트
 		meanModifyForm.querySelector(".cancle").addEventListener("click", meanModifyFormHide);
 		function meanModifyFormHide(e) {
-			meanModifyForm.style.display = "none";
+			meanModifyForm.classList.remove("show");
 		}
 
 		//예시 삭제 이벤트
