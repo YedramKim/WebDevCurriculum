@@ -9,6 +9,30 @@ String.prototype.replaceAll = function(keyword, replace) {
 	return this.split(keyword).join(replace);
 }
 
+//일본어일 경우 루비태그로 변환시키는 함수
+function wordChangeRuby(str){
+	var hanzaRegStr = "\u2E80-\u2EFF\u3400-\u4DBF\u4E00-\u9FBF\uF900-\uFAFF\u20000-\u2A6DF\u2F800-\u2FA1F";
+	var kanaRegStr = "\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF";
+	var japaneseReg = new RegExp("[" + hanzaRegStr + "]+", "gim");
+	var rubyReg = new RegExp("[" + hanzaRegStr + "]+\\([" + kanaRegStr + "]+\\)", "gim");
+
+	var match = str.match(rubyReg);
+
+	if(match !== null){
+		var length = match.length;
+		for(var i = 0; i < length; ++i){
+			var tempstr = "</ruby><ruby>" + match[i];
+			tempstr = tempstr.replace("(", "<rp>(</rp><rt>").replace(")", "</rt><rp>)</rp></ruby><ruby>");
+			str = str.replace(match[i], tempstr);
+		}
+
+		str = "<ruby>" + str + "</ruby>";
+		str = str.replaceAll("<ruby></ruby>", "");
+	}
+
+	return str;
+}
+
 //단어장 총괄할 객체
 var Vocabulary = function(selector) {
 	this.diaryNode = document.querySelector(selector);
@@ -271,13 +295,10 @@ Word.prototype.setNode = function() {
 	//일본어인지 검사
 	if(word.search(this.japaneseReg) !== -1){
 		template.classList.add("jword");
-
-		word = "<ruby>" + word.replaceAll("(", "<rp>(</rp><rt>").replaceAll(")", "</rt><rp>)</rp></ruby><ruby>") + "</ruby>";
-		word = word.replaceAll("<ruby></ruby>", "");
 	}else{
 		template.classList.add("eword");
 	}
-	template.querySelector(".word").innerHTML = word;
+	template.querySelector(".word").innerHTML = wordChangeRuby(word);
 	template.querySelector(".wordMean").innerHTML = mean;
 
 	if(template.parentNode === null){
@@ -326,9 +347,24 @@ Word.prototype.bindEvents = function() {
 		modifyForm.addEventListener("submit", modifySubmit);
 		function modifySubmit(e) {
 			e.preventDefault();
+			var word = wordInput.value.trim();
+			var mean = meanInput.value.trim();
 
-			node.data.word = wordInput.value.trim();
-			node.data.mean = meanInput.value.trim();
+			//예시문장들의 자신을 가리키는 단어 변경
+			var exampleData = node.exampleStore.getData(searchExample);
+			function searchExample(data){
+				return node.data.word == data.word;
+			}
+
+			var length = exampleData.length;
+			for(var i = 0; i < length; i++){
+				var data = exampleData[i];
+				data.word = word;
+				node.exampleStore.update(data.idx, data);
+			}
+
+			node.data.word = word;
+			node.data.mean = mean;
 
 			node.wordStore.update(node.data.idx, node.data);
 
@@ -418,12 +454,6 @@ var WordExample = function(template, data){
 	this.template = template.cloneNode(true);
 	this.exampleStore = new Store("example");
 	this.data = data;
-
-	//정규식 (밑의 initialize 함수에서 해결)
-	this.hanzaRegStr = "\u2E80-\u2EFF\u3400-\u4DBF\u4E00-\u9FBF\uF900-\uFAFF\u20000-\u2A6DF\u2F800-\u2FA1F";
-	this.kanaRegStr = "\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF";
-	this.japaneseReg = new RegExp("[" + this.hanzaRegStr + "]+", "gim");
-	this.rubyReg = new RegExp("[" + this.hanzaRegStr + "]+\\([" + this.kanaRegStr + "]+\\)", "gim");
 }
 WordExample.prototype._initialize = function() {
 	//HTML 요소 설정
@@ -442,20 +472,7 @@ WordExample.prototype.setNode = function() {
 	template.querySelector(".meanModifyForm .examInput").value = exam;
 	template.querySelector(".meanModifyForm .meanInput").value = mean;
 
-	//일본어인지 검사
-	var match = exam.match(this.rubyReg);
-	if(match !== null){
-		var length = match.length;
-		for(var i = 0; i < length; ++i){
-			var str = "</ruby><ruby>" + match[i];
-			str = str.replace("(", "<rp>(</rp><rt>").replace(")", "</rt><rp>)</rp></ruby><ruby>");
-			exam = exam.replace(match[i], str);
-		}
-
-		exam = "<ruby>" + exam + "</ruby>";
-		exam = exam.replaceAll("<ruby></ruby>", "");
-	}
-	template.querySelector(".exam>.word").innerHTML = exam;
+	template.querySelector(".exam>.word").innerHTML = wordChangeRuby(exam);
 	template.querySelector(".exam p").innerHTML = mean;
 
 	//삽입 이벤트 실행
@@ -498,22 +515,8 @@ WordExample.prototype.bindEvents = function() {
 			node.data.exam = examWord;
 			node.data.mean = mean;
 
-			//일본어인지 검사
-			var match = examWord.match(node.rubyReg);
-			if(match !== null){
-				var length = match.length;
-				for(var i = 0; i < length; ++i){
-					var str = "</ruby><ruby>" + match[i];
-					str = str.replace("(", "<rp>(</rp><rt>").replace(")", "</rt><rp>)</rp></ruby><ruby>");
-					examWord = examWord.replace(match[i], str);
-				}
-
-				examWord = "<ruby>" + examWord + "</ruby>";
-				examWord = examWord.replaceAll("<ruby></ruby>", "");
-			}
-
 			node.exampleStore.update(node.data.idx, node.data);
-			exam.querySelector(".word").innerHTML = examWord;
+			exam.querySelector(".word").innerHTML = wordChangeRuby(examWord);
 			exam.querySelector(".examMean p").innerHTML = mean;
 			alert("예시가 수정되었습니다.");
 
