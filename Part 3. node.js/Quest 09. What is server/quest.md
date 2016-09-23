@@ -17,7 +17,7 @@
 #### 그 IP주소들은 어디에 위치해 있나요?
 * quest2
 
-### Wireshark를 통해 www.google.com으로 요청을 날렸을 떄 어떤 TCP 패킷이 오가는지 확인해 보세요
+### Wireshark를 통해 www.google.com으로 요청을 날렸을 때 어떤 TCP 패킷이 오가는지 확인해 보세요
 
 #### TCP 패킷을 주고받는 과정은 어떻게 되나요?
 * quest3
