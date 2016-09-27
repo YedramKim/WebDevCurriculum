@@ -11,23 +11,21 @@ http.createServer(function(req, res) {
 	var query = url.query;
 
 	if(path === "/foo") {
+		res.writeHead(200, {
+			"Content-Type" : "text/html"
+		});
+
 		if(method === "GET") {
-			res.writeHead(200, {
-				"Content-Type" : "text/html"
-			});
 			res.end("Hello, " + query.bar);
 		}else if(method === "POST") {
 			var body = "";
 
 			req.on('data', function(data) {
-				body += data;
+				body += data.toString();
 			});
 
 			req.on('end', function(){
 				body = qs.parse(body);
-				res.writeHead(200, {
-					"Content-Type" : "text/html"
-				});
 				res.end("Hello, " + body.bar);
 			});
 		}
