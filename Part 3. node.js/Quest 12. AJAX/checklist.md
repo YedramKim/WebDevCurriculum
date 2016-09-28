@@ -14,18 +14,18 @@
 
 * 사용방법 예시
 ```javascript
-	fetch('/data.json', {
+	fetch('/data.json', { //url, http request 정보 설정
 		headers : {
 			"Content-Type" : "application/x-www-form-urlencoded"
 		},
 		method : "post",
 		body : "data=name"
 	}).then(function(res) {
-		if(res.ok) { // 무사히 호출되었으면
+		if(res.ok) { // 무사히 호출되었으면 true
 			return result.json();
 		}
-	}).then(function(data) { 
-		// data 호출한 JSON 데이터가 온다.
+	}).then(function(data) { // data : 호출한 JSON 데이터가 온다.
+		
 	});
 ```
 
