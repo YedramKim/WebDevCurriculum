@@ -9,6 +9,7 @@ HTMLElement.prototype.getIndex = function() {
 	}
 }
 
+//메모장 객체
 var Notepad = function(selector) {
 	/* TODO: 그 외에 또 어떤 클래스와 메소드가 정의되어야 할까요? */
 	this.node = document.querySelector(selector); // 메모장 HTML 요소
@@ -125,24 +126,53 @@ Notepad.prototype.bindEvent = function() {
 
 	//탭으로 메모 전환
 	document.body.addEventListener("keydown", function(e) {
+		//누른 키가 탭일 경우
 		if(e.which == 9 && e.key.toLowerCase() == "tab") {
 			e.preventDefault();
-			var noteNum = notepad.fileList.children.length - 1;
+			var noteNum = notepad.files.length;
+			
+			//메모 파일이 없을 경우 종료
 			if(noteNum === 0) {
 				return ;
 			}
+
 			var current = notepad.fileList.querySelector(".select");
 			var clickEventTrigger = new Event("click");
 			if(current !== null) {
-				var idx = current.getIndex() + 1;
-				if(idx === noteNum) {
-					idx = 0;
+				//쉬프트 키가 눌려져 있을 경우
+				if(this.shiftPress) {
+					var idx = current.getIndex() - 1;
+					if(idx < 0) {
+						idx = noteNum - 1;
+					}
+				}else { // 눌려져 있지 않은 경우
+					var idx = current.getIndex() + 1;
+					if(idx === noteNum) {
+						idx = 0;
+					}
 				}
 
 				notepad.files[idx].loadButton.dispatchEvent(clickEventTrigger);
 			}else {
-				notepad.files[0].loadButton.dispatchEvent(clickEventTrigger);
+				//쉬프트 키가 눌려져 있을 경우 맨 마지막을 연다.
+				if(this.shiftPress) {
+					notepad.files[noteNum - 1].loadButton.dispatchEvent(clickEventTrigger);
+				}else{
+					notepad.files[0].loadButton.dispatchEvent(clickEventTrigger);
+				}
 			}
+		}
+
+		//누른 키가 쉬프트일 경우
+		if(e.which == 16 && e.key.toLowerCase() == "shift") {
+			this.shiftPress = true;
+		}
+	});
+
+	document.body.addEventListener("keyup", function(e) {
+		//쉬프트키를 땠을 경우
+		if(e.which == 16 && e.key.toLowerCase() == "shift") {
+			this.shiftPress = false;
 		}
 	});
 }
@@ -154,20 +184,24 @@ var Note = function(data) {
 	// 더블클릭하면 내용을 로드하는 버튼
 	this.loadDom = document.createElement("li");
 	this.loadButton = document.createElement("button");
-	this.loadDom.appendChild(this.loadButton);
-	this.loadButton.innerHTML ='<span class="octicons octicon-bookmark"></span>' + data.title + ' open';
 
 	//메모장 편집기
 	this.noteEditor = document.createElement("li");
-
 	this.noteTextarea = document.createElement("textarea");
-	this.noteEditor.appendChild(this.noteTextarea);
 
 	this.saveButton = document.createElement("button");
-	this.saveButton.innerHTML = '<span class="octicons octicon-keyboard"></span>저장하기';
-	this.noteEditor.appendChild(this.saveButton);
 }
 Note.prototype._initialize = function() {
+	this.loadButton.setAttribute("title", this.data.title);
+	this.loadDom.appendChild(this.loadButton);
+	this.loadButton.innerHTML ='<span class="octicons octicon-bookmark"></span>' + this.data.title + '&nbsp;(open)';	
+
+	this.noteEditor.appendChild(this.noteTextarea);
+
+	this.saveButton.innerHTML = '<span class="octicons octicon-keyboard"></span>저장하기';
+	this.noteEditor.appendChild(this.saveButton);
+
+	//메모 파일 추가 이벤트 발생
 	var eventTrigger = new Event("append");
 	this.loadDom.dispatchEvent(eventTrigger);
 	this.noteEditor.dispatchEvent(eventTrigger);

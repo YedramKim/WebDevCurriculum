@@ -14,9 +14,11 @@ app.use(bodyParser.json()); //JSON 파싱
 String.prototype.eraseAll = function(search) {
 	return this.split(search).join("");
 }
+String.prototype.replaceAll = function(search, change) {
+	return this.split(search).join(change);
+}
 var styleRouter = express.Router();
 styleRouter.use(function(req, res, next) {
-	console.log("styleroute start");
 	res.root = path.join(__dirname, "client");
 	next();
 });
@@ -24,37 +26,21 @@ styleRouter.get("/index", function(req, res) {
 	res.set("Content-Type", "text/css");
 	fs.readFile(path.join(res.root, "style.css"), function(error, style) {
 		style = style.toString();
-		style = style.eraseAll(/\/\*.+\*\//).eraseAll("\t").eraseAll("\r\n");
+		style = style.eraseAll(/\/\*.+\*\/|\t|\r\n/);
 		res.send(style);
 	});
 });
 styleRouter.get("/octicons.ttf", function(req, res) {
-	res.set("Content-Type", "application/x-font-opentype");
+	//res.set("Content-Type", "application/x-font-opentype");
 	fs.readFile(path.join(res.root, "octicons.ttf"), function(error, font) {
 		font = font.toString();
 		res.send(font);
 	});
 });
-app.use('/public/style', styleRouter);
+app.use('/style', styleRouter);
 
 //메모장 관련 데이터
-var notes = [
-	{
-		idx : 0,
-		title : "game1",
-		content : "last of us"
-	},
-	{
-		idx : 1,
-		title : "movie1",
-		content : "captain america : civil war"
-	},
-	{
-		idx : 2,
-		title : "movie2",
-		content : "doctor strange"
-	}
-];
+var notes = [];
 var noteAutoIncrement = notes.length; // 새 파일을 만들 때 마다 사용할 메모 idx
 
 //메모장 관련 라우트

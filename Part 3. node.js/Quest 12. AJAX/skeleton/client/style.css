@@ -1,16 +1,16 @@
 /* 기본 초기화 */
 @font-face{
 	font-family: "octicons";
-	src: url(../../octicons.ttf);
+	src: url(/octicons.ttf);
 }
 
-* {
+*{
 	margin: 0;
 	padding: 0;
 	position: relative;
-	box-sizing : border-box;
+	box-sizing: border-box;
 	color: inherit;
-	font-family : 'Malgun Gothic';
+	font-family: 'Malgun Gothic';
 }
 a{
 	text-decoration: none;
@@ -24,7 +24,7 @@ table{
 input,textarea{
 	border: 1px #aaa solid;
 	background: #fff;
-	resize : none;
+	resize: none;
 }
 button{
 	border: 1px #aaa solid;
@@ -93,9 +93,10 @@ button{
 .filetab{
 	margin-top: 50px;
 	margin-bottom: 10px;
+	flex-wrap: nowrap;
 }
 .filetab > li{
-	width: 156px;
+	flex : 1 1 auto;
 	height: 50px;
 	line-height: 48px;
 	border: 1px #aaa solid;
@@ -111,6 +112,9 @@ button{
 	border: 0;
 	font-size: 1.0em;
 	background: #fff;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .filetab > .select > button{
 	background: #eee;
