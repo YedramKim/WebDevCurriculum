@@ -46,15 +46,17 @@ Notepad.prototype._initialize = function() {
 	this.lastlist.appendChild(this.createNoteButton);
 
 	//메모장 리스트 가져오기
-	fetch("/note").then(function(res) {
-		if(res.ok) {
-			return res.json();
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", "/note", true);
+	xhr.onreadystatechange = function(e) {
+		if(this.readyState === 4 && this.status == 200){
+			var data = JSON.parse(this.responseText);
+			notepad.files = data;
+			notepad.start();
+			notepad.bindEvent();
 		}
-	}).then(function(data) {
-		notepad.files = data;
-		notepad.start();
-		notepad.bindEvent();
-	});
+	}
+	xhr.send();
 }
 //메모장 실행 함수
 Notepad.prototype.start = function() {
@@ -218,17 +220,14 @@ Note.prototype.bindEvent = function() {
 	function loadNoteEvent(e) {
 		e.preventDefault();
 		if(note.data.content === undefined) {
-			fetch("/note/load/" + note.data.idx).then(function(res) {
-				if(res.ok) {
-					return res.text();
-				}else{
-					alert("데이터를 불러오지 못햇습니다.");
-				}
-			}).then(function(data) {
-				note.data.content = data;
-				note.noteTextarea.textContent = data;
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "/note/load/" + note.data.idx);
+			xhr.onreadystatechange = function(e) {
+				note.data.content = this.responseText;
+				note.noteTextarea.textContent = this.responseText;
 				note.showEditor();
-			});
+			}
+			xhr.send();
 		}else{
 			note.showEditor();
 		}
@@ -240,22 +239,22 @@ Note.prototype.bindEvent = function() {
 		note.data.content = note.noteTextarea.value;
 
 		var data = JSON.stringify(note.data);
-		fetch("/note/save", {
-			headers : {
-				"Content-Type" : "application/json"
-			},
-			method : "POST",
-			body : data
-		}).then(function(req) {
-			if(note.data.idx === undefined && req.ok) {
-				return req.text();
-			}else{
-				return note.data.idx;
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", "/note/save", true);
+		xhr.onreadystatechange = function(e) {
+			if(this.readyState === 4 && this.status === 200) {
+				var idx;
+				if(note.data.idx === undefined) {
+					idx = this.responseText;
+				}else{
+					idx = note.data.idx;
+				}
+				idx = parseInt(idx);
+				note.data.idx = idx;
 			}
-		}).then(function(idx) {
-			idx = parseInt(idx);
-			note.data.idx = idx;
-		});
+		}
+		xhr.setRequestHeader("Content-Type", "application/json");
+		xhr.send(data);
 	}
 }
 //편집기 보여주기
@@ -273,4 +272,6 @@ Note.prototype.showEditor = function() {
 		siblings[i].classList.remove("edit");
 	}
 	this.noteEditor.classList.add("edit");
+
+	this.noteTextarea.focus();
 }

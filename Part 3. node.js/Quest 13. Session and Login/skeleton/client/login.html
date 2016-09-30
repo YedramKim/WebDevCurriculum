@@ -4,14 +4,29 @@
 		<meta charset="UTF-8">
 		<link rel="stylesheet" href="/style/index">
 		<title>Notepad</title>
-		<script src="/notepad.js"></script>
+		<script src="/login.js"></script>
 	</head>
 	<body>
 		<!-- TODO: 이 곳을 채워 클라이언트를 만들어 보세요 -->
-		<section class="notepad wrap">
+		<section class="login">
+			<form action="/login/process" method="post">
+				<h1 class="tac">
+					<span class="octicons octicon-lock"></span>
+					<p>로그인</p>
+				</h1>
+				<label class="db">
+					<input type="text" name="id" placeholder="아이디" data-message="아이디를 입력해주세요">
+				</label>
+				<label class="db">
+					<input type="password" name="pass" placeholder="비밀번호" data-message="비밀번호를 입력해주세요">
+				</label>
+				<div class="buttonArea">
+					<button>로그인</button>
+				</div>
+			</form>
 		</section>
 		<script>
-			var notepad = new Notepad(".notepad");
+			var loginForm = new LoginForm(".login");
 		</script>
 	</body>
 </html>

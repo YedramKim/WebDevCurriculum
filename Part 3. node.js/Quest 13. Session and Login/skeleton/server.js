@@ -79,32 +79,70 @@ app.use(function(req, res, next) {
 	}else{
 		req.login = false;
 	}
+	//메세지를 출력하면서 전페이지로 이동하는 함수
+	res.prevPage = function(message) {
+		res.set("Content-Type", "text/html");
+		res.write("<meta charset='utf-8'><script>alert('" + message + ".'); history.go(-1);</script>");
+	}
 	next();
 });
+//로그인 관련 라우터
 var loginRouter = express.Router();
+//로그인 폼 페이지
 loginRouter.get("/page", function(req, res) {
 	res.sendFile(path.join(__dirname, "client", "login.html"));
-})
+});
+//로그인 처리
+loginRouter.post("/process", function(req, res) {
+	//로그인 폼 정보
+	var id = req.body.id;
+	var pass = req.body.pass;
+
+	//id 존재 유무 확인
+	var length = users.length;
+	for(var i = 0; i < length; i++){
+		if(users[i].id === id){
+			if(users[i].password === pass){
+				req.session.pageId = id;
+				req.session.nickname = users[i].nickname;
+				res.redirect(302, "/");
+			}else{
+				res.prevPage("비밀번호가 틀렸습니다.")
+			}
+			return;
+		}
+	}
+	res.prevPage("존재하지 않는 아이디입니다.");
+});
+loginRouter.get("/logout", function(req, res) {
+	req.session.destroy();
+	res.redirect(302, "/login/page");
+});
 app.use("/login", loginRouter);
 
 //메모장 관련 데이터
-var notes = [
-];
+var notes = [];
 var noteAutoIncrement = notes.length; // 새 파일을 만들 때 마다 사용할 메모 idx
 
 //메모장 관련 라우트
 var noteRouter = express.Router();
 //메모장 리스트를 전송
 noteRouter.get('/', function(req, res) {
-	//제목들만 전송
+	//자신의 id
+	var id = req.session.pageId;
+	id = id !== undefined ? id : "";
+
+	//id가 똑같은 메모 파일만 전송
 	var datas = [];
 	var length = notes.length;
 	for(var i = 0; i < length; i++) {
-		datas.push({
-			idx : notes[i].idx,
-			title : notes[i].title,
-			id : undefined
-		});
+		if(notes[i].id === id){
+			datas.push({
+				idx : notes[i].idx,
+				title : notes[i].title,
+				id : id
+			});
+		}
 	}
 	res.json(datas);
 });
@@ -126,6 +164,9 @@ noteRouter.get('/load/:idx' , function(req, res) {
 });
 //메모 저장
 noteRouter.post("/save", function(req, res) {
+	var id = req.session.pageId;
+	id = id !== undefined ? id : "";
+
 	var data = req.body;
 	//기존에 있던 파일일 경우
 	if(data.idx !== undefined) {
@@ -138,6 +179,7 @@ noteRouter.post("/save", function(req, res) {
 		res.send("save");
 	}else { // 기존에 있던 파일이 아닐 경우 (메모장 목록에 추가, 데이터에 idx추가)
 		data.idx = noteAutoIncrement++;
+		data.id = id;
 		notes.push(data);
 		res.send(data.idx+"");
 	}
@@ -147,13 +189,11 @@ app.use('/note', noteRouter);
 app.get('/', function (req, res) {
 	//로그인이 되어있지 않을 경우
 	if(req.login === false) {
-		console.log("not login");
 		res.set("Content-Type", "text/html");
 		res.write("<meta charset='utf-8'><script>alert('로그인을 하세요.'); location = '/login/page';</script>");
 	}else{
 		res.sendFile(path.join(__dirname, 'client', 'notepad.html'));
 	}
-	res.end();
 });
 
 app.get('/*', function(req, res) {
