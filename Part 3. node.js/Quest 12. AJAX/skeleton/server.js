@@ -16,7 +16,7 @@ styleRouter.use(function(req, res, next) {
 	res.root = path.join(__dirname, "client");
 	res.css = function (cssStr) {
 		res.set("Content-Type", "text/css");
-		res.send(css.str.split(/\/\*.+\*\/|\t|\r\n|\n/).join(""));
+		res.send(cssStr.split(/\/\*.+\*\/|\t|\r\n|\n/).join(""));
 	}
 	next();
 });
