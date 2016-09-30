@@ -1,3 +1,159 @@
-* {
-	/* TODO: 필요한 CSS를 채워넣어 보세요! */
+/* 기본 초기화 */
+@font-face{
+	font-family: "octicons";
+	src: url(/octicons.ttf);
+}
+
+*{
+	margin: 0;
+	padding: 0;
+	position: relative;
+	box-sizing: border-box;
+	color: inherit;
+	font-family: 'Malgun Gothic';
+}
+a{
+	text-decoration: none;
+}
+li{
+	list-style-type: none;
+}
+table{
+	border-collapse: collapse;
+}
+input,textarea{
+	border: 1px #aaa solid;
+	background: #fff;
+	resize: none;
+}
+button{
+	border: 1px #aaa solid;
+	cursor: pointer;
+	background: #eee;
+	outline: 0;
+}
+
+/* 편의 기능 */
+.wrap{
+	margin: 0 auto;
+	width: 100%;
+	max-width: 1000px;
+}
+.tar{
+	text-align: left;
+}
+.tac{
+	text-align: center;
+}
+.tar{
+	text-align: right;
+}
+.fn{
+	font-weight: normal;
+}
+.fb{
+	font-weight: bold;
+}
+.dib{
+	display: inline-block;
+}
+.db{
+	display: block;
+}
+.dn{
+	display: none;
+}
+.poa{
+	position: absolute;
+}
+.list{
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	flex-flow: row wrap;
+}
+.octicons{
+	font-family: "octicons";
+	vertical-align: middle;
+	font-size: 1.5em;
+}
+.octicons.octicon-plus::before{
+	content:'\f05d';
+}
+.octicons.octicon-bookmark::before{
+	content:'\f07b';
+}
+.octicons.octicon-keyboard::before{
+	content:'\f00d';
+}
+
+/*메모 리스트*/
+.filetab{
+	margin-top: 50px;
+	margin-bottom: 10px;
+	flex-wrap: nowrap;
+}
+.filetab > li{
+	flex : 1 1 auto;
+	height: 50px;
+	line-height: 48px;
+	border: 1px #aaa solid;
+	text-align: center;
+	overflow: hidden;
+}
+.filetab > li > button{
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	font-size: 1.0em;
+	background: #fff;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.filetab > .select > button{
+	background: #eee;
+}
+.filetab > li.createNote > button{
+	background: #aaa;
+	color: #fff;
+}
+.filetab > li > button > .octicons{
+	margin-right: 10px;
+	font-size: 2.0em;
+}
+.filetab > .select > button > .octicons{
+	color: #ff3f3f;
+}
+
+/* 메모장 */
+.noteEditors li{
+	margin-bottom: 15px;
+	display: none;
+}
+.noteEditors li.edit{
+	display: block;
+}
+.noteEditors textarea{
+	width: 100%;
+	height: 250px;
+	padding: 10px;
+	margin:10px 0;
+	outline: 0;
+}
+.noteEditors textarea:focus{
+	border-color: #3571ff;
+}
+.noteEditors button{
+	width: 100%;
+	height: 40px;
+}
+.noteEditors button > .octicons{
+	font-size: 2.0em;
+	margin-right: 10px;
 }
