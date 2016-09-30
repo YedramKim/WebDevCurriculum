@@ -11,23 +11,19 @@ app.use(bodyParser.urlencoded({ extended : true})); // x-www-form-urlencoded 파
 app.use(bodyParser.json()); //JSON 파싱
 
 //압축 css 관련 라우트
-String.prototype.eraseAll = function(search) {
-	return this.split(search).join("");
-}
-String.prototype.replaceAll = function(search, change) {
-	return this.split(search).join(change);
-}
 var styleRouter = express.Router();
 styleRouter.use(function(req, res, next) {
 	res.root = path.join(__dirname, "client");
+	res.css = function (cssStr) {
+		res.set("Content-Type", "text/css");
+		res.send(css.str.split(/\/\*.+\*\/|\t|\r\n|\n/).join(""));
+	}
 	next();
 });
 styleRouter.get("/index", function(req, res) {
-	res.set("Content-Type", "text/css");
 	fs.readFile(path.join(res.root, "style.css"), function(error, style) {
 		style = style.toString();
-		style = style.eraseAll(/\/\*.+\*\/|\t|\r\n/);
-		res.send(style);
+		res.css(style);
 	});
 });
 styleRouter.get("/octicons.ttf", function(req, res) {
