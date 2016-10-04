@@ -92,6 +92,10 @@ app.use(function(req, res, next) {
 var loginRouter = express.Router();
 //로그인 폼 페이지
 loginRouter.get("/page", function(req, res) {
+	//로그인 되어 있을 경우 메모편집으로 이동
+	if(req.login) {
+		res.redirect(302, "/");
+	}
 	res.sendFile(path.join(__dirname, "client", "login.html"));
 });
 //로그인 처리
