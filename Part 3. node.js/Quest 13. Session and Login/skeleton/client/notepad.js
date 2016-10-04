@@ -3,7 +3,7 @@ HTMLElement.prototype.getIndex = function() {
 	var siblings = this.parentNode.children;
 	var length = siblings.length;
 	for(var i = 0; i < length; i++) {
-		if(siblings[i] == this) {
+		if(siblings[i] === this) {
 			return i;
 		}
 	}
@@ -28,6 +28,7 @@ var Notepad = function(selector) {
 
 	this._initialize();
 };
+
 Notepad.prototype._initialize = function() {
 	var notepad = this; // Notepad 객체 자기자신
 
@@ -46,17 +47,12 @@ Notepad.prototype._initialize = function() {
 	this.lastlist.appendChild(this.createNoteButton);
 
 	//메모장 리스트 가져오기
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET", "/note", true);
-	xhr.onreadystatechange = function(e) {
-		if(this.readyState === 4 && this.status == 200){
-			var data = JSON.parse(this.responseText);
-			notepad.files = data;
-			notepad.start();
-			notepad.bindEvent();
-		}
-	}
-	xhr.send();
+	AJAX("GET", "/note", function(data) {
+		var data = JSON.parse(data);
+		notepad.files = data;
+		notepad.start();
+		notepad.bindEvent();
+	});
 }
 //메모장 실행 함수
 Notepad.prototype.start = function() {
@@ -129,7 +125,7 @@ Notepad.prototype.bindEvent = function() {
 	//탭으로 메모 전환
 	document.body.addEventListener("keydown", function(e) {
 		//누른 키가 탭일 경우
-		if(e.which == 9 && e.key.toLowerCase() == "tab") {
+		if(e.which === 9 && e.key.toLowerCase() === "tab") {
 			e.preventDefault();
 			var noteNum = notepad.files.length;
 			
@@ -166,14 +162,14 @@ Notepad.prototype.bindEvent = function() {
 		}
 
 		//누른 키가 쉬프트일 경우
-		if(e.which == 16 && e.key.toLowerCase() == "shift") {
+		if(e.which === 16 && e.key.toLowerCase() === "shift") {
 			this.shiftPress = true;
 		}
 	});
 
 	document.body.addEventListener("keyup", function(e) {
 		//쉬프트키를 땠을 경우
-		if(e.which == 16 && e.key.toLowerCase() == "shift") {
+		if(e.which === 16 && e.key.toLowerCase() === "shift") {
 			this.shiftPress = false;
 		}
 	});
@@ -220,14 +216,11 @@ Note.prototype.bindEvent = function() {
 	function loadNoteEvent(e) {
 		e.preventDefault();
 		if(note.data.content === undefined) {
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", "/note/load/" + note.data.idx);
-			xhr.onreadystatechange = function(e) {
-				note.data.content = this.responseText;
-				note.noteTextarea.textContent = this.responseText;
+			AJAX("GET", "/note/load/" + note.data.idx, function(data) {
+				note.data.content = data;
+				note.noteTextarea.textContent = data;
 				note.showEditor();
-			}
-			xhr.send();
+			});
 		}else{
 			note.showEditor();
 		}
@@ -238,23 +231,16 @@ Note.prototype.bindEvent = function() {
 	function noteSave() {
 		note.data.content = note.noteTextarea.value;
 
-		var data = JSON.stringify(note.data);
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", "/note/save", true);
-		xhr.onreadystatechange = function(e) {
-			if(this.readyState === 4 && this.status === 200) {
-				var idx;
-				if(note.data.idx === undefined) {
-					idx = this.responseText;
-				}else{
-					idx = note.data.idx;
-				}
-				idx = parseInt(idx);
-				note.data.idx = idx;
+		AJAX("POST", "/note/save", function(data) {
+			var idx;
+			if(note.data.idx === undefined) {
+				idx = data;
+			}else{
+				idx = note.data.idx;
 			}
-		}
-		xhr.setRequestHeader("Content-Type", "application/json");
-		xhr.send(data);
+			idx = parseInt(idx);
+			note.data.idx = idx;
+		}, note.data);
 	}
 }
 //편집기 보여주기
@@ -264,6 +250,7 @@ Note.prototype.showEditor = function() {
 	for(var i = 0; i < length; i++) {
 		siblings[i].classList.remove("select");
 	}
+	this.loadDom.parentNode.classList.add("on");
 	this.loadDom.classList.add("select");
 
 	var siblings = this.noteEditor.parentNode.children;
@@ -274,4 +261,43 @@ Note.prototype.showEditor = function() {
 	this.noteEditor.classList.add("edit");
 
 	this.noteTextarea.focus();
+}
+
+//XMLHttpRequest 호출 함수
+function AJAX(method = "GET", url = "/", ajaxEvent = null, data = "") {
+	//XMLHttpRequest 객체 생성
+	var xhr = new XMLHttpRequest();
+	xhr.open(method, url, true);
+
+	//post일 경우 Request 요청의 헤더의 Content-Type 정보를 설정
+	if(method.toUpperCase() === "POST") {
+		if(typeof(data) === "string") {
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		}else if(typeof(data) === "object") {
+			xhr.setRequestHeader("Content-Type", "application/json");
+			data = JSON.stringify(data);
+		}
+	}
+
+	//ajax가 무사히 호출이 되었으면 매개변수로 받은 ajaxEvent 함수를 실행
+	xhr.onreadystatechange = function(e) {
+		if(this.readyState === 4 && this.status === 200) {
+			if(typeof(ajaxEvent) === "function") {
+				ajaxEvent(this.responseText);
+			}else if(ajaxEvent !== null){
+				console.error("type of ajaxEvent not function");
+				return;
+			}
+		}else if(this.readtState === 4 && this.status !== 200){
+			console.error("AJAX Error");
+			return;
+		}
+	};
+
+	//ajax 통신 실행
+	if(data !== "") {
+		xhr.send(data);
+	}else{
+		xhr.send();
+	}
 }

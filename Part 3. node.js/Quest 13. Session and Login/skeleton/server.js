@@ -1,6 +1,7 @@
 var express = require('express'),
 	path = require('path'),
 	fs = require('fs'),
+	crypto = require('crypto'),
 	bodyParser = require('body-parser'),
 	session = require('express-session'),
 	app = express();
@@ -58,31 +59,32 @@ app.use('/style', styleRouter);
 var users = [
 	{
 		id : "admin",
-		password : "1234",
+		password : "F2qkL5N1Uvd0eJBnKbjYEA==",
 		nickname : "집게사장"
 	},
 	{
 		id : "employee1",
-		password : "1234",
+		password : "F2qkL5N1Uvd0eJBnKbjYEA==",
 		nickname : "징징이"
 	},
 	{
 		id : "employee2",
-		password : "1234",
+		password : "F2qkL5N1Uvd0eJBnKbjYEA==",
 		nickname : "스폰지밥"
 	}
 ];
-//회원 관련 세션 처리
+
+//로그인 관련 세션 처리
 app.use(function(req, res, next) {
 	if(req.session.pageId !== undefined && typeof req.session.pageId === "string"){
 		req.login = true;
 	}else{
 		req.login = false;
 	}
+
 	//메세지를 출력하면서 전페이지로 이동하는 함수
 	res.prevPage = function(message) {
-		res.set("Content-Type", "text/html");
-		res.write("<meta charset='utf-8'><script>alert('" + message + ".'); history.go(-1);</script>");
+		res.send("<meta charset='utf-8'><script>alert('" + message + ".'); history.go(-1);</script>");
 	}
 	next();
 });
@@ -94,9 +96,17 @@ loginRouter.get("/page", function(req, res) {
 });
 //로그인 처리
 loginRouter.post("/process", function(req, res) {
+	//암호화 객체
+	var key = "notepadLoginPassword";
+	var cipher = crypto.createCipher("aes256", key);
+
 	//로그인 폼 정보
 	var id = req.body.id;
 	var pass = req.body.pass;
+
+	//비밀번호 암호화
+	cipher.update(pass, "utf8", "base64");
+	pass = cipher.final("base64");
 
 	//id 존재 유무 확인
 	var length = users.length;
@@ -186,12 +196,17 @@ noteRouter.post("/save", function(req, res) {
 });
 app.use('/note', noteRouter);
 
+app.get("/password", function(req, res) {
+	var cipher = crypto.createCipher("aes256", "notepadLoginPassword");
+	cipher.update("1234", "utf8", "base64");
+	res.send(cipher.final("base64"));
+});
+
 app.get('/', function (req, res) {
 	//로그인이 되어있지 않을 경우
 	if(req.login === false) {
-		res.set("Content-Type", "text/html");
-		res.write("<meta charset='utf-8'><script>alert('로그인을 하세요.'); location = '/login/page';</script>");
-	}else{
+		res.send("<meta charset='utf-8'><script>alert('로그인을 하세요.'); location = '/login/page';</script>");
+	}else {
 		res.sendFile(path.join(__dirname, 'client', 'notepad.html'));
 	}
 });
