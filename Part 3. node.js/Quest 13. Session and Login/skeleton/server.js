@@ -6,7 +6,7 @@ var express = require('express'),
 	session = require('express-session'),
 	app = express();
 
-app.use(express.static(path.join(__dirname, "client")));
+app.use("/static", express.static(path.join(__dirname, "client")));
 
 /* TODO: 여기에 처리해야 할 요청의 주소별로 동작을 채워넣어 보세요..! */
 
@@ -29,31 +29,6 @@ fooRouter.post(function (req, res) {
 	console.log("Hello, " + body.bar);
 	res.send("");
 });
-
-//css 압축 관련 라우트
-var styleRouter = express.Router();
-styleRouter.use(function(req, res, next) {
-	res.root = path.join(__dirname, "client");
-	res.css = function (cssStr) {
-		res.set("Content-Type", "text/css");
-		res.send(cssStr.toString().split(/\/\*.+\*\/|\t|\r\n|\n/).join(""));
-	}
-	next();
-});
-styleRouter.get("/index", function(req, res) {
-	fs.readFile(path.join(res.root, "style.css"), function(error, style) {
-		style = style.toString();
-		res.css(style);
-	});
-});
-styleRouter.get("/octicons.ttf", function(req, res) {
-	//res.set("Content-Type", "application/x-font-opentype");
-	fs.readFile(path.join(res.root, "octicons.ttf"), function(error, font) {
-		font = font.toString();
-		res.send(font);
-	});
-});
-app.use('/style', styleRouter);
 
 //회원 목록
 var users = [
@@ -78,6 +53,7 @@ var users = [
 app.use(function(req, res, next) {
 	if(req.session.pageId !== undefined && typeof req.session.pageId === "string"){
 		req.login = true;
+		req.id = req.session.pageId;
 	}else{
 		req.login = false;
 	}
@@ -135,15 +111,47 @@ loginRouter.get("/logout", function(req, res) {
 app.use("/login", loginRouter);
 
 //메모장 관련 데이터
+var notePath = __dirname + "/notes";
+var noteAutoIncrement = 0; // 새 파일을 만들 때 마다 사용할 메모 idx
+
 var notes = [];
-var noteAutoIncrement = notes.length; // 새 파일을 만들 때 마다 사용할 메모 idx
+try{
+	notes = fs.readdirSync(notePath);
+	
+	var length = notes.length;
+	for(var i = 0; i < length; i++) {
+		var data = notes[i].replace(/\.[^.]+$/, "");
+		data = data.split(/\)\)\)/gi); 
+		notes[i] = {
+			idx : Number(data[0]),
+			id : data[1],
+			title : data[2]
+		}
+	}
+
+	//파일을 다시 idx별로 정렬
+	notes.sort(function(prev, next) {
+		return prev.idx - next.idx;
+	});
+
+	//파일이 하나도 없을 경우
+	if(notes.length === 0) {
+		noteAutoIncrement = 0;
+	}else {
+		noteAutoIncrement = notes[notes.length - 1].idx + 1;
+	}
+}catch(e) {
+	console.log(e);
+	process.exit(1);
+}
+console.log(notes);
 
 //메모장 관련 라우트
 var noteRouter = express.Router();
 //메모장 리스트를 전송
 noteRouter.get('/', function(req, res) {
 	//자신의 id
-	var id = req.session.pageId;
+	var id = req.id;
 	id = id !== undefined ? id : "";
 
 	//id가 똑같은 메모 파일만 전송
@@ -167,36 +175,51 @@ noteRouter.get('/all', function(req, res) {
 //지정한 메모 로드
 noteRouter.get('/load/:idx' , function(req, res) {
 	var idx = parseInt(req.params.idx);
-	var data = notes.filter(function(note) {
-		return note.idx === idx;
-	})[0];
-	if(data) {
-		res.send(data.content);
-	}else{
-		res.send("");
+	var title = "";
+	var id = req.id;
+	var length = notes.length;
+	for(var i = 0; i < length; i++) {
+		if(notes[i].idx === idx){
+			title = notes[i].title.trim();
+			break;
+		}
+	}
+	//만약의 경우 파일이 존재하지 않을 경우 종료
+	var path = notePath + "/" + idx + ")))" + id + ")))" + title + ".txt";
+	if(title = "") {
+		res.redirect(302, "/");
+	}else {
+		fs.readFile(path, "utf8", function(err, content) {
+			res.send(content);
+		});
 	}
 });
-//메모 저장
-noteRouter.post("/save", function(req, res) {
+//메모 생성
+noteRouter.post("/create", function(req, res) {
+	var idx = noteAutoIncrement ++;
+	var title = req.body.title;
 	var id = req.session.pageId;
-	id = id !== undefined ? id : "";
-
-	var data = req.body;
-	//기존에 있던 파일일 경우
-	if(data.idx !== undefined) {
-		var length = notes.length;
-		for(var i = 0; i < length; i++) {
-			if(data.idx === notes[i].idx) {
-				notes[i].content = data.content;
-			}
+	var path = notePath + "/" + idx + ")))" + id + ")))" + title + ".txt";
+	fs.writeFile(path, req.body.content, "utf8", function(err){
+		notes[notes.length] = {
+			idx : idx,
+			id : id,
+			title : title
 		}
+		res.send(String(idx));
+	});
+});
+//메모 저장
+noteRouter.post("/modify", function(req, res) {
+	var data = req.body;
+	var idx = data.idx;
+	var title = data.title;
+	var content = data.content;
+	var id = req.id;
+	//기존에 있던 파일일 경우
+	fs.writeFile(notePath + "/" + idx + ")))" + req.id + ")))" + title + ".txt", content, "utf8", function(err, result) {
 		res.send("save");
-	}else { // 기존에 있던 파일이 아닐 경우 (메모장 목록에 추가, 데이터에 idx추가)
-		data.idx = noteAutoIncrement++;
-		data.id = id;
-		notes.push(data);
-		res.send(data.idx+"");
-	}
+	});
 });
 app.use('/note', noteRouter);
 

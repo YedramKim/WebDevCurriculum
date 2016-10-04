@@ -116,6 +116,7 @@ Notepad.prototype.bindEvent = function() {
 		note.noteEditor.addEventListener("append", editorAppendEvent);
 		note._initialize();
 		note.showEditor();
+		note.createNote();
 		notepad.files.push(note);
 
 		//파일 생성 버튼을 다시 맨뒤에 놓음
@@ -231,17 +232,17 @@ Note.prototype.bindEvent = function() {
 	function noteSave() {
 		note.data.content = note.noteTextarea.value;
 
-		AJAX("POST", "/note/save", function(data) {
-			var idx;
-			if(note.data.idx === undefined) {
-				idx = data;
-			}else{
-				idx = note.data.idx;
-			}
-			idx = parseInt(idx);
-			note.data.idx = idx;
-		}, note.data);
+		AJAX("POST", "/note/modify", null, note.data);
 	}
+}
+//파일을 클라이언트에서 생성할 경우 서버에도 생성하는 함수
+Note.prototype.createNote = function() {
+	var note = this;
+
+	//메모 파일을 서버에 생성
+	AJAX("POST", "/note/create", function(idx){
+		note.data.idx = Number(idx);
+	}, note.data);
 }
 //편집기 보여주기
 Note.prototype.showEditor = function() {

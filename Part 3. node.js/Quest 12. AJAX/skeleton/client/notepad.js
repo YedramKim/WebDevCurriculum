@@ -118,6 +118,7 @@ Notepad.prototype.bindEvent = function() {
 		note.noteEditor.addEventListener("append", editorAppendEvent);
 		note._initialize();
 		note.showEditor();
+		note.createNote();
 		notepad.files.push(note);
 
 		//파일 생성 버튼을 다시 맨뒤에 놓음
@@ -213,7 +214,7 @@ Note.prototype._initialize = function() {
 Note.prototype.bindEvent = function() {
 	var note = this;
 
-	//더블클릭 했을 시 데이터가 없으면 파일을 로드한다.
+	//클릭 했을 시 데이터가 없으면 파일을 로드한다.
 	this.loadButton.addEventListener("click", loadNoteEvent);
 	function loadNoteEvent(e) {
 		e.preventDefault();
@@ -240,23 +241,33 @@ Note.prototype.bindEvent = function() {
 		note.data.content = note.noteTextarea.value;
 
 		var data = JSON.stringify(note.data);
-		fetch("/note/save", {
+		fetch("/note/modify", {
 			headers : {
 				"Content-Type" : "application/json"
 			},
 			method : "POST",
 			body : data
-		}).then(function(req) {
-			if(note.data.idx === undefined && req.ok) {
-				return req.text();
-			}else{
-				return note.data.idx;
-			}
-		}).then(function(idx) {
-			idx = parseInt(idx);
-			note.data.idx = idx;
 		});
 	}
+}
+//파일을 클라이언트에서 생성할 경우 서버에도 생성하는 함수
+Note.prototype.createNote = function() {
+	var note = this;
+
+	//메모 파일을 서버에 생성
+	fetch("/note/create" , {
+		method : "POST",
+		headers : {
+			"Content-Type" : "application/json"
+		},
+		body : JSON.stringify(note.data)
+	}).then(function(res) {
+		if(res.ok) {
+			return res.text();
+		}
+	}).then(function(idx) {
+		note.data.idx = Number(idx);
+	});
 }
 //편집기 보여주기
 Note.prototype.showEditor = function() {
