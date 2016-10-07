@@ -7,6 +7,45 @@ var express = require('express'),
 	session = require('express-session'),
 	app = express();
 
+var sequelize = new Sequelize("node", "root", "phpmyadmin", {
+	host : "localhost",
+	dialect : "mysql"
+});
+
+console.log();
+
+sequelize.authenticate();
+
+var User = sequelize.define("user", {
+	idx : {
+		type : Sequelize.INTEGER,
+		allowNull : false,
+		autoIncrement : true,
+		primaryKey : true,
+		column : {
+			autoIncrement : true,
+			primaryKey : true
+		}
+	},
+	id : {
+		type : Sequelize.STRING(50),
+		allowNull : true
+	},
+	nickname : {
+		type : Sequelize.STRING(20),
+		allowNull : true
+	},
+	password : {
+		type : Sequelize.STRING(64),
+		allowNull : true
+	},
+	salt : {
+		type : Sequelize.STRING(32),
+		allowNull : true
+	}
+});
+
+console.log();
 
 app.use("/static", express.static(path.join(__dirname, "client")));
 
