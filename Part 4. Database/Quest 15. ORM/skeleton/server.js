@@ -12,40 +12,39 @@ var sequelize = new Sequelize("node", "root", "phpmyadmin", {
 	dialect : "mysql"
 });
 
-console.log();
-
-sequelize.authenticate();
-
 var User = sequelize.define("user", {
 	idx : {
 		type : Sequelize.INTEGER,
 		allowNull : false,
 		autoIncrement : true,
-		primaryKey : true,
-		column : {
-			autoIncrement : true,
-			primaryKey : true
-		}
+		primaryKey : true
 	},
 	id : {
 		type : Sequelize.STRING(50),
-		allowNull : true
+		allowNull : false
 	},
 	nickname : {
 		type : Sequelize.STRING(20),
-		allowNull : true
+		allowNull : false
 	},
 	password : {
 		type : Sequelize.STRING(64),
-		allowNull : true
+		allowNull : false
 	},
 	salt : {
 		type : Sequelize.STRING(32),
-		allowNull : true
+		allowNull : false
 	}
+}, {
+	timeStamps : false,
+	tableName : 'user'
 });
 
-console.log();
+//User.create();
+
+/*User.findAll().then(function(users) {
+	console.log(users);
+});*/
 
 app.use("/static", express.static(path.join(__dirname, "client")));
 
