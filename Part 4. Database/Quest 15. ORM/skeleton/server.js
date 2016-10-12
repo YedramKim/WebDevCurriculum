@@ -38,7 +38,7 @@ function createSalt() {
 	return salt;
 }
 
-//회원 목록
+//회원 목록(서버가 실행이 될 때 이 목록을 토대로 회원을 만든다.)
 var users = [
 	{
 		id : "admin",
@@ -54,11 +54,6 @@ var users = [
 		id : "employee2",
 		password : "1234",
 		nickname : "스폰지밥"
-	},
-	{
-		id : "emiya",
-		password : "angksdmlrjawp",
-		nickname : "궁수"
 	}
 ];
 
@@ -88,6 +83,26 @@ var User = sequelize.define("user", {
 		allowNull : false
 	}
 });
+//`user`테이블 생성
+//force : true일 경우 테이블을 지운뒤 다시 생성한다.
+User.sync({force : true}).then(function() {
+	//회원 별로 솔트 문자열 생성 및 데이터베이스에 정보 등록
+	var length = users.length;
+	for(var i = 0; i < length; i++) {
+		//솔트 문자열 생성
+		var salt = createSalt();
+		users[i]["salt"] = salt;
+
+		//암호문 만들기
+		var pass = users[i]["password"] + salt;
+		var hash = crypto.createHash("sha256");
+
+		users[i]["password"] = hash.update(pass , "utf8").digest("hex");
+
+		//유저 정보 데이터베이스에 등록
+		User.create(users[i]);
+	}
+});
 
 //메모 테이블 모델 생성
 var Memo = sequelize.define("memo", {
@@ -113,27 +128,6 @@ var Memo = sequelize.define("memo", {
 //`memo` 테이블 생성 해당 모델에 해당하는 테이블이 존재하지 않으면 생성한다.
 Memo.sync();
 
-//`user`테이블 생성
-//force : true일 경우 테이블을 지운뒤 다시 생성한다.
-User.sync({force : true}).then(function() {
-	//회원 별로 솔트 문자열 생성 및 데이터베이스에 정보 등록
-	var length = users.length;
-	for(var i = 0; i < length; i++) {
-		//솔트 문자열 생성
-		var salt = createSalt();
-		users[i]["salt"] = salt;
-
-		//암호문 만들기
-		var pass = users[i]["password"] + salt;
-		var hash = crypto.createHash("sha256");
-
-		users[i]["password"] = hash.update(pass , "utf8").digest("hex");
-
-		//유저 정보 데이터베이스에 등록
-		User.create(users[i]);
-	}
-});
-
 app.use("/static", express.static(path.join(__dirname, "client")));
 
 /* TODO: 여기에 처리해야 할 요청의 주소별로 동작을 채워넣어 보세요..! */
@@ -147,12 +141,12 @@ app.use(session({
 
 // /foo 관련 라우트
 var fooRouter = app.route("/foo");
-fooRouter.get(function (req, res) {
+fooRouter.get(function(req, res) {
 	var query = req.query;
 	console.log("Hello, " + query.bar);
 	res.json(query);
 });
-fooRouter.post(function (req, res) {
+fooRouter.post(function(req, res) {
 	var body = req.body;
 	console.log("Hello, " + body.bar);
 	res.send("");
@@ -204,7 +198,7 @@ loginRouter.post("/process", function(req, res) {
 				nickname : user.nickname,
 				password : user.password,
 				salt : user.salt
-			}
+			};
 		}
 	}).then(function(user) { // 비밀번호 확인
 		var hash = crypto.createHash("sha256");

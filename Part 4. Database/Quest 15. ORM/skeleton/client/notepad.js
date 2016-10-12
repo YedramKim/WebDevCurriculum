@@ -216,7 +216,6 @@ Note.prototype.bindEvent = function() {
 	this.loadButton.addEventListener("click", loadNoteEvent);
 	function loadNoteEvent(e) {
 		e.preventDefault();
-		console.log("click");
 		if(note.data.content === undefined) {
 			AJAX("GET", "/note/load/" + note.data.idx, function(data) {
 				note.data.content = data;
