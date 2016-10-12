@@ -54,11 +54,15 @@ var users = [
 		id : "employee2",
 		password : "1234",
 		nickname : "스폰지밥"
+	},
+	{
+		id : "emiya",
+		password : "angksdmlrjawp",
+		nickname : "궁수"
 	}
 ];
-var length = users.length;
 
-//회원 테이블 모델
+//회원 테이블 모델 생성
 var User = sequelize.define("user", {
 	idx : {
 		type : Sequelize.INTEGER,
@@ -85,7 +89,7 @@ var User = sequelize.define("user", {
 	}
 });
 
-//메모 테이블 모델
+//메모 테이블 모델 생성
 var Memo = sequelize.define("memo", {
 	idx : {
 		type : Sequelize.INTEGER,
@@ -112,9 +116,10 @@ Memo.sync();
 //`user`테이블 생성
 //force : true일 경우 테이블을 지운뒤 다시 생성한다.
 User.sync({force : true}).then(function() {
-	//회원 등록
+	//회원 별로 솔트 문자열 생성 및 데이터베이스에 정보 등록
 	var length = users.length;
 	for(var i = 0; i < length; i++) {
+		//솔트 문자열 생성
 		var salt = createSalt();
 		users[i]["salt"] = salt;
 
@@ -124,6 +129,7 @@ User.sync({force : true}).then(function() {
 
 		users[i]["password"] = hash.update(pass , "utf8").digest("hex");
 
+		//유저 정보 데이터베이스에 등록
 		User.create(users[i]);
 	}
 });
@@ -154,6 +160,7 @@ fooRouter.post(function (req, res) {
 
 //로그인 관련 세션 처리
 app.use(function(req, res, next) {
+	//로그인이 되어 있으면 req 객체에 login, id 속성 추가
 	if(req.session.pageId !== undefined && typeof req.session.pageId === "string"){
 		req.login = true;
 		req.id = req.session.pageId;
@@ -188,7 +195,7 @@ loginRouter.post("/process", function(req, res) {
 		where : {
 			id : id
 		}
-	}).then(function(user) {
+	}).then(function(user) { // 아이디 검사, user : 만약에 아이디가 존재하지 않으면 NULL
 		if(user.length === null) {
 			res.prevPage("존재하지 않는 아이디입니다.");
 		}else{
@@ -205,7 +212,7 @@ loginRouter.post("/process", function(req, res) {
 		//입력한 비밀번호를 솔트랑 조합해서 정보 수정
 		var submit_pass = hash.update(pass + user.salt, "utf8").digest("hex");
 
-		//비밀번호 검사
+		//비밀번호 검사, 틀릴 경우 다시 로그인 페이지로 이동
 		if(user.password === submit_pass) {
 			req.session.pageId = id;
 			req.session.nickname = users.nickname;
@@ -244,13 +251,16 @@ noteRouter.get('/', function(req, res) {
 //메모정보 전부 공개
 noteRouter.get('/all', function(req, res) {
 	Memo.findAll().then(function(memos){
-		res.json(memos.map(function(memo){
-			return {
-				idx : memo.idx,
-				title : memo.title,
-				id : memo.id,
-			}
-		}));
+		var length = memos.length;
+		var datas=[];
+		for(var i = 0; i < length; i++) {
+			datas.push({
+				idx : memos[i].idx,
+				title : memos[i].title,
+				id : memos[i].id,
+			})
+		}
+		res.json(datas);
 	});
 });
 //지정한 메모 로드
@@ -281,12 +291,11 @@ noteRouter.post("/create", function(req, res) {
 		title : title,
 		content : ""
 	}).then(function(data){
-		res.status(200);
 		//res.send()로 숫자를 보낼때는 반드시 toString()을 사용할 것
 		res.send(data.idx.toString());
 	});
 });
-//메모 저장
+//메모 수정
 noteRouter.post("/modify", function(req, res) {
 	var data = req.body;
 	var idx = data.idx;
@@ -311,6 +320,7 @@ noteRouter.post("/delete", function(req, res) {
 	var idx = req.body.idx;
 	var id = req.id;
 
+	//idx와 id가 같은 데이터 삭제
 	Memo.destroy({
 		where : {
 			idx : idx,
@@ -319,7 +329,7 @@ noteRouter.post("/delete", function(req, res) {
 	}).then(function(){
 		res.send("deleted!!");
 	});
-})
+});
 app.use('/note', noteRouter);
 
 app.get('/', function (req, res) {
