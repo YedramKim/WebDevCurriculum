@@ -7,11 +7,58 @@ var express = require('express'),
 	session = require('express-session'),
 	app = express();
 
+//데이터 베이스 ORM
 var sequelize = new Sequelize("node", "root", "phpmyadmin", {
 	host : "localhost",
-	dialect : "mysql"
+	dialect : "mysql",
+	define : {
+		timestamps : false
+	}
 });
 
+//지정한 범위의 숫자를 랜덤으로 생성하는 함수
+function randomInt(max, min = 0) {
+	if(max < min) {
+		var temp = max;
+		max = min;
+		min = temp;
+	}
+	max -= min;
+	return Math.floor(Math.random() * (max + 1)) + min;
+}
+
+//솔트 문자열을 생성하는 함수
+var saltenglish = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
+var charLength = saltenglish.length - 1;
+function createSalt() {
+	var salt = "";
+	for(var i = 0; i < 32; i++) {
+		salt += saltenglish[randomInt(0, charLength)];
+	}
+	return salt;
+}
+
+//회원 목록
+var users = [
+	{
+		id : "admin",
+		password : "1234",
+		nickname : "집게사장"
+	},
+	{
+		id : "employee1",
+		password : "1234",
+		nickname : "징징이"
+	},
+	{
+		id : "employee2",
+		password : "1234",
+		nickname : "스폰지밥"
+	}
+];
+var length = users.length;
+
+//회원 테이블 모델
 var User = sequelize.define("user", {
 	idx : {
 		type : Sequelize.INTEGER,
@@ -21,6 +68,7 @@ var User = sequelize.define("user", {
 	},
 	id : {
 		type : Sequelize.STRING(50),
+		unique : true,
 		allowNull : false
 	},
 	nickname : {
@@ -28,23 +76,57 @@ var User = sequelize.define("user", {
 		allowNull : false
 	},
 	password : {
-		type : Sequelize.STRING(64),
+		type : Sequelize.CHAR(64),
 		allowNull : false
 	},
 	salt : {
-		type : Sequelize.STRING(32),
+		type : Sequelize.CHAR(32),
 		allowNull : false
 	}
-}, {
-	timeStamps : false,
-	tableName : 'user'
 });
 
-//User.create();
+//메모 테이블 모델
+var Memo = sequelize.define("memo", {
+	idx : {
+		type : Sequelize.INTEGER,
+		primaryKey : true,
+		autoIncrement : true,
+		allowNull : false
+	},
+	id : {
+		type : Sequelize.STRING(50),
+		allowNull : false
+	},
+	title : {
+		type : Sequelize.STRING,
+		allowNull : false
+	},
+	content : {
+		type : Sequelize.TEXT,
+		allowNull : false
+	}
+});
+//`memo` 테이블 생성 해당 모델에 해당하는 테이블이 존재하지 않으면 생성한다.
+Memo.sync();
 
-/*User.findAll().then(function(users) {
-	console.log(users);
-});*/
+//`user`테이블 생성
+//force : true일 경우 테이블을 지운뒤 다시 생성한다.
+User.sync({force : true}).then(function() {
+	//회원 등록
+	var length = users.length;
+	for(var i = 0; i < length; i++) {
+		var salt = createSalt();
+		users[i]["salt"] = salt;
+
+		//암호문 만들기
+		var pass = users[i]["password"] + salt;
+		var hash = crypto.createHash("sha256");
+
+		users[i]["password"] = hash.update(pass , "utf8").digest("hex");
+
+		User.create(users[i]);
+	}
+});
 
 app.use("/static", express.static(path.join(__dirname, "client")));
 
@@ -69,25 +151,6 @@ fooRouter.post(function (req, res) {
 	console.log("Hello, " + body.bar);
 	res.send("");
 });
-
-//회원 목록
-var users = [
-	{
-		id : "admin",
-		password : "F2qkL5N1Uvd0eJBnKbjYEA==",
-		nickname : "집게사장"
-	},
-	{
-		id : "employee1",
-		password : "F2qkL5N1Uvd0eJBnKbjYEA==",
-		nickname : "징징이"
-	},
-	{
-		id : "employee2",
-		password : "F2qkL5N1Uvd0eJBnKbjYEA==",
-		nickname : "스폰지밥"
-	}
-];
 
 //로그인 관련 세션 처리
 app.use(function(req, res, next) {
@@ -116,74 +179,48 @@ loginRouter.get("/page", function(req, res) {
 });
 //로그인 처리
 loginRouter.post("/process", function(req, res) {
-	//암호화 객체
-	var key = "notepadLoginPassword";
-	var cipher = crypto.createCipher("aes256", key);
-
 	//로그인 폼 정보
 	var id = req.body.id;
 	var pass = req.body.pass;
 
-	//비밀번호 암호화
-	cipher.update(pass, "utf8", "base64");
-	pass = cipher.final("base64");
-
-	//id 존재 유무 확인
-	var length = users.length;
-	for(var i = 0; i < length; i++){
-		if(users[i].id === id){
-			if(users[i].password === pass){
-				req.session.pageId = id;
-				req.session.nickname = users[i].nickname;
-				res.redirect(302, "/");
-			}else{
-				res.prevPage("비밀번호가 틀렸습니다.")
-			}
-			return;
+	//id에 맞는 유저정보 찾기, 없으면 로그인 페이지로 이동
+	User.findOne({
+		where : {
+			id : id
 		}
-	}
-	res.prevPage("존재하지 않는 아이디입니다.");
+	}).then(function(user) {
+		if(user.length === null) {
+			res.prevPage("존재하지 않는 아이디입니다.");
+		}else{
+			return {
+				id : user.id,
+				nickname : user.nickname,
+				password : user.password,
+				salt : user.salt
+			}
+		}
+	}).then(function(user) { // 비밀번호 확인
+		var hash = crypto.createHash("sha256");
+
+		//입력한 비밀번호를 솔트랑 조합해서 정보 수정
+		var submit_pass = hash.update(pass + user.salt, "utf8").digest("hex");
+
+		//비밀번호 검사
+		if(user.password === submit_pass) {
+			req.session.pageId = id;
+			req.session.nickname = users.nickname;
+			res.redirect(302, "/");
+		}else {
+			res.prevPage("비밀번호가 틀렸습니다.");
+		}
+	});
 });
+//로그아웃
 loginRouter.get("/logout", function(req, res) {
 	req.session.destroy();
 	res.redirect(302, "/login/page");
 });
 app.use("/login", loginRouter);
-
-//메모장 관련 데이터
-var notePath = __dirname + "/notes";
-var noteAutoIncrement = 0; // 새 파일을 만들 때 마다 사용할 메모 idx
-
-var notes = [];
-try{
-	notes = fs.readdirSync(notePath);
-	
-	var length = notes.length;
-	for(var i = 0; i < length; i++) {
-		var data = notes[i].replace(/\.[^.]+$/, "");
-		data = data.split(/\)\)\)/gi); 
-		notes[i] = {
-			idx : Number(data[0]),
-			id : data[1],
-			title : data[2]
-		}
-	}
-
-	//파일을 다시 idx별로 정렬
-	notes.sort(function(prev, next) {
-		return prev.idx - next.idx;
-	});
-
-	//파일이 하나도 없을 경우
-	if(notes.length === 0) {
-		noteAutoIncrement = 0;
-	}else {
-		noteAutoIncrement = notes[notes.length - 1].idx + 1;
-	}
-}catch(e) {
-	console.log(e);
-	process.exit(1);
-}
 
 //메모장 관련 라우트
 var noteRouter = express.Router();
@@ -193,59 +230,60 @@ noteRouter.get('/', function(req, res) {
 	var id = req.id;
 	id = id !== undefined ? id : "";
 
-	//id가 똑같은 메모 파일만 전송
-	var datas = [];
-	var length = notes.length;
-	for(var i = 0; i < length; i++) {
-		if(notes[i].id === id){
-			datas.push({
-				idx : notes[i].idx,
-				title : notes[i].title,
-				id : id
-			});
+	//메모 데이터 불러오기
+	Memo.findAll({
+		attributes : ["idx", "id", "title"],
+		where : {
+			id : id
 		}
-	}
-	res.json(datas);
+	}).then(function(memos) {
+		memos = memos.length !== 0 ? memos : [];
+		res.json(memos);
+	});
 });
 //메모정보 전부 공개
 noteRouter.get('/all', function(req, res) {
-	res.json(notes);
+	Memo.findAll().then(function(memos){
+		res.json(memos.map(function(memo){
+			return {
+				idx : memo.idx,
+				title : memo.title,
+				id : memo.id,
+			}
+		}));
+	});
 });
 //지정한 메모 로드
 noteRouter.get('/load/:idx' , function(req, res) {
 	var idx = parseInt(req.params.idx);
-	var title = "";
 	var id = req.id;
-	var length = notes.length;
-	for(var i = 0; i < length; i++) {
-		if(notes[i].idx === idx){
-			title = notes[i].title.trim();
-			break;
+
+	Memo.findOne({
+		attributes : ["content"],
+		where : {
+			idx : idx,
+			id : id
 		}
-	}
-	//만약의 경우 파일이 존재하지 않을 경우 종료
-	var path = notePath + "/" + idx + ")))" + id + ")))" + title + ".txt";
-	if(title = "") {
-		res.redirect(302, "/");
-	}else {
-		fs.readFile(path, "utf8", function(err, content) {
-			res.send(content);
-		});
-	}
+	}).then(function(memo) {
+		if(memo === null) {
+			res.send("Error");
+		}else{
+			res.send(memo.content);
+		}
+	});
 });
 //메모 생성
 noteRouter.post("/create", function(req, res) {
-	var idx = noteAutoIncrement ++;
 	var title = req.body.title;
-	var id = req.session.pageId;
-	var path = notePath + "/" + idx + ")))" + id + ")))" + title + ".txt";
-	fs.writeFile(path, req.body.content, "utf8", function(err){
-		notes[notes.length] = {
-			idx : idx,
-			id : id,
-			title : title
-		}
-		res.send(String(idx));
+	var id = req.id;
+	Memo.create({
+		id : id,
+		title : title,
+		content : ""
+	}).then(function(data){
+		res.status(200);
+		//res.send()로 숫자를 보낼때는 반드시 toString()을 사용할 것
+		res.send(data.idx.toString());
 	});
 });
 //메모 저장
@@ -255,18 +293,34 @@ noteRouter.post("/modify", function(req, res) {
 	var title = data.title;
 	var content = data.content;
 	var id = req.id;
-	//기존에 있던 파일일 경우
-	fs.writeFile(notePath + "/" + idx + ")))" + req.id + ")))" + title + ".txt", content, "utf8", function(err, result) {
-		res.send("save");
-	});
-});
-app.use('/note', noteRouter);
 
-app.get("/password", function(req, res) {
-	var cipher = crypto.createCipher("aes256", "notepadLoginPassword");
-	cipher.update("1234", "utf8", "base64");
-	res.send(cipher.final("base64"));
+	//데이터베이스에 있는 메모 수정
+	Memo.update({
+		content : content
+	},{
+		where : {
+			idx : idx,
+			id : id
+		}
+	}).then(function(data) {
+		res.send("save");
+	})
 });
+//메모 삭제
+noteRouter.post("/delete", function(req, res) {
+	var idx = req.body.idx;
+	var id = req.id;
+
+	Memo.destroy({
+		where : {
+			idx : idx,
+			id : id,
+		}
+	}).then(function(){
+		res.send("deleted!!");
+	});
+})
+app.use('/note', noteRouter);
 
 app.get('/', function (req, res) {
 	//로그인이 되어있지 않을 경우

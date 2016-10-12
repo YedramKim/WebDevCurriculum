@@ -212,10 +212,11 @@ Note.prototype._initialize = function() {
 Note.prototype.bindEvent = function() {
 	var note = this;
 
-	//더블클릭 했을 시 데이터가 없으면 파일을 로드한다.
+	//클릭 했을 시 데이터가 없으면 파일을 로드한다.
 	this.loadButton.addEventListener("click", loadNoteEvent);
 	function loadNoteEvent(e) {
 		e.preventDefault();
+		console.log("click");
 		if(note.data.content === undefined) {
 			AJAX("GET", "/note/load/" + note.data.idx, function(data) {
 				note.data.content = data;
@@ -226,6 +227,16 @@ Note.prototype.bindEvent = function() {
 			note.showEditor();
 		}
 	}
+
+	//더블클릭 했을 시 파일을 삭제할지 말지 여부를 묻는다.
+	this.loadButton.addEventListener("dblclick", function(e) {
+		e.preventDefault();
+		if(confirm("파일을 정말로 삭제하시겠습니까?") === true) {
+			AJAX("POST", "/note/delete", null, "idx=" + note.data.idx);
+			note.loadDom.parentNode.removeChild(note.loadDom);
+			note.noteEditor.parentNode.removeChild(note.noteEditor);
+		}
+	}, false);
 
 	//메모 저장 및 수정
 	this.saveButton.addEventListener("click", noteSave);
