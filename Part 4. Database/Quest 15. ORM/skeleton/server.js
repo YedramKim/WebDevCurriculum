@@ -11,8 +11,9 @@ var express = require('express'),
 var sequelize = new Sequelize("node", "root", "phpmyadmin", {
 	host : "localhost",
 	dialect : "mysql",
+	logging : false,
 	define : {
-		timestamps : false
+		paranoid : true
 	}
 });
 
@@ -82,26 +83,8 @@ var User = sequelize.define("user", {
 		type : Sequelize.CHAR(32),
 		allowNull : false
 	}
-});
-//`user`테이블 생성
-//force : true일 경우 테이블을 지운뒤 다시 생성한다.
-User.sync({force : true}).then(function() {
-	//회원 별로 솔트 문자열 생성 및 데이터베이스에 정보 등록
-	var length = users.length;
-	for(var i = 0; i < length; i++) {
-		//솔트 문자열 생성
-		var salt = createSalt();
-		users[i]["salt"] = salt;
-
-		//암호문 만들기
-		var pass = users[i]["password"] + salt;
-		var hash = crypto.createHash("sha256");
-
-		users[i]["password"] = hash.update(pass , "utf8").digest("hex");
-
-		//유저 정보 데이터베이스에 등록
-		User.create(users[i]);
-	}
+}, {
+	tableName : "user"
 });
 
 //메모 테이블 모델 생성
@@ -112,10 +95,6 @@ var Memo = sequelize.define("memo", {
 		autoIncrement : true,
 		allowNull : false
 	},
-	id : {
-		type : Sequelize.STRING(50),
-		allowNull : false
-	},
 	title : {
 		type : Sequelize.STRING,
 		allowNull : false
@@ -124,10 +103,45 @@ var Memo = sequelize.define("memo", {
 		type : Sequelize.TEXT,
 		allowNull : false
 	}
+}, {
+	tableName : "memo"
 });
-//`memo` 테이블 생성 해당 모델에 해당하는 테이블이 존재하지 않으면 생성한다.
-Memo.sync();
+//`user`테이블 생성
+//회원이 없을 경우 생성한다.
+// User 모델과 Memo 모델을 1:N 관계로 정의한다.
+User.hasMany(Memo, {
+	foreignKey : "userIdx"
+});
+Memo.belongsTo(User, {
+	foreignKey : "userIdx",
+	targetKey : "idx"
+});
+User.sync().then(function(){
+	return User.count();
+}).then(function(count) {
+	var promise = User.sync();
+	if(count === 0) {
+		//회원 별로 솔트 문자열 생성 및 데이터베이스에 정보 등록
+		var length = users.length;
+		for(var i = 0; i < length; i++) {
+			//솔트 문자열 생성
+			var salt = createSalt();
+			users[i]["salt"] = salt;
 
+			//암호문 만들기
+			var pass = users[i]["password"] + salt;
+			var hash = crypto.createHash("sha256");
+
+			users[i]["password"] = hash.update(pass , "utf8").digest("hex");
+		}
+		return User.bulkCreate(users);
+	}
+	return null;
+}).then(function() {
+	return Memo.sync();
+}).then(function() {
+	console.log("Database ready complete")
+});
 app.use("/static", express.static(path.join(__dirname, "client")));
 
 /* TODO: 여기에 처리해야 할 요청의 주소별로 동작을 채워넣어 보세요..! */
@@ -155,9 +169,9 @@ fooRouter.post(function(req, res) {
 //로그인 관련 세션 처리
 app.use(function(req, res, next) {
 	//로그인이 되어 있으면 req 객체에 login, id 속성 추가
-	if(req.session.pageId !== undefined && typeof req.session.pageId === "string"){
+	if(req.session.userIdx !== undefined){
 		req.login = true;
-		req.id = req.session.pageId;
+		req.userIdx = req.session.userIdx;
 	}else{
 		req.login = false;
 	}
@@ -194,7 +208,7 @@ loginRouter.post("/process", function(req, res) {
 			res.prevPage("존재하지 않는 아이디입니다.");
 		}else{
 			return {
-				id : user.id,
+				idx : user.idx,
 				nickname : user.nickname,
 				password : user.password,
 				salt : user.salt
@@ -208,7 +222,7 @@ loginRouter.post("/process", function(req, res) {
 
 		//비밀번호 검사, 틀릴 경우 다시 로그인 페이지로 이동
 		if(user.password === submit_pass) {
-			req.session.pageId = id;
+			req.session.userIdx = user.idx;
 			req.session.nickname = users.nickname;
 			res.redirect(302, "/");
 		}else {
@@ -228,16 +242,25 @@ var noteRouter = express.Router();
 //메모장 리스트를 전송
 noteRouter.get('/', function(req, res) {
 	//자신의 id
-	var id = req.id;
-	id = id !== undefined ? id : "";
+	var idx = req.userIdx;
+	idx = idx !== undefined ? idx : -1;
 
 	//메모 데이터 불러오기
-	Memo.findAll({
-		attributes : ["idx", "id", "title"],
+	User.findOne({
 		where : {
-			id : id
+			idx : idx
 		}
+	}).then(function(user) {
+		return user.getMemos();
 	}).then(function(memos) {
+		var length = memos.length;
+		for(var i = 0; i < length; i++) {
+			memos[i] = {
+				idx : memos[i].idx,
+				title : memos[i].title,
+				userIdx : memos[i].userIdx
+			}
+		}
 		memos = memos.length !== 0 ? memos : [];
 		res.json(memos);
 	});
@@ -260,13 +283,13 @@ noteRouter.get('/all', function(req, res) {
 //지정한 메모 로드
 noteRouter.get('/load/:idx' , function(req, res) {
 	var idx = parseInt(req.params.idx);
-	var id = req.id;
+	var userIdx = req.userIdx;
 
 	Memo.findOne({
 		attributes : ["content"],
 		where : {
 			idx : idx,
-			id : id
+			userIdx : userIdx
 		}
 	}).then(function(memo) {
 		if(memo === null) {
@@ -279,14 +302,26 @@ noteRouter.get('/load/:idx' , function(req, res) {
 //메모 생성
 noteRouter.post("/create", function(req, res) {
 	var title = req.body.title;
-	var id = req.id;
-	Memo.create({
-		id : id,
-		title : title,
-		content : ""
-	}).then(function(data){
+	var userIdx = req.userIdx;
+	var writer = null;
+	
+	User.findOne({
+		where : {
+			idx : userIdx
+		}
+	}).then(function(user) {
+		writer = user;
+		return Memo.create({
+			title : title,
+			content : "",
+			userIdx : userIdx
+		});
+	}).then(function(memo){
 		//res.send()로 숫자를 보낼때는 반드시 toString()을 사용할 것
-		res.send(data.idx.toString());
+		res.send(memo.idx.toString());
+		return writer.addMemo(memo);
+	}).then(function() {
+		console.log("create new memo");
 	});
 });
 //메모 수정
@@ -295,7 +330,7 @@ noteRouter.post("/modify", function(req, res) {
 	var idx = data.idx;
 	var title = data.title;
 	var content = data.content;
-	var id = req.id;
+	var userIdx = req.userIdx;
 
 	//데이터베이스에 있는 메모 수정
 	Memo.update({
@@ -303,7 +338,7 @@ noteRouter.post("/modify", function(req, res) {
 	},{
 		where : {
 			idx : idx,
-			id : id
+			userIdx : userIdx
 		}
 	}).then(function(data) {
 		res.send("save");
@@ -312,13 +347,13 @@ noteRouter.post("/modify", function(req, res) {
 //메모 삭제
 noteRouter.post("/delete", function(req, res) {
 	var idx = req.body.idx;
-	var id = req.id;
+	var userIdx = req.userIdx;
 
-	//idx와 id가 같은 데이터 삭제
+	//idx와 userIdx가 같은 데이터 삭제
 	Memo.destroy({
 		where : {
 			idx : idx,
-			id : id,
+			userIdx : userIdx,
 		}
 	}).then(function(){
 		res.send("deleted!!");
