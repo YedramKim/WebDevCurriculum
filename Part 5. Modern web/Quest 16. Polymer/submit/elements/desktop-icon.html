@@ -1,0 +1,23 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="./icon-behaviors.html">
+
+<dom-module id="desktop-icon">
+	<style include="icon-style">
+	
+	</style>
+	<template strip-whitespace>
+		<!-- 아이콘 이미지 -->
+		<img src="../static/img/file.png" alt="아이콘 이미지" title="아이콘 이미지" class="iconImage">
+		<!-- 아이콘 이름 -->
+		<p class="icon-title fb c">
+			{{iconTitle}}
+		</p>
+		<div class="cover"></div>
+	</template>
+	<script>
+		Polymer({
+			is : "desktop-icon",
+			behaviors : [iconBehaviors]
+		});
+	</script>
+</dom-module>

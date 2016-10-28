@@ -1,0 +1,45 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="app-desktop">
+	<style>
+	:host{
+		--desktop-size : 98%;
+		display: block;
+		min-width: var(--desktop-size, 98%);
+		min-height: var(--desktop-size, 98%);
+		position: relative;
+		padding: 10px;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		-o-user-select: none;
+		user-select: none;
+		overflow: hidden;
+	}
+	</style>
+	<template strip-whitespace>
+		<!-- 아이콘과 폴더 모음들 -->
+		<content select="desktop-icon, desktop-folder"></content>
+	</template>
+	<script>
+		Polymer({
+			is : "app-desktop",
+			properties : {
+				zIndex : {
+					type : Number,
+					value : 2
+				}
+			},
+			ready : function() {
+				var icons = this.getContentChildren("content");
+				var length = icons.length;
+				for(var i = 0; i < length; i++) {
+					this.listen(icons[i], "riseZIndex", "increaseZIndex");
+				}
+			},
+			increaseZIndex : function(e) {
+				e.target.style.zIndex = this.zIndex++;
+			}
+		});
+	</script>
+</dom-module>

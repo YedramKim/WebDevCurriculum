@@ -1,5 +1,13 @@
 ### Polymer는 어떤 특징을 가지고 있는 웹 프레임워크인가요?
-* 구글에서 개발한 Web components 기반의 프레임워크입니다.
+* 구글에서 개발한 Web components 기반의 프레임워크입니다. 지금 현재 Web components는 chrome을 제외한 다른 브라우저에서는 거의 제대로 동작하지 않지만 Polymer를 통해 다른 브라우저에서도 비슷한 형태로 Web components를 구현할 수 있게 해줍니다.(하지만 Polymer library만으로도 한계가 있기 때문에 web components의 polyfill이 별개로 필요합니다.)
+
+* Polymer는 web components 기능처럼 기존의 태그를 이용한 커스텀 엘리먼트를 만들 수 있고 커스텀 엘리먼트마다 전용 속성을 만들어서 커스텀 엘리먼트를 조작할 수도 있습니다.
+
+* observer나 computed properties를 이용해서 종속된 값들이 변할 때마다 observer 처럼 그에 대한 처리를 할 수도 있습니다.
+
+* 데이터 바인딩을 이용해서 바인딩된 값이 변할 때마다 자동으로 바인딩을 시킨 구역이 값에 맞춰 변하게 하거나 `<input>`같은 기존의 태그의 속성(attribute)에 바인딩 시켜서 특정한 이벤트 때마다 값을 변화시킬 수도 있습니다.
+
+* 구글이 제공해주는 여러가지 커스텀 엘리먼트를 이용할 수도 있습니다.
 
 ### Shadow DOM이 무엇인가요?
 * `shadow DOM`은 DOM 일종으로 내부에 있는 DOM, style, script를 캡슐화시키고 외부에 노출되지 않고 특수한 방법을 쓰지 않는 이상 외부의 css 규칙과 스크립트의 영향을 받지 않습니다. (마찬가지로 shadow DOM 내부의 css 규칙은 외부에 아무런 영향을 주지 않습니다.)

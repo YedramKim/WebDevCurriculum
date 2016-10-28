@@ -1,0 +1,65 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<!-- <dom-module id="polymer-table">
+<style>
+  	:host{
+  		display: block;
+  	}
+  	</style>
+  <template>
+    <table>
+      <tr>
+        <template is="dom-repeat" items="{{items}}">
+          <td>{{item}}</td>
+        </template>
+      </tr>
+    </table>
+  </template>
+  <script>
+  Polymer({
+    is: "polymer-table",
+    properties: {
+      items: {
+        type: Array,
+		notify : true,
+        value: [ 1, 2, 3, 4 ]
+      }
+    }
+  });
+</script>
+</dom-module> -->
+
+
+<dom-module id="polymer-table">
+	<style>
+	:host{
+		display: block;
+	}
+	</style>
+	<template>
+		<table>
+			<tr>
+				<template is="dom-repeat" items="[[array]]">
+					<td>
+						{{item}}
+					</td>
+				</template>
+			</tr>
+		</table>
+	</template>
+	<script>
+		Polymer({
+			is : "polymer-table",
+			properties : {
+				array : {
+					type : Array,
+					notify : true,
+					value : [0,1,2,3,4,5]
+				}
+			},
+			ready : function() {
+				
+			}
+		});
+	</script>
+</dom-module>
