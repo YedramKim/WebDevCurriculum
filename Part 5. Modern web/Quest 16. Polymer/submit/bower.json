@@ -1,0 +1,20 @@
+{
+  "name": "polymer-first-quest",
+  "description": "learn polymer",
+  "main": "index.html",
+  "authors": [
+    "YedarmKim <ydkim@knowre.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "polymer"
+  ],
+  "homepage": "https://github.com/YedramKim/WebDevCurriculum",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

@@ -1,5 +1,5 @@
 ### Polymer는 어떤 특징을 가지고 있는 웹 프레임워크인가요?
-* 구글에서 개발한 Web components 기반의 프레임워크
+* 구글에서 개발한 Web components 기반의 프레임워크입니다.
 
 ### Shadow DOM이 무엇인가요?
 * `shadow DOM`은 DOM 일종으로 내부에 있는 DOM, style, script를 캡슐화시키고 외부에 노출되지 않고 특수한 방법을 쓰지 않는 이상 외부의 css 규칙과 스크립트의 영향을 받지 않습니다. (마찬가지로 shadow DOM 내부의 css 규칙은 외부에 아무런 영향을 주지 않습니다.)
