@@ -1,0 +1,97 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="desktop-window">
+	<style>
+		:host{
+			display: none;
+			position: absolute;
+			background: #ddd;
+			width: 800px;
+			padding: 5px;
+			padding-top: 0;
+			--title-height : 30px;
+			z-index: 100;
+		}
+		:host([show]){
+			display: block;
+		}
+		.title{
+			position: relative;
+			text-align: center;
+			font-weight: bold;
+			font-size: 1.1em;
+			cursor: all-scroll;
+		}
+		.title p{
+			margin: 0;
+			height: var(--title-height, 30px);
+			line-height: var(--title-height, 30px);
+		}
+		.title .close_button{
+			background: #ff4b4b;
+			color: #fff;
+			font-weight: bold;
+			position: absolute;
+			right: 0;
+			top: 0;
+			width: 100px;
+			line-height: var(--title-height, 30px);
+			height: var(--title-height, 30px);
+			cursor: default;
+		}
+		.title .close_button:hover{
+			background: #e63333;
+		}
+		.title .close_button:active{
+			background: #c42a2a;
+		}
+		app-desktop{
+			box-sizing : border-box;
+			height: 300px;
+		}
+	</style>
+	<template>
+		<div class="title">
+			<p>
+				{{windowTitle}}
+			</p>
+			<div class="close_button">
+				X
+			</div>
+		</div>
+		<app-desktop>
+			<content select="desktop-icon,desktop-folder"></content>
+		</app-desktop>
+	</template>
+	<script>
+		Polymer({
+			is : "desktop-window",
+			behaviors : [dragBehavior],
+			properties : {
+				windowTitle : { //윈도우 제목
+					type : String,
+					reflectToAttribute : true,
+					notify : true
+				},
+				show : { //윈도우를 표시할지 말지 정하는 속성
+					type : Boolean,
+					reflectToAttribute : true,
+					notify : true,
+					value : false
+				}
+			},
+			ready : function() {
+				this.desktop = Polymer.dom(this);
+
+				//드래그 이벤트
+				this.listen(this.$$(".title"), "track", "_trackEvent");
+
+				//닫기 버튼 클릭 이벤트
+				this.listen(this.$$(".close_button"), "tap", "_closeWindow");
+			},
+			_closeWindow : function() {
+				this.show = false;
+			}
+		});
+	</script>
+</dom-module>

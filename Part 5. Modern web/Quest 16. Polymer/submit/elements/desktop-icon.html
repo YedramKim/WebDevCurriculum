@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="./icon-behaviors.html">
+<link rel="import" href="./drag-behaviors.html">
+<link rel="import" href="./icon-style.html">
 
 <dom-module id="desktop-icon">
 	<style include="icon-style">
@@ -17,7 +18,27 @@
 	<script>
 		Polymer({
 			is : "desktop-icon",
-			behaviors : [iconBehaviors]
+			properties : {
+				iconTitle : { //아이콘 제목
+					type : String,
+					notify : true,
+					reflectToAttribute : true,
+					value : "아이콘"
+				}
+			},
+			behaviors : [dragBehavior],
+			listeners : {
+				//hover 이벤트
+				"mouseenter" : "_hoverEvent",
+				"mouseleave" : "_hoverEvent"
+			},
+			_hoverEvent : function() {
+				this.toggleClass("hover");
+			},
+			ready : function() {
+				//드래그 이벤트
+				this.listen(this.$$(".cover"), "track", "_trackEvent");
+			}
 		});
 	</script>
 </dom-module>

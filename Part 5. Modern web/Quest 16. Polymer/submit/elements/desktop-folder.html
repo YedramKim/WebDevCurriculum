@@ -1,11 +1,13 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="./icon-behaviors.html">
+<link rel="import" href="./drag-behaviors.html">
+<link rel="import" href="./icon-style.html">
+<link rel="import" href="./desktop-window.html">
 
 <dom-module id="desktop-folder">
 	<style include="icon-style">
 	
 	</style>
-	<template>
+	<template strip-shitespace>
 		<!-- 아이콘 이미지 -->
 		<img src="../static/img/folder.png" alt="아이콘 이미지" title="아이콘 이미지" class="iconImage">
 		<!-- 아이콘 이름 -->
@@ -17,7 +19,65 @@
 	<script>
 		Polymer({
 			is : "desktop-folder",
-			behaviors : [iconBehaviors]
+			properties : {
+				iconTitle : { //아이콘 제목
+					type : String,
+					notify : true,
+					reflectToAttribute : true,
+					value : "폴더",
+					observer : "iconTitleObserver"
+				}
+			},
+			iconTitleObserver : function(newValue, oldValue) {
+				if(this.window) {
+					this.window.windowTitle = newValue;
+				}
+			},
+			behaviors : [dragBehavior],
+			ready : function() {
+				//드래그 이벤트
+				this.listen(this.$$(".cover"), "track", "_trackEvent");
+
+				//hover 이벤트
+				this.listen(this.$$(".cover"), "mouseenter", "_hoverEvent");
+				this.listen(this.$$(".cover"), "mouseleave", "_hoverEvent");
+
+				//더블클릭 이벤트
+				this.listen(this.$$(".cover"), "dblclick", "_dblclickEvent");
+
+				//desktop-window을 놓을 DOM
+				var appDesktop = document.querySelector("body app-desktop");
+				appDesktop = Polymer.dom(appDesktop);
+				
+				//폴더 창 설정
+				this.window = document.createElement("desktop-window");
+				this.window.x = 10;
+				this.window.y = 10;
+				this.window.PolymerDOM = Polymer.dom(this.window);
+				this.window.windowTitle = this.iconTitle;
+
+				//폴더 창을 body app-desktop에 삽입
+				appDesktop.appenChild(this.window);
+
+				//folder 내부의 아이콘이 추가되거나 제거될 때 window에도 적용
+				Polymer.dom(this).observeNodes(function(info) {
+					var icons = this.getEffectiveChildren();
+					this.window.PolymerDOM.innerHTML = "";
+
+					var length = icons.length;
+					for(var i = 0; i < length; i++) {
+						var node = icons[i];
+						this.window.PolymerDOM.appendChild(node.cloneNode());
+					}
+				});
+			},
+			_hoverEvent : function() {
+				this.toggleClass("hover");
+			},
+			_dblclickEvent : function() {
+				this.window.show = true;
+				this.window.fire("mousedown");
+			}
 		});
 	</script>
 </dom-module>

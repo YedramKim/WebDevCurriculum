@@ -1,0 +1,64 @@
+<script>
+var dragBehavior = {
+	properties : {
+		x : { //아이콘의 x좌표(원위치를 0으로 기준)
+			type : Number,
+			value : 0
+		},
+		y : { //아이콘의 y좌표(원위치를 0으로 기준)
+			type : Number,
+			value : 0
+		},
+		ex : { //아이콘의 x좌표(전 이벤트 끝났을 때 혹은 처음 좌표를 기준)
+			type : Number,
+			value : 0
+		},
+		ey : { //아이콘의 y좌표(전 이벤트 끝났을 때 혹은 처음 좌표를 기준)
+			type : Number,
+			value : 0
+		}
+	},
+	_trackEvent : function(e) { //track리스너
+		e.stopPropagation();
+		//track이벤트의 상태 (start or track or end)
+		var state = e.detail.state;
+		
+		//현재 마우스 좌표
+		var pageX = e.detail.sourceEvent.pageX;
+		var pageY = e.detail.sourceEvent.pageY;
+
+		//부모 노드인 app-desktop의 위치정보
+		var parentPos = this.closest("app-desktop").getBoundingClientRect();
+		var left = parentPos.left;
+		var top = parentPos.top;
+		var right = left + parentPos.width;
+		var bottom = top + parentPos.height;
+
+		//만약에 마우스가 부모 노드를 벗어났을 경우 이벤트를 취소한다.
+		if(pageX < left || pageY < top || pageX > right || pageY > bottom) {
+			return;
+		}
+
+		if(state === "track") {
+			//드래그 중일 때 아이콘이 이동한다.
+			this.x = this.ex + e.detail.dx;
+			this.y = this.ey + e.detail.dy;
+		}else if(state === "end") {
+			//드래그 중일 때 아이콘이 이동한다.
+			this.x = this.ex + e.detail.dx;
+			this.y = this.ey + e.detail.dy;
+
+			//드래그가 끝나면 ex와 ey를 수정한다.
+			this.ex += e.detail.dx;
+			this.ey += e.detail.dy;
+		}
+	},
+	observers : [ //x, y 속성의 옵저버
+		"_setIconPosition(x, y)"
+	],
+	_setIconPosition : function(x, y) { //x, y 속성이 바뀔때마다 위치가 변경
+		this.style.left = x + "px";
+		this.style.top = y + "px";
+	}
+}
+</script>

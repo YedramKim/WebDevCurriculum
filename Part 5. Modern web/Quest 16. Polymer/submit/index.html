@@ -8,11 +8,12 @@
 		window.Polymer = {
 			dom : "shadow"
 		}
+		window.Polymer = {};
 	</script>
 	<link rel="import" href="./bower_components/polymer/polymer.html">
 	<link rel="import" href="./elements/desktop-icon.html">
-	<link rel="import" href="./elements/app-desktop.html">
 	<link rel="import" href="./elements/desktop-folder.html">
+	<link rel="import" href="./elements/app-desktop.html">
 	<style>
 		html,body{
 			width: 100%;
@@ -25,9 +26,19 @@
 </head>
 <body>
 	<app-desktop>
-		<desktop-icon icon-title="아이콘1"></desktop-icon>
-		<desktop-folder icon-title="폴더1"></desktop-folder>
-		<desktop-folder icon-title="폴더2"></desktop-folder>
+		<desktop-icon icon-title="프로그램"></desktop-icon>
+		<desktop-folder icon-title="라이브러리">
+			<desktop-icon icon-title="jQuery"></desktop-icon>
+			<desktop-icon icon-title="React"></desktop-icon>
+			<desktop-icon icon-title="Angular"></desktop-icon>
+			<desktop-icon icon-title="Polymer"></desktop-icon>
+		</desktop-folder>
+		<desktop-folder icon-title="언어">
+			<desktop-icon icon-title="HTML"></desktop-icon>
+			<desktop-icon icon-title="CSS"></desktop-icon>
+			<desktop-icon icon-title="JavaScript"></desktop-icon>
+		</desktop-folder>
+		<desktop-window></desktop-window>
 	</app-desktop>
 </body>
 </html>

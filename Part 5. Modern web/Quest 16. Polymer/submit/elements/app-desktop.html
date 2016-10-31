@@ -5,6 +5,7 @@
 	:host{
 		--desktop-size : 98%;
 		display: block;
+		background: #fff;
 		min-width: var(--desktop-size, 98%);
 		min-height: var(--desktop-size, 98%);
 		position: relative;
@@ -19,7 +20,7 @@
 	</style>
 	<template strip-whitespace>
 		<!-- 아이콘과 폴더 모음들 -->
-		<content select="desktop-icon, desktop-folder"></content>
+		<content select="desktop-icon, desktop-folder, desktop-window"></content>
 	</template>
 	<script>
 		Polymer({
@@ -30,15 +31,15 @@
 					value : 2
 				}
 			},
-			ready : function() {
+			attached : function() {
 				var icons = this.getContentChildren("content");
 				var length = icons.length;
 				for(var i = 0; i < length; i++) {
-					this.listen(icons[i], "riseZIndex", "increaseZIndex");
+					this.listen(icons[i], "mousedown", "increaseZIndex");
 				}
 			},
 			increaseZIndex : function(e) {
-				e.target.style.zIndex = this.zIndex++;
+				Polymer.dom(e).localTarget.style.zIndex = this.zIndex++;
 			}
 		});
 	</script>
