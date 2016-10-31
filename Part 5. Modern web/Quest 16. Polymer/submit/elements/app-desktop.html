@@ -39,7 +39,16 @@
 				}
 			},
 			increaseZIndex : function(e) {
-				Polymer.dom(e).localTarget.style.zIndex = this.zIndex++;
+				e.stopPropagation();
+				console.log(1);
+				var target = Polymer.dom(e).localTarget;
+				var tagName = target.tagName.toLowerCase();
+
+				if(tagName === "desktop-window"){
+					target.style.zIndex = (this.zIndex++) + 1000;
+				}else{
+					target.style.zIndex = this.zIndex++;
+				}
 			}
 		});
 	</script>
