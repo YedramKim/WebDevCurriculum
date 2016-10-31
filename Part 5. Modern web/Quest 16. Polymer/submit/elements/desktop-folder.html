@@ -48,7 +48,7 @@
 				//desktop-window을 놓을 DOM
 				var appDesktop = document.querySelector("body app-desktop");
 				appDesktop = Polymer.dom(appDesktop);
-				
+
 				//폴더 창 설정
 				this.window = document.createElement("desktop-window");
 				this.window.x = 10;
@@ -57,7 +57,7 @@
 				this.window.windowTitle = this.iconTitle;
 
 				//폴더 창을 body app-desktop에 삽입
-				appDesktop.appenChild(this.window);
+				appDesktop.appendChild(this.window);
 
 				//folder 내부의 아이콘이 추가되거나 제거될 때 window에도 적용
 				Polymer.dom(this).observeNodes(function(info) {
