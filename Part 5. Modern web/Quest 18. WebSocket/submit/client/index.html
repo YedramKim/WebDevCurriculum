@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>socket test</title>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+	
+<script>
+	var socket = io("/");
+	socket.on("start", function(data){
+		console.log(data)
+	});
+	/*socket.emit("msg", "I'm Socket");*/
+</script>
+</body>
+</html>
