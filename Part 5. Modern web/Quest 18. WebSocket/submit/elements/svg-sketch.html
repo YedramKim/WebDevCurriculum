@@ -1,0 +1,362 @@
+<dom-module id="svg-sketch">
+	<style>
+		:host{
+			display: block;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+		*{
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			position: relative;
+		}
+		li{
+			list-style-type: none;
+		}
+		.createButtons{
+			display: flex;
+			line-height: 54px;
+			flex-direction: row;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			-o-user-select: none;
+			user-select: none;
+		}
+		.createButtons li{
+			height: 60px;
+			cursor: pointer;
+			flex: auto;
+			text-align: center;
+			font-weight: bold;
+			color: #fff;
+			border: 3px solid #000;
+			transition:all .5s;
+		}
+		.createButtons [data-shape=triangle]{
+			background: #afb9ff;
+			border-color: #afb9ff;
+		}
+		.createButtons [data-shape=triangle]:hover{
+			color: #afb9ff;
+		}
+		.createButtons [data-shape=rectangle]{
+			background: #ffdf57;
+			border-color: #ffdf57;
+		}
+		.createButtons [data-shape=rectangle]:hover{
+			color: #ffdf57;
+		}
+		.createButtons [data-shape=circle]{
+			background: #669dff;
+			border-color: #669dff;
+		}
+		.createButtons [data-shape=circle]:hover{
+			color: #669dff;
+		}
+		.createButtons li:hover{
+			background: #fff;
+		}
+		svg-shape{
+			width: 100px;
+			height: 100px;
+			position: absolute;
+		}
+		svg-shape.beforeCreate{
+			opacity: .5;
+			pointer-events: none;
+		}
+	</style>
+	<template>
+		<ul class="createButtons">
+			<li on-tap="createShape" data-shape="triangle">삼각형 그리기</li>
+			<li on-tap="createShape" data-shape="rectangle">사각형 그리기</li>
+			<li on-tap="createShape" data-shape="circle">원 그리기</li>
+		</ul>
+	</template>
+	<script>
+	Polymer({
+		is : "svg-sketch",
+		createShape : function(e) { // 도형 생성 함수
+			e.stopPropagation();
+
+			var shape = this.beforeCreate;
+			if(shape === null){
+				shape = this.beforeCreate = document.createElement("svg-shape");
+			}
+
+			shape.shape = e.target.getAttribute("data-shape");
+			this.targetMove(e.detail.sourceEvent);
+
+			Polymer.dom(this.root).appendChild(shape);
+			this.toggleClass("beforeCreate", true, shape);
+		},
+		targetMove : function(e) { // 도형을 움직이는 함수
+
+			var sketchPos = this.getBoundingClientRect();
+
+			var x = e.pageX - sketchPos.left - 50;
+			var y = e.pageY - sketchPos.top - 50;
+			
+			this.beforeCreate.x = x;
+			this.beforeCreate.y = y;
+		},
+		listeners : {
+			"mousemove" : "_mousemoveListener",
+			"track" : "_trackListener",
+			"tap" : "_tapListener",
+			"keydown" : "_keydownListener"
+		},
+		_mousemoveListener : function(e) {
+			if(!this.beforeCreate) {
+				return;
+			}
+
+			this.targetMove(e);
+		},
+		_trackListener : function(e) {
+			if(this.beforeCreate === null) {
+				return;
+			}
+
+			this.targetMove(e.detail.sourceEvent);
+		},
+		_tapListener : function(e) {
+			if(this.beforeCreate !== null) { // 도형 생성 중일 때
+				var sketchPos = this.getBoundingClientRect();
+
+				var data = {
+					shape : this.beforeCreate.shape,
+					x : e.detail.sourceEvent.pageX - sketchPos.left - 50,
+					y : e.detail.sourceEvent.pageY - sketchPos.top - 50
+				}
+
+				this.socket.emit("create shape", data);
+
+				Polymer.dom(this.root).removeChild(this.beforeCreate);
+
+				this.beforeCreate = null;
+			}
+		},
+		ready : function() {
+			this.beforeCreate = null; // 생성전의 노드
+			this.target = null // 조종할 노드
+			this.moveDebounceAble = false; //디바운스 사용 및 재사용 가능 여부
+
+			//키보드 누르기 점검표
+			// 0 : 눌러져 있지 않음
+			// 1 : 눌러져 있는 상태
+			// -1 : 눌러져 있지만 현재 이벤트에는 영향을 미치지 않는 상태
+			this.keyState = {
+				left : 0,
+				top : 0,
+				right : 0,
+				bottom : 0
+			};
+
+			this.keyCode = {
+				left : 37,
+				top : 38,
+				right : 39,
+				bottom : 40,
+				delete : 46
+			};
+
+			this.socket = null; //웹 소켓
+			this.socketInit(); // 소켓 설정
+		},
+		socketInit : function() {
+			var sketch = this;
+			var socket = this.socket = io("/sketch");
+			socket.on("connect", function() {
+				//방번호
+				var roomIdx = location.pathname.replace("/room/", "").trim();
+
+				if(isNaN(roomIdx) === true) { // 숫자가 아닐경우
+					alert("올바르지 않은 접속 방법입니다.");
+					location.href = "/";
+				}else{
+					roomIdx = parseInt(roomIdx);
+				}
+
+				// 해당 인덱스의 방이 존재하는지 검사합니다.
+				socket.emit("check room", roomIdx);
+			});
+
+			socket.on("set room", function(roomData) { // 해당 방이 존재할 때 해당 방의 데이터 적용
+				//키보드 이벤트 설정
+				document.title = "스케치> " + roomData.name;
+
+				// 초기 도형 생성
+				var shapes = roomData.shapes;
+				for(var i in shapes) {
+					sketch.setShape(shapes[i]);
+				}
+				sketch.keyBoardEventBind();
+			});
+
+			socket.on("not exist room", function() { // 해당 방이 존재하지 않을 때
+				alert("해당 번호의 방이 존재하지 않습니다.");
+				location.href = "/";
+			});
+
+			socket.on("return shape", function(shape) { // 자신이 만든 도형일 경우 오는 이벤트로 select 상태로 놓음
+			//정보에 맞는 도형 생성
+				shape = sketch.setShape(shape);
+				sketch.reSelect(shape);
+			});
+
+			socket.on("set shape", function(data) { //도형 생성
+				//정보에 맞는 도형 생성
+				sketch.setShape(data);
+			});
+
+			socket.on("move shape", function(data) { // 도형 이동
+				var shape = Polymer.dom(sketch.root).querySelector("#" + data.id);
+				shape.x = data.x;
+				shape.y = data.y;
+			});
+
+			socket.on("deleted shape", function(id) { // 도형 삭제
+				var dom = Polymer.dom(sketch.root);
+				var shape = dom.querySelector("#" + id);
+				dom.removeChild(shape);
+				sketch.target = null;
+			});
+		},
+		reSelect : function(node) {
+			this.toggleClass("select", false, this.$$(".select"));
+
+			if(node) {
+				this.target = node;
+				this.toggleClass("select", true, node);
+			}
+		},
+		setShape : function(data) { //정보를 받으면 그에 따른 <svg-shape>를 생성하는 함수 (생성된 DOM을 반환)
+			var dom = Polymer.dom(this.root);
+
+			var svgShape = document.createElement("svg-shape");
+			svgShape.id = data.id;
+			svgShape.shape = data.shape;
+			svgShape.x = data.x;
+			svgShape.y = data.y;
+
+			dom.appendChild(svgShape);
+			
+			//클릭이벤트 설정
+			this.listen(svgShape, "tap", "shapeTapListener");
+
+			return svgShape;
+		},
+		shapeTapListener : function(e) { //-svg-shape 터치 이벤트
+			var target = Polymer.dom(e).localTarget;
+			this.reSelect(target);
+		},
+		keyBoardEventBind : function() {
+			var body = document.body;
+			var sketch = this;
+			var keyState = this.keyState;
+
+			body.addEventListener("keydown", function(e) {
+				var keyCode = e.keyCode;
+
+				switch(keyCode){
+					case sketch.keyCode.left:
+						keyState.left = 1;
+						if(keyState.right === 1) {
+							keyState.right = -1;
+						}
+						break;
+					case sketch.keyCode.right:
+						keyState.right = 1;
+						if(keyState.left === 1) {
+							keyState.left = -1;
+						}
+						break;
+					case sketch.keyCode.top:
+						keyState.top = 1;
+						if(keyState.bottom === 1) {
+							keyState.bottom = -1;
+						}
+						break;
+					case sketch.keyCode.bottom:
+						keyState.bottom = 1;
+						if(keyState.top === 1) {
+							keyState.top = -1;
+						}
+						break;
+					case sketch.keyCode.delete:
+						if(sketch.target) {
+							sketch.target.parentNode.removeChild(sketch.target);
+							sketch.socket.emit("delete shape", sketch.target.id);
+
+							sketch.target = null;
+						}
+						break;
+				}
+
+				if(sketch.isDebouncerActive("shape move") === false) {
+					var result = keyState.left || keyState.right || keyState.bottom || keyState.top;
+					if(result) {
+						sketch.moveDebounceAble = true;
+						sketch.debounce("shape move", sketch.moveDebounce, 10);
+					}
+				}
+
+			});
+
+			body.addEventListener("keyup", function(e) {
+				var keyCode = e.keyCode;
+
+				//떼어진 키가 방향키라면 svg 이동방향 설정
+				if(keyCode === sketch.keyCode.left) {
+					keyState.left = 0;
+					if(keyState.right === -1) {
+						keyState.right = 1;
+					}
+				}else if(keyCode === sketch.keyCode.top) {
+					keyState.top = 0;
+					if(keyState.bottom === -1) {
+						keyState.bottom = 1;
+					}
+				}else if(keyCode === sketch.keyCode.right) {
+					keyState.right = 0;
+					if(keyState.left === -1) {
+						keyState.left = 1;
+					}
+				}else if(keyCode === sketch.keyCode.bottom) {
+					keyState.bottom = 0;
+					if(keyState.top === -1) {
+						keyState.top = 1;
+					}
+				}
+
+				//모든 방향키가 눌러져 있지 않는 상황일 경우 도형 인터벌을 종료 한다.
+				var result = keyState.left || keyState.right || keyState.top || keyState.bottom;
+				
+				if(result == false) {
+					sketch.moveDebounceAble = false;
+					sketch.flushDebouncer("shape move");
+				}
+			});
+		},
+		moveDebounce : function() {
+
+			if(this.target) { // 타겟이 지정되어 있을 경우 실행
+				this.socket.emit("keydown", {
+					id : this.target.id,
+					left : this.keyState.left,
+					right : this.keyState.right,
+					top : this.keyState.top,
+					bottom : this.keyState.bottom
+				});
+			}
+			if(this.moveDebounceAble) { // 디바운스 실행이 허가되어 있을 경우 실행
+				this.debounce("shape move", this.moveDebounce, 10);
+			}
+		}
+	});
+	</script>
+</dom-module>

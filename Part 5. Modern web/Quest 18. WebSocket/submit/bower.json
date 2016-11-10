@@ -1,0 +1,17 @@
+{
+  "name": "websocket",
+  "description": "",
+  "main": "",
+  "authors": [
+    "ydKim"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/YedramKim/WebDevCurriculum",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

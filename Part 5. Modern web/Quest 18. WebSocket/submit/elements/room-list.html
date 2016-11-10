@@ -1,0 +1,217 @@
+<dom-module id="room-list">
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			position: relative;
+			font-family: "Malgun Gothic";
+		}
+		:host{
+			display: block;
+			width: 100%;
+			max-width: 800px;
+			margin: 0 auto !important;
+		}
+		li{
+			list-style-type: none;
+		}
+		template{
+			display: none !important;
+		}
+		a{
+			color: inherit;
+			text-decoration: none;
+		}
+		.tac{
+			text-align: center;
+		}
+
+		.createRoomForm{
+			margin-top: 20px;
+			height: 40px;
+		}
+		.createRoomForm input{
+			width: 100%;
+			height: 100%;
+			padding:0 20px;
+			border-radius: 100px;
+			border: 1px #aaa solid;
+			outline: none;
+		}
+		.createRoomForm input:focus{
+			border: 2px #648fd2 solid;
+			padding:0 19px;
+		}
+		.createRoomForm button{
+			padding:0 20px;
+			height: 30px;
+			line-height: 30px;
+			background: #ff6d6d;
+			color: #fff;
+			border: 0;
+			cursor: pointer;
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			border-radius: 100px;
+		}
+
+		.rlist{
+			margin-top: 20px;
+		}
+		.rlist li{
+			display: -webkit-flex;
+			display: -moz-flex;
+			display: -ms-flex;
+			display: -o-flex;
+			display: flex;
+			height: 40px;
+			line-height: 40px;
+			border-bottom: 1px solid #aaa;
+		}
+		.rlist li:hover:not(.header){
+			background: #efefef;
+		}
+		.rlist .header{
+			background: #7bafff;
+			color: #fff;
+			border-bottom: 0;
+			cursor: default;
+		}
+		.rlist .idx, .rlist .number{
+			padding:0 10px;
+			text-align: center;
+			flex-basis: 20%;
+		}
+		.rlist .name{
+			padding:0 10px;
+			flex-basis: 60%;
+		}
+		.rlist .name .link{
+			color: #3685ff;
+		}
+	</style>
+	<template>
+		<h1 class="tac">방 목록</h1>
+		<form on-submit="createRoom" action="#" class="createRoomForm">
+			<input type="text" placeholder="생성할 방 이름" value="{{roomName::input}}" autofocus="autofocus">
+			<button>방 만들기</button>
+		</form>
+		<ul class="rlist">
+			<li class="header">
+				<div class="idx">방번호</div>
+				<div class="name">
+					방이름
+				</div>
+				<div class="number">
+					인원수
+				</div>
+			</li>
+			<template is="dom-repeat" items="[[rooms]]" filter="{{roomFilter(rooms.*)}}">
+				<li>
+					<div class="idx">
+						[[item.idx]]
+					</div>
+					<div class="name">
+						<a href$="/room/[[item.idx]]" class="link">[[item.name]]</a>
+					</div>
+					<div class="number">
+						<span class="current">[[item.people]]</span>
+					</div>
+				</li>
+			</template>
+		</ul>
+	</template>
+	<script>
+		Polymer({
+			is : "room-list",
+			createRoom : function(e) {
+				e.preventDefault();
+
+				var room = this.roomName.trim();
+				if(room === "") {
+					alert("방 이름을 입력하세요.");
+					return;
+				}
+
+				this.socket.emit("create room", room);
+			},
+			roomFilter : function(){
+				return function(item) {
+					return item;
+				}
+			},
+			properties : {
+				roomName : {
+					type : String,
+					value : "",
+					notify : true
+				}
+			},
+			_roomNameObserver : function(newValue, oldValue) { // 특수기호가 있을 경우 입력되기 전의 값으로 복귀
+				var reg = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+				if(newValue.match(reg) !== null) {
+					this.roomName = oldValue;
+				}
+			},
+			ready : function() {
+				this.rooms = []; // 방목록
+				
+				this.socket = null; // 방 목록 소켓
+				this.socketInit(); // 소켓 설정
+			},
+			socketInit : function() {
+				var list = this;
+
+				// 방 목록을 알아보는 소켓 생성
+				var socket = this.socket = io("/room");
+				socket.on("connect", function() {
+					socket.emit("get rooms");
+				});
+
+				//모든 방의 정보 불러오기
+				socket.on("send rooms", function(rooms) {
+					list.rooms = rooms;
+				});
+
+				//새로 만들어진 방의 정보 수신
+				socket.on("created room", function(room) {
+					list.push("rooms", room);
+				});
+
+				//방 생성 완료
+				socket.on("complete create room", function(idx){
+					location.href = "/room/" + idx;
+				});
+
+				//방의 인원 변화
+				socket.on("room update", function(joinData) {
+					var rooms = list.rooms;
+					var room = rooms[joinData.idx];
+					if(!room) { // 유효하지 않은 방일 경우 종료
+						return;
+					}
+					list.rooms[joinData.idx].people = joinData.people;
+					list.notifyPath("rooms.#" + joinData.idx + ".people");
+				});
+
+				//방의 삭제
+				socket.on("remove room", function(idx) {
+					var rooms = list.rooms;
+
+					var room = rooms[idx];
+					if(!room) { // 유효하지 않은 방일 경우 종료
+						return;
+					}
+					// 해당 방의 인원수 변경
+					// 혹시 만약에 경우에 대비해서 `remove room` 이벤트가 동시에 여러개 발생해 rooms 데이터 변경에
+					// 착오가 생기지 않도록 배열을 자르는 대신 null 값을 넣는 방식을 선택했습니다.
+					rooms[idx] = null;
+					list.notifyPath("rooms.#" + idx);
+					
+				});
+			}
+		});
+	</script>
+</dom-module>

@@ -2,13 +2,27 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>SVG 스케치보드</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<script src="/socket.io/socket.io.js"></script>
+	<script src="/polymer/webcomponentsjs/webcomponents.min.js"></script>
+	<link rel="import" href="/polymer/polymer/polymer.html">
+	<link rel="import" href="/elements/svg-shape.html">
+	<link rel="import" href="/elements/svg-sketch.html">
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			position: relative;
+		}
+		html,body{
+			width: 100%;
+			height: 100%;
+		}
+	</style>
 </head>
 <body>
-	<h1>room</h1>
-	<script>
-		var socket = io("/room");
-	</script>
+	<svg-sketch></svg-sketch>
 </body>
 </html>

@@ -1,0 +1,85 @@
+<dom-module id="svg-shape">
+	<style>
+		:host svg{
+			width: 100px;
+			position: relative;
+			display: inline-block;
+		}
+		:host([shape=triangle]) svg{
+			fill:#7c86c7;
+			stroke:#afb9ff;
+			stroke-width: 4;
+		}
+		:host([shape=rectangle]) svg{
+			fill:#ffdf57;
+			stroke:#ff951b;
+			stroke-width: 3;
+		}
+		:host([shape=circle]) svg{
+			fill:#669dff;
+			stroke:#1b2fff;
+			stroke-width: 3;
+		}
+		:host(.select) svg{
+			stroke-width: 6 ;
+		}
+	</style>
+	<template>
+		<template is="dom-if" if="[[triangle]]">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" class="triangle">
+				<polygon points="60,20 110,106.6 10,106.6"/>
+			</svg>
+		</template>
+		<template is="dom-if" if="[[rectangle]]">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" class="rectangle">
+				<rect x="10" y="10" width="100" height="100"/>
+			</svg>
+		</template>
+		<template is="dom-if" if="[[circle]]">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" class="circle">
+				<circle cx="60" cy="60" r="50"/>
+			</svg>
+		</template>
+	</template>
+	<script>
+	Polymer({
+		is : "svg-shape",
+		properties : {
+			shape : {
+				type : String,
+				value : "triangle",
+				notify : true,
+				reflectToAttribute : true,
+				observer : "_shapeObserver"
+			},
+			x : {
+				type : Number,
+				notify : true,
+				reflectToAttribute : true,
+				observer : "_xObserver"
+			},
+			y : {
+				type : Number,
+				notify : true,
+				reflectToAttribute : true,
+				observer : "_yObserver"
+			}
+		},
+		_shapeObserver : function(shape) {
+			this.triangle = shape === "triangle";
+			this.rectangle = shape === "rectangle";
+			this.circle = shape === "circle";
+
+			if(shape !== "triangle" && shape !== "rectangle" && shape !== "circle" ){ // shape 속성이 올바르지 않을경우 trinangle로 변경
+				this.shape = "triangle";
+			}
+		},
+		_xObserver : function(x) {
+			this.style.left = x + "px";
+		},
+		_yObserver : function(y) {
+			this.style.top = y + "px";
+		}
+	});
+	</script>
+</dom-module>
