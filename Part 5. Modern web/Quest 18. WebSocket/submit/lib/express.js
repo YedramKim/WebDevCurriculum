@@ -20,9 +20,6 @@ app.get("/", function(req, res) {
 	res.sendFile(path.join(__dirname, "../", "client", "list.html"));
 });
 
-app.use(bodyParser.urlencoded({extended : true}));
-app.use(bodyParser.json());
-
 module.exports = exports = app.listen(8080, function(){
 	console.log("Running at localhost:8080");
 });
