@@ -1,0 +1,242 @@
+/* 기본 초기화 */
+@font-face{
+	font-family: "octicons";
+	src: url(./octicons.ttf);
+}
+
+*{
+	margin: 0;
+	padding: 0;
+	position: relative;
+	box-sizing: border-box;
+	color: inherit;
+	font-family: 'Malgun Gothic';
+}
+html,body{
+	min-height : 100%;
+}
+a{
+	text-decoration: none;
+}
+li{
+	list-style-type: none;
+}
+table{
+	border-collapse: collapse;
+}
+input,textarea{
+	border: 1px #aaa solid;
+	background: #fff;
+	resize: none;
+}
+button{
+	border: 1px #aaa solid;
+	cursor: pointer;
+	background: #eee;
+	outline: 0;
+}
+
+/* 편의 기능 */
+.wrap{
+	margin: 0 auto;
+	width: 100%;
+	max-width: 1000px;
+}
+.tar{
+	text-align: left;
+}
+.tac{
+	text-align: center;
+}
+.tar{
+	text-align: right;
+}
+.fn{
+	font-weight: normal;
+}
+.fb{
+	font-weight: bold;
+}
+.dib{
+	display: inline-block;
+}
+.db{
+	display: block;
+}
+.dn{
+	display: none;
+}
+.poa{
+	position: absolute;
+}
+.list{
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	flex-flow: row wrap;
+}
+.octicons{
+	font-family: "octicons";
+	vertical-align: middle;
+	font-size: 1.5em;
+}
+.octicons.octicon-plus::before{
+	content:'\f05d';
+}
+.octicons.octicon-bookmark::before{
+	content:'\f07b';
+}
+.octicons.octicon-keyboard::before{
+	content:'\f00d';
+}
+.octicons.octicon-lock::before{
+	content:'\f06a';
+}
+.octicons.octicon-key::before{
+	content:'\f049';
+}
+
+/*메모 리스트*/
+.logout{
+	margin-top: 20px;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background: #aaa;
+}
+.filetab{
+	margin-top: 50px;
+	flex-wrap: nowrap;
+	z-index: 10;
+}
+.filetab > li{
+	flex : 1 1 auto;
+	height: 50px;
+	line-height: 48px;
+	border: 1px #aaa solid;
+	border-right: 0;
+	text-align: center;
+}
+.filetab > li.select{
+	border-right: 1px solid;
+	border-color: #3571ff;
+	border-bottom: 0;
+}
+.filetab.on > li{
+	border-bottom: 0;
+}
+.filetab > li > button{
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	font-size: 1.0em;
+	background: #eee;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.filetab > li.select > button{
+	background: #fff;
+	height: 102%;
+}
+.filetab > li.select + li{
+	border-left: 0;
+}
+.filetab > li.createNote > button{
+	background: #aaa;
+	color: #fff;
+}
+.filetab > li > button > .octicons{
+	margin-right: 10px;
+	font-size: 2.0em;
+}	
+.filetab > .select > button > .octicons{
+	color: #ff3f3f;
+}
+
+/* 메모장 */
+.noteEditors li{
+	margin-bottom: 15px;
+	display: none;
+}
+.noteEditors li.edit{
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	flex-flow: column nowrap;
+	border: 1px #3571ff solid;
+}
+.noteEditors textarea{
+	width: 100%;
+	height: 250px;
+	padding: 10px;
+	margin-bottom: 0;
+	outline: 0;
+	border: 0;
+}
+.noteEditors button{
+	width: 100%;
+	height: 40px;
+	border-width: 0;
+	border-top-width: 1px;
+}
+.noteEditors button > .octicons{
+	font-size: 2.0em;
+	margin-right: 10px;
+}
+
+/*로그인 페이지*/
+.login{
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	bottom: 0;
+	right: 0;
+	width: 400px;
+	height: 500px;
+	margin-left: -200px;
+	margin-top: -250px;
+	box-shadow: 0 1px 1px 2px rgba(0,0,0,.1);
+}
+.login h1{
+	width: 150px;
+	height: 150px;
+	margin: 50px auto;
+	padding: 20px;
+	border-radius: 75px;
+	border: 1px solid #000;
+}
+.login h1 > .octicons{
+	font-size: 3.0em;
+}
+.login label{
+	width: 80%;
+	height: 40px;
+	display: block;
+	margin: 15px auto;
+}
+.login label input{
+	width: 100%;
+	height: 100%;
+	padding-left: 10px;
+}
+.login .buttonArea{
+	width: 80%;
+	height: 60px;
+	margin: 20px auto;
+	padding-top: 20px;
+	border-top: 1px #ddd solid;
+}
+.login .buttonArea button{
+	width: 100%;
+	height: 100%;
+	font-size: 1.0em;
+	border: 0;
+}
