@@ -197,27 +197,53 @@ button{
 	position: fixed;
 	left: 50%;
 	top: 50%;
-	bottom: 0;
-	right: 0;
-	width: 400px;
+	width: 300px;
 	height: 500px;
-	margin-left: -200px;
+	margin-left: -150px;
 	margin-top: -250px;
 	box-shadow: 0 1px 1px 2px rgba(0,0,0,.1);
+}
+.login .Google-oauth-button{
+	font-family: 'Roboto', sans-serif;
+	background: #4285f4;
+	color: #fff;
+	width: 80%;
+	height: 45px;
+	line-height: 43px;
+	margin: 20px auto;
+	border: 1px #4285f4 solid;
+	border-radius: 3px;
+	font-weight: bold;
+	cursor: pointer;
+	display: block;
+	overflow: hidden;
+}
+.login .Google-oauth-button .g-logo{
+	display: inline-block;
+	background: #fff url(/static/google_sign.png) no-repeat center center;
+	background-size: 18px 18px;
+	width: 43px;
+	height: 43px;
+	margin-right: 10px;
+}
+.login form{
+	padding-top: 10px;
+	margin: auto;
+	width: 80%;
+	border-top: #ddd 1px solid;
 }
 .login h1{
 	width: 150px;
 	height: 150px;
-	margin: 50px auto;
+	margin: 0 auto 30px;
 	padding: 20px;
 	border-radius: 75px;
-	border: 1px solid #000;
 }
 .login h1 > .octicons{
 	font-size: 3.0em;
 }
 .login label{
-	width: 80%;
+	width: 100%;
 	height: 40px;
 	display: block;
 	margin: 15px auto;
@@ -228,7 +254,7 @@ button{
 	padding-left: 10px;
 }
 .login .buttonArea{
-	width: 80%;
+	width: 100%;
 	height: 60px;
 	margin: 20px auto;
 	padding-top: 20px;

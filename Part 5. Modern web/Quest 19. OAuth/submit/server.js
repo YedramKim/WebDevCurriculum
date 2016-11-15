@@ -1,1 +1,3 @@
-var server = require("./module/express").listen(8080);
+var server = require("./module/express").listen(80).then(function(express) {
+	server = express;
+});

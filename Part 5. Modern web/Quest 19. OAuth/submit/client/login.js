@@ -2,6 +2,8 @@
 var LoginForm = function(selector) {
 	this.node = document.querySelector(selector);
 
+	this.googleOAuthWindow = null;
+
 	this.form = this.node.querySelector("form");
 	this.inputs = this.form.querySelectorAll("input[type=text], input[type=password]");
 	
@@ -24,5 +26,11 @@ LoginForm.prototype.bindEvent = function() {
 				break;
 			}
 		}
+	});
+
+	var googleOauthButton = this.node.querySelector(".Google-oauth-button");
+	googleOauthButton.addEventListener("click", function() {
+		var option = "titlebar=no,menubar=no,resizable=no,scrollbars=no,width=500,height=500,left=400,top=200";
+		loginForm.googleOAuthWindow = window.open("/google/auth", "google oauth", option);
 	});
 }

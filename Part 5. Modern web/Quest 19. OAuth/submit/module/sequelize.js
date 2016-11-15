@@ -8,17 +8,22 @@ var users = [
 	{
 		id : "admin",
 		password : "1234",
-		nickname : "집게사장"
+		name : "집게사장"
 	},
 	{
 		id : "employee1",
 		password : "1234",
-		nickname : "징징이"
+		name : "징징이"
 	},
 	{
 		id : "employee2",
 		password : "1234",
-		nickname : "스폰지밥"
+		name : "스폰지밥"
+	},
+	{
+		id : "ydkim@knowre.com",
+		password : "1234",
+		name : "테스트유저"
 	}
 ];
 
@@ -62,12 +67,18 @@ var User = module.User = sequelize.define("user", {
 		autoIncrement : true,
 		primaryKey : true
 	},
+	googleUser : {
+		type : Sequelize.BOOLEAN,
+		unique : "user",
+		allowNull : false,
+		defaultValue : false,
+	},
 	id : {
 		type : Sequelize.STRING(50),
-		unique : true,
+		unique : "user",
 		allowNull : false
 	},
-	nickname : {
+	name : {
 		type : Sequelize.STRING(20),
 		allowNull : false
 	},
@@ -113,29 +124,31 @@ Memo.belongsTo(User, {
 	targetKey : "idx"
 });
 
-User.sync().then(function(){
-	return User.count();
-}).then(function(count) {
-	var promise = User.sync();
-	if(count === 0) {
-		//회원 별로 솔트 문자열 생성 및 데이터베이스에 정보 등록
-		var length = users.length;
-		for(var i = 0; i < length; i++) {
-			//솔트 문자열 생성
-			var salt = createSalt();
-			users[i]["salt"] = salt;
+module.sync = function() {
+	return User.sync().then(function(){
+		return User.count();
+	}).then(function(count) {
+		var promise = User.sync();
+		if(count === 0) {
+			//회원 별로 솔트 문자열 생성 및 데이터베이스에 정보 등록
+			var length = users.length;
+			for(var i = 0; i < length; i++) {
+				//솔트 문자열 생성
+				var salt = createSalt();
+				users[i]["salt"] = salt;
 
-			//암호문 만들기
-			var pass = users[i]["password"] + salt;
-			var hash = crypto.createHash("sha256");
+				//암호문 만들기
+				var pass = users[i]["password"] + salt;
+				var hash = crypto.createHash("sha256");
 
-			users[i]["password"] = hash.update(pass , "utf8").digest("hex");
+				users[i]["password"] = hash.update(pass , "utf8").digest("hex");
+			}
+			return User.bulkCreate(users);
 		}
-		return User.bulkCreate(users);
-	}
-	return null;
-}).then(function() {
-	return Memo.sync();
-}).then(function() {
-	console.log("Database ready complete");
-});
+		return null;
+	}).then(function() {
+		return Memo.sync();
+	}).then(function() {
+		console.log("Database ready complete");
+	});
+}
