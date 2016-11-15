@@ -221,7 +221,7 @@ button{
 .login .Google-oauth-button .g-logo{
 	display: inline-block;
 	background: #fff url(/static/google_sign.png) no-repeat center center;
-	background-size: 18px 18px;
+	background-size: 22px;
 	width: 43px;
 	height: 43px;
 	margin-right: 10px;
