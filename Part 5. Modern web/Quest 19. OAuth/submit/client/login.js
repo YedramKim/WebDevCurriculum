@@ -1,3 +1,7 @@
+if(opener) { // 서브창 일경우
+	close();
+}
+
 //로그인 폼 객체
 var LoginForm = function(selector) {
 	this.node = document.querySelector(selector);

@@ -36,19 +36,16 @@ app.use(function(req, res, next) {
 	next();
 });
 
-//구글 관련 api들과 라우터와 관련 변수들
+//구글 로그인 라우터
 var googleRouter = require("./googleRouter")
-
 app.use("/google", googleRouter);
 
 //로그인 관련 라우터
 var loginRouter = require("./loginRouter");
-
 app.use("/login", loginRouter);
 
 //메모장 관련 라우트
 var noteRouter = require("./noteRouter");
-
 app.use('/note', noteRouter);
 
 app.get('/', function (req, res) {

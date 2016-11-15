@@ -3,6 +3,7 @@ var path = require("path");
 var express = require("express");
 var Database = require("./sequelize");
 var googleRouter = module.exports = exports = express.Router();
+
 var google = require("googleapis");
 var OAuth2 = google.auth.OAuth2;
 var plus = google.plus("v1");
