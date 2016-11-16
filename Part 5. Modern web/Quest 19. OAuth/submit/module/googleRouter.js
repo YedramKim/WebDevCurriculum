@@ -4,19 +4,18 @@ var express = require("express");
 var Database = require("./sequelize");
 var googleRouter = module.exports = exports = express.Router();
 
+//구글 관련 api들
 var google = require("googleapis");
 var OAuth2 = google.auth.OAuth2;
 var plus = google.plus("v1");
 
+//API에 쓸 클라이언트 관련 정보들
 var APICLIENT = path.join(__dirname, "..", "client", "OAuth.json");
-APICLIENT = JSON.parse(fs.readFileSync(APICLIENT)); //API에 쓸 클라이언트 관련 정보들
+APICLIENT = JSON.parse(fs.readFileSync(APICLIENT));
 var REDIRECT_URI = "http://localhost/google/login";
 
 //로그인 oauth 클라이언트
 var oauth2Client = new OAuth2(APICLIENT.id, APICLIENT.secret, REDIRECT_URI);
-google.options({
-	auth : oauth2Client
-});
 
 oauth2Client.setCredentials({
 	access_token : "ACCESS TOKEN HERE",
@@ -40,14 +39,15 @@ googleRouter.get("/login", (req, res) => {
 
 		//토큰 설정
 		oauth2Client.setCredentials(tokens);
-		plus.people.get({
-			userId : "me"
+		plus.people.get({ // 프로필 얻어오기
+			userId : "me",
+			auth : oauth2Client
 		}, (err, result) => {
 			if(err) { // 에러가 있을 경우 로그인 페이지로 이동
 				res.redirect(302, "/login/page");
 				return;
 			}
-			var googleLogin = req.session.googleLogin = {
+			req.session.googleLogin = {
 				id : result.emails[0].value,
 				name : result.displayName
 			};
@@ -87,7 +87,6 @@ googleRouter.get("/login/process", (req, res) => {
 		req.session.name = user.name;
 		req.session.googleUser = true; // 구글유저가 맞다.
 		res.redirect(302, "/google/login/redirect");
-
 	});
 });
 
