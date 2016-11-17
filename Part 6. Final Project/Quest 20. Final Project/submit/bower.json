@@ -1,0 +1,21 @@
+{
+  "name": "final project",
+  "description": "",
+  "main": "",
+  "authors": [
+    "YedarmKim <oncoder@naver.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/YedramKim/WebDevCurriculum",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer#^1.7.0",
+    "app-route": "PolymerElements/app-route#^0.9.3"
+  }
+}

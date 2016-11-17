@@ -1,0 +1,42 @@
+<link rel="import" href="/polymer/polymer/polymer.html">
+<link rel="import" href="/polymer/app-route/app-location.html">
+<link rel="import" href="/polymer/app-route/app-route.html">
+<link rel="import" href="/client/style/common-style.html">
+<link rel="import" href="/client/elements/form-input.html">
+<script src="/socket.io/socket.io.js"></script>
+
+<dom-module id="schedule-app">
+<style include="common-style">
+	:host{
+		display: block;
+	}
+</style>
+<template>
+	<app-location route="{{route}}"></app-location>
+	<app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subRoute}}"></app-route>
+</template>
+<script>
+	Polymer({
+		is : "schedule-app",
+		redirect : function(path) {
+			this.set("route.path", path);
+		},
+		ready : function() {
+			window.app = window.app ? window.app : this;
+
+			this.setSocket(); 소켓 설정
+		},
+		setSocket : function() { // 소켓 설정
+			var socket = this.socket = io();
+			socket.on("connect", function() {
+				
+			});
+		},
+		properties : {
+			route : {
+				type : Object
+			}
+		}
+	});
+</script>
+</dom-module>
