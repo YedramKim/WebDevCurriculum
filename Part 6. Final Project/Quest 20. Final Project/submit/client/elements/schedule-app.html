@@ -7,36 +7,36 @@
 
 <dom-module id="schedule-app">
 <style include="common-style">
-	:host{
-		display: block;
-	}
+:host{
+	display: block;
+}
 </style>
 <template strip-whitespace>
 	<app-location route="{{route}}"></app-location>
-	<app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subRoute}}"></app-route>sas
+	<app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subRoute}}"></app-route>
 </template>
 <script>
-	Polymer({
-		is : "schedule-app",
-		redirect : function(path) {
-			this.set("route.path", path);
-		},
-		ready : function() {
-			window.app = window.app ? window.app : this;
+Polymer({
+	is : "schedule-app",
+	redirect : function(path) {
+		this.set("route.path", path);
+	},
+	ready : function() {
+		window.app = window.app ? window.app : this;
 
-			this.setSocket(); //소켓 설정
-		},
-		setSocket : function() { // 소켓 설정
-			var socket = this.socket = io();
-			socket.on("connect", function() {
-				
-			});
-		},
-		properties : {
-			route : {
-				type : Object
-			}
+		this.setSocket(); //소켓 설정
+	},
+	setSocket : function() { // 소켓 설정
+		var socket = this.socket = io();
+		socket.on("connect", function() {
+			
+		});
+	},
+	properties : {
+		route : {
+			type : Object
 		}
-	});
+	}
+});
 </script>
 </dom-module>

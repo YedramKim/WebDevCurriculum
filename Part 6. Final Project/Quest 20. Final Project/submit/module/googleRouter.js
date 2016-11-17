@@ -1,10 +1,10 @@
-var path = require("path");
-var fs = require("fs");
-var express = require("express");
+const path = require("path");
+const fs = require("fs");
+const express = require("express");
 var router = module.exports = exports = new express.Router();
 
 //google api 관련 파일
-var google = require("googleapis");
+const google = require("googleapis");
 var OAuth2 = google.auth.OAuth2;
 var plus = google.plus("v1");
 

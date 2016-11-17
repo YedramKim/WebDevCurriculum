@@ -21,25 +21,30 @@ var User = sequelize.define("user", {
 	},
 	site : {
 		type : Sequelize.ENUM("local", "google", "facebook"),
+		defaultValue : "google",
 		allowNull : false,
 		unique : "userUnique"
 	},
-	id : {
+	account : {
 		type : Sequelize.STRING(50),
 		allowNull : false,
+		defaultValue : "",
 		unique : "userUnique"
 	},
 	name : {
 		type : Sequelize.STRING(20),
-		allowNull : false
+		allowNull : false,
+		defaultValue : ""
 	},
 	password : {
 		type : Sequelize.CHAR(64),
-		allowNull : false
+		allowNull : false,
+		defaultValue : ""
 	},
 	salt : {
 		type : Sequelize.CHAR(32),
-		allowNull : false
+		allowNull : false,
+		defaultValue : ""
 	}
 }, {
 	tableName : "user"
@@ -55,7 +60,8 @@ var Schedule = sequelize.define("schedule", {
 	},
 	title : {
 		type : Sequelize.STRING(40),
-		allowNull : false
+		allowNull : false,
+		defaultValue : "title"
 	},
 	content : {
 		type : Sequelize.TEXT,
@@ -63,11 +69,12 @@ var Schedule = sequelize.define("schedule", {
 	},
 	image : {
 		type : Sequelize.STRING(15),
-		allowNull : false
+		allowNull : true
 	},
 	useMap : {
 		type : Sequelize.BOOLEAN,
-		allowNull : false
+		allowNull : false,
+		defaultValue : false
 	},
 	latitude : {
 		type : Sequelize.CHAR(20),
@@ -82,22 +89,19 @@ var Schedule = sequelize.define("schedule", {
 });
 
 // 유저와 일정의 관계 테이블
-var UserHasSchedule = sequelize.define("userHasSchedule", {
-	idx : {
-		type : Sequelize.INTEGER,
-		primaryKey : true,
-		autoIncrement : true
-	}
-});
 
-//User.belongsToMany(User);
+//테이블 관계 구축
+User.belongsToMany(User, {
+	as : "friends",
+	through : "friend"
+});
 User.belongsToMany(Schedule, {
 	foreignKey : "User",
-	through : UserHasSchedule
+	through : "UserHasSchedule"
 });
 Schedule.belongsToMany(User, {
 	foreignKey : "Schedule",
-	through : UserHasSchedule
+	through : "UserHasSchedule"
 });
 
 module.sync = () => {

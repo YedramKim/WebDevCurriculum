@@ -12,4 +12,5 @@ var module = module.exports = exports = io;
 
 io.on("connection", (socket) => {
 	var sockets = this;
+	var UserIdx = -1;
 });
