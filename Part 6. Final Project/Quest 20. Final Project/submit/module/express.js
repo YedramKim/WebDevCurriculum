@@ -26,6 +26,21 @@ app.use(session({
 	saveUninitialized : true
 }));
 
+//로그인 검사
+app.use((req, res, next) => {
+	var session = req.session;
+	if(session.account) { // 로그인 되어 있는 경우
+		req.login = true;
+	}else {
+		req.login = false;
+	}
+	next();
+});
+
+//로그인 관련 라우터
+const loginRouter = require("./loginRouter");
+app.use("/login", loginRouter);
+
 //post 처리 설정
 app.use(bodyParser.urlencoded({extended : false}));
 app.use(bodyParser.json());

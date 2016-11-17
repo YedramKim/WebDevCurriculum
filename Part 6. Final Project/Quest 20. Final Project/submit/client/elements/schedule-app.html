@@ -15,39 +15,70 @@
 	min-height:100vh;
 }
 app-drawer-layout{
-	background: #eee;
+	background: #f6f6f6;
 }
 app-drawer{
-	position: absolute;
+	position: fixed;
 	display: block;
 	background: #000;
-	box-sizing : content-box;
+	bottom: 0;
+}
+.menu a{
+	display: block;
+	padding-left: 20px;
+	height: 50px;
+	line-height: 50px;
+}
+.sub-menu{
+	display: block;
+	background: #eee;
+	transition:all .5s;
+}
+.sub-menu a{
+	padding-left: 40px;
+}
+.menu > .iron-selected > a{
+	font-weight: bold;
+}
+.menu > .iron-selected .sub-menu a.iron-selected{
+	font-weight: bold;
 }
 app-header-layout{	
 }
 app-header{
 	background: #fff;
 }
-.menu > a{
-	display: block;
-	height: 50px;
-	line-height: 50px;
-	font-size: 1.3em;
-	padding-left: 20px;
-}
 </style>
 <template strip-whitespace>
+	<!-- 라우트 -->
 	<app-location route="{{route}}"></app-location>
 	<app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subRoute}}"></app-route>
 	<app-route route="{{subRoute}}" pattern="/:subPage" data="{{subRouteData}}"></app-route>
+	
+	<!-- 레이아웃 -->
 	<app-drawer-layout fullbleed>
+		<!-- 메뉴 -->
 		<app-drawer>
 			<app-toolbar>
 				YDSchedule
 			</app-toolbar>
 			<iron-selector class="menu" selected="[[page]]" attr-for-selected="name">
-				<div class="menu" name="main">
-					<a href="/">main</a>
+				<div name="main">
+					<a href="/">HOME</a>
+				</div>
+				<div name="schedule">
+					<a href="/schedule">일정</a>
+					<iron-selector selected="[[subPage]]" class="sub-menu" attr-for-selected="name">
+						<a name="main" href="/schedule">일정 확인</a>
+						<a name="plus" href="/schedule/plus">일정 추가</a>
+					</iron-selector>
+				</div>
+				<div name="friend">
+					<a href="/friend">친구</a>
+					<iron-selector selected="[[subPage]]" class="sub-menu" attr-for-selected="name">
+						<a name="main" href="/friend">친구 목록</a>
+						<a name="provide" href="/friend/provide">친구 초대</a>
+					</iron-selector>
 				</div>
 			</iron-selector>
 		</app-drawer>
@@ -55,7 +86,13 @@ app-header{
 			<app-header>
 				<app-toolbar>main site</app-toolbar>
 			</app-header>
-			<div>page</div>
+			<iron-ajax id="ajax" auto url="/login/check" last-response="{{login}}"></iron-ajax>
+			<template is="dom-if" if="{{!login.status}}">
+				not login
+			</template>
+			<template is="dom-if" if="{{login.status}}">
+				not login
+			</template>
 		</app-header-layout>
 	</app-drawer-layout>
 </template>
@@ -77,16 +114,24 @@ Polymer({
 		});
 	},
 	observers : [
-		"_routeObserver(routeData.page)"
+		"_routeObserver(routeData.page)",
+		"_subPageObserver(subRouteData.page)"
 	],
 	_routeObserver : function(page) {
 		this.page = page ? page : "main";
+	},
+	_subPageObserver : function(subPage) {
+		this.subPage = subPage ? subPage : "main";
 	},
 	properties : {
 		route : {
 			type : Object
 		},
 		page : {
+			type : String,
+			value : ""
+		},
+		subPage : {
 			type : String,
 			value : ""
 		}
