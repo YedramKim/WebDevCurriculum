@@ -19,14 +19,18 @@
 * 우선 웹소켓에 접속하면 자신의 idx로 룸을 이동
 * 자신이 일정을 추가할 때 마다 지정한 자신의 친구들에게 알림.(회원 idx의 이름으로 된 룸으로 소켓 전송)
 
-### date picker
+##만드는 태그
+
+### date picker 태그
 * date picker를 태그 형식으로 개발 날짜 문자열과 시간(getTime())을 two way binding으로 지정가능 (2016년부터)
 
-### toast alert
+### toast alert 태그
 * 토스트 형식으로 alert를 태그 링크도 추가 가능(paper-toast 이용)
 
 ## 파일 구조
-* server.js(여기에서 socket.io 실행) -> module/express(express 서버 생성) -> googleRouter(google oAuth) | module/sequelize(데이터 베이스)
+* server.js(여기에서 socket.io와 서버 실행) -> module/express(express 서버 생성) -> googleRouter(google oAuth) | module/sequelize(데이터 베이스), 기타 express 라우트 .js파일
+* client : html, css, js, polymer custom element파일
+* module : node.js 모듈
 
 ## 데이터 베이스 구조
 ### 회원 테이블(user)

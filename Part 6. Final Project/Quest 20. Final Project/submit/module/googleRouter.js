@@ -37,7 +37,7 @@ router.get("/login", (req, res) => {
 		return;
 	}
 
-	oauth2Client.getToken(code, function(err, tokens) {
+	oauth2Client.getToken(code, (err, tokens) => {
 		oauth2Client.setCredentials(tokens);
 		if(err) { // 에러 검사
 			res.redirect(302, "/google/loginerror");
