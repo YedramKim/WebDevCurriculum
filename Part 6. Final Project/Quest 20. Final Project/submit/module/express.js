@@ -47,6 +47,7 @@ app.use((req, res) => {
 module.listen = (port) => {
 	server = app.listen(port, () => {
 		console.log("Server Running at " + port);
+		//데이터 베이스 실행
 		Database.sync().then(() => {
 			console.log("Database Start");
 		});
