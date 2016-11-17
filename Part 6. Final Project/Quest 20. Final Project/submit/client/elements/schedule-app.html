@@ -1,4 +1,7 @@
 <link rel="import" href="/polymer/polymer/polymer.html">
+<link rel="import" href="/polymer/iron-ajax/iron-ajax.html">
+<link rel="import" href="/polymer/iron-selector/iron-selector.html">
+<link rel="import" href="/polymer/app-layout/app-layout.html">
 <link rel="import" href="/polymer/app-route/app-location.html">
 <link rel="import" href="/polymer/app-route/app-route.html">
 <link rel="import" href="/client/style/common-style.html">
@@ -9,11 +12,52 @@
 <style include="common-style">
 :host{
 	display: block;
+	min-height:100vh;
+}
+app-drawer-layout{
+	background: #eee;
+}
+app-drawer{
+	position: absolute;
+	display: block;
+	background: #000;
+	box-sizing : content-box;
+}
+app-header-layout{	
+}
+app-header{
+	background: #fff;
+}
+.menu > a{
+	display: block;
+	height: 50px;
+	line-height: 50px;
+	font-size: 1.3em;
+	padding-left: 20px;
 }
 </style>
 <template strip-whitespace>
 	<app-location route="{{route}}"></app-location>
 	<app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subRoute}}"></app-route>
+	<app-route route="{{subRoute}}" pattern="/:subPage" data="{{subRouteData}}"></app-route>
+	<app-drawer-layout fullbleed>
+		<app-drawer>
+			<app-toolbar>
+				YDSchedule
+			</app-toolbar>
+			<iron-selector class="menu" selected="[[page]]" attr-for-selected="name">
+				<div class="menu" name="main">
+					<a href="/">main</a>
+				</div>
+			</iron-selector>
+		</app-drawer>
+		<app-header-layout>
+			<app-header>
+				<app-toolbar>main site</app-toolbar>
+			</app-header>
+			<div>page</div>
+		</app-header-layout>
+	</app-drawer-layout>
 </template>
 <script>
 Polymer({
@@ -32,9 +76,19 @@ Polymer({
 			
 		});
 	},
+	observers : [
+		"_routeObserver(routeData.page)"
+	],
+	_routeObserver : function(page) {
+		this.page = page ? page : "main";
+	},
 	properties : {
 		route : {
 			type : Object
+		},
+		page : {
+			type : String,
+			value : ""
 		}
 	}
 });

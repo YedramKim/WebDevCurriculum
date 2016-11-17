@@ -2,13 +2,18 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+	<script>
+		window.Polymer = {
+			dom : "shadow"
+		}
+	</script>
 	<title>YDSchedule</title>
 	<script src="/polymer/webcomponentsjs/webcomponents.min.js"></script>
 	<link rel="import" href="/client/elements/schedule-app.html">
 	<style is="custom-style" include="common-style">
-		schedule-app{
-			width: 100%;
-			height: 100%;
+		body{
+			min-height: 100vh;
 		}
 	</style>
 </head>
