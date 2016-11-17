@@ -11,9 +11,3 @@ router.get("/check", (req, res, next) => {
 		next();
 	}
 });
-
-router.use((req, res) => {
-	if(!req.xhr){
-		res.sendFile(path.join(__dirname, "..", "client", "index.html"));
-	}
-});

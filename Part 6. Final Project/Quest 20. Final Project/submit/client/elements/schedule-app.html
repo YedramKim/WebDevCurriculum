@@ -1,5 +1,6 @@
 <link rel="import" href="/polymer/polymer/polymer.html">
 <link rel="import" href="/polymer/iron-ajax/iron-ajax.html">
+<link rel="import" href="/polymer/iron-pages/iron-pages.html">
 <link rel="import" href="/polymer/iron-selector/iron-selector.html">
 <link rel="import" href="/polymer/app-layout/app-layout.html">
 <link rel="import" href="/polymer/app-route/app-location.html">
@@ -88,10 +89,14 @@ app-header{
 			</app-header>
 			<iron-ajax id="ajax" auto url="/login/check" last-response="{{login}}"></iron-ajax>
 			<template is="dom-if" if="{{!login.status}}">
-				not login
+				
 			</template>
 			<template is="dom-if" if="{{login.status}}">
-				not login
+				<iron-pages class="pages" selected="[[page]]" attr-for-selected="name">
+					<div name="main">
+						sasas
+					</div>
+				</iron-pages>
 			</template>
 		</app-header-layout>
 	</app-drawer-layout>
