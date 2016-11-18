@@ -1,5 +1,6 @@
 <link rel="import" href="/polymer/iron-icon/iron-icon.html">
 <link rel="import" href="/polymer/iron-icons/iron-icons.html">
+<link rel="import" href="/polymer/paper-button/paper-button.html">
 
 <dom-module id="friend-search">
 <style include="common-style">
@@ -73,14 +74,20 @@
 .results > li:not(.nf) > * {
 	text-align: center;
 }
-.results > li:not(.nf) .name {
+.results > li .name {
 	flex-basis: 20%;
 }
-.results > li:not(.nf) .account {
-	flex-basis: 70%;
+.results > li .account {
+	flex-basis: 65%;
 }
-.results > li:not(.nf) .provide {
-	flex-basis: 10%;
+.results > li .provide {
+	flex-basis: 15%;
+}
+.results > li .provide paper-button{
+	width: 80%;
+	height: 80%;
+	background: #ff6262;
+	color: #fff;
 }
 .results > li.nf{
 	color: rgba(0,0,0,.4);
@@ -116,7 +123,9 @@
 			<li>
 				<div class="name">{{item.name}}</div>
 				<div class="account">{{item.account}}</div>
-				<div class="provide">{{item.idx}}</div>
+				<div class="provide">
+					<paper-button raised provide-idx="{{item.idx}}">초대하기</paper-button>
+				</div>
 			</li>
 		</template>
 	</ul>
