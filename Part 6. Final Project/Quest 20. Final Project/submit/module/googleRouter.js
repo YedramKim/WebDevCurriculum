@@ -29,21 +29,21 @@ var OAuth2url = oauth2Client.generateAuthUrl({
 	scope : scope
 });
 
-router.get("/access", (req, res) => {
+router.get("/auth", (req, res) => {
 	res.redirect(302, OAuth2url);
 });
 
 router.get("/token", (req, res) => {
 	var code = req.session.code = req.query.code;
 	if(!code) { // 코드검사
-		res.redirect(302, "/error/loginerror");
+		res.redirect(302, "/login/failed");
 		return;
 	}
 
 	oauth2Client.getToken(code, (err, tokens) => {
 		oauth2Client.setCredentials(tokens);
 		if(err) { // 에러 검사
-			res.redirect(302, "/error/loginerror");
+			res.redirect(302, "/login/failed");
 			return;
 		}
 
@@ -73,16 +73,20 @@ router.get("/login", (req, res, next) => {
 	User.findOne({
 		where : OAuthProfile
 	}).then((user) => {
-		console.log(OAuthProfile);
 		if(user) { // 등록되어 있을 경우 그대로 정보를 등록한다.
 			return user;
 		}else { // 처음 로그인한 경우 정보를 등록한다.
 			return User.create(OAuthProfile);
 		}
 	}).then((user) => {
-		req.session.account = OAuthProfile.account;
-		req.session.site = OAuthProfile.site;
-		req.session.name = OAuthProfile.name;
-		res.redirect(302, "/login/success")
+		req.session.userIdx = user.idx;
+		req.session.account = user.account;
+		req.session.site = user.site;
+		req.session.name = user.name;
+		res.redirect(302, "/login/success");
 	});
+});
+
+router.get("/info", (req, res) => {
+	res.send(req.session);
 });

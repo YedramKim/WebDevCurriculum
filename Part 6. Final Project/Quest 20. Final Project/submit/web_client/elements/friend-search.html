@@ -1,0 +1,149 @@
+<link rel="import" href="/polymer/iron-icon/iron-icon.html">
+<link rel="import" href="/polymer/iron-icons/iron-icons.html">
+
+<dom-module id="friend-search">
+<style include="common-style">
+:host{
+	display: block;
+	padding-top: 100px;
+}
+.search-input{
+	margin-top: 40px;
+	height: 40px;
+	border-radius: 3px;
+	overflow: hidden;
+	@apply(--shadow-elevation-2dp);
+}
+.search-input input{
+	border: 0;
+	outline : 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	padding-left: 10px;
+}
+.search-input button{
+	position: absolute;
+	right: 5px;
+	top: 5px;
+	width: 30px;
+	height: 30px;
+	cursor: pointer;
+	opacity: .4;
+	color: #6a96ff;
+	background: none;
+	border: 0;
+	outline: 0;
+	@apply(--transition-style);
+}
+.search-input button:hover{
+	opacity: .7;
+}
+.search-input button:active{
+	opacity: 1;
+}
+.search-input button iron-icon{
+	width: 100%;
+	height: 100%;
+}
+.results {
+	margin-top: 50px;
+	border-radius: 3px;
+	overflow: hidden;
+	@apply(--shadow-elevation-2dp);
+	border: 1px #ddd solid;
+}
+.results > li:not(.nf) {
+	display: flex;
+	height: 40px;
+	line-height: 40px;
+	background: #fff;
+	border-bottom: 1px #ddd solid;
+}
+.results > li:first-child{
+	height: 50px;
+	line-height: 50px;
+	background: #66b0ff;
+	color: #fff;
+	border-bottom: 0;
+}
+.results > li:last-of-type{
+	border-bottom: 0;
+}
+.results > li:not(.nf) > * {
+	text-align: center;
+}
+.results > li:not(.nf) .name {
+	flex-basis: 20%;
+}
+.results > li:not(.nf) .account {
+	flex-basis: 70%;
+}
+.results > li:not(.nf) .provide {
+	flex-basis: 10%;
+}
+.results > li.nf{
+	color: rgba(0,0,0,.4);
+	background: #fff;
+	height: 250px;
+}
+.results > li.nf > iron-icon{
+	width: 180px;
+	height: 180px;
+}
+</style>
+<template>
+	<iron-ajax class="searchHTTP" url="/friend/searchuser" params="[[searchKeyword]]" last-response="{{users}}"></iron-ajax>
+	<form class="search-input" on-submit="searchFriend">
+		<input type="text" value="{{keyword::input}}" placeholder="검색할 친구의 이메일이나 아이디 혹은 이름을 입력하세요.">
+		<button>
+			<iron-icon icon="icons:search"></iron-icon>
+		</button>
+	</form>
+	{{!users.length}}
+	<ul class="results">
+		<li>
+			<div class="name">이름</div>
+			<div class="account">계정</div>
+			<div class="provide">초대하기</div>
+		</li>
+		<template is="dom-if" if="{{!users.length}}">
+			<li class="nf tac">
+				<iron-icon icon="icons:search" on-tap="searchFriend"></iron-icon>
+				<h2>검색하면 목록이 나옵니다.</h2>
+			</li>
+		</template>
+		<template is="dom-repeat" items="{{users}}">
+			<li>
+				<div class="name">{{item.name}}</div>
+				<div class="account">{{item.account}}</div>
+				<div class="provide">{{item.idx}}</div>
+			</li>
+		</template>
+	</ul>
+</template>
+<script>
+	Polymer({
+		is : "friend-search",
+		ready : function() {
+			this.searchHTTP = this.$$(".searchHTTP");
+			this.searchKeyword = {
+				length : 0
+			}
+			this.users = [];
+		},
+		searchFriend : function(e) {
+			e.preventDefault();
+			var keyword = this.keyword ? this.keyword : "";
+			keyword = keyword.trim();
+			if(keyword === "") {
+				Polymer.app.toast.alert("검색할 키워드를 입력하세요.");
+				return;
+			}
+			this.searchKeyword['keyword'] = keyword;
+
+			this.searchHTTP.generateRequest();
+		}
+	});
+</script>
+</dom-module>

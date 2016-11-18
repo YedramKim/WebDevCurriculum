@@ -2,16 +2,52 @@
 <style include="common-style">
 :host{
 	display: block;
-	width: 200px;
+	width: 400px;
 	background: #fff;
+	padding: 20px!important;
+	border-radius: 3px;
+	@apply(--shadow-elevation-2dp);
+}
+.auth{
+	display: block;
+	height: 40px;
+	color: #fff;
+	margin: 10px 0;
+	line-height: 38px;
+	border-radius: 3px;
+	overflow: hidden;
+	padding-left: 55px;
+}
+.google.auth{
+	background: #4285f4;
+	border: 1px #4285f4 solid;
+}
+.logo{
+	display: inline-block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	vertical-align: middle;
+	width: 38px;
+	height: 100%;
+	margin-right: 20px;
+}
+.google .logo{
+	background: #fff url(/client/img/google_sign.png) no-repeat center center;
+	background-size: 25px;
 }
 </style>
 <template>
-	login
+	<h3>Login</h3>
+	<a href="javascript:void(0)" on-tap="googlelogin" class="google roboto auth">
+		<span class="logo"></span>
+		SIGN IN WITH GOOGLE
+	</a>
 </template>
 <script>
-	Polymer({
-		is : "login-auth"
-	});
+Polymer({
+	is : "login-auth",
+	behaviors : [loginBehavior]
+});
 </script>
 </dom-module>

@@ -26,6 +26,9 @@ app-toolbar{
 .menu > .iron-selected .sub-menu a.iron-selected{
 	font-weight: bold;
 }
+.pages .iron-selected{
+	margin:0 auto;
+}
 </style>
 <template>
 	<!-- 라우터 설정 -->
@@ -53,26 +56,27 @@ app-toolbar{
 				<a href="/friend/list">친구</a>
 				<iron-selector selected="[[subPage]]" class="sub-menu" attr-for-selected="name">
 					<a name="list" href="/friend/list">친구 목록</a>
-					<a name="provide" href="/friend/provide">친구 초대</a>
+					<a name="search" href="/friend/search">친구 찾기</a>
+					<a name="provide" href="/friend/provide">초대 목록</a>
 				</iron-selector>
 			</div>
 		</iron-selector>
 	</nav>
-	<template is="dom-if" if="{{!login.status}}">
+	<template is="dom-if" if="{{!login.login}}">
 		<div>
-			<a href="/googleOAuth/access" on-tap="login">구글 계정으로 로그인</a>
+			<a href="/googleOAuth/auth" on-tap="login">구글 계정으로 로그인</a>
 		</div>
 	</template>
-	<template is="dom-if" if="{{login.status}}">
+	<template is="dom-if" if="{{login.login}}">
 		<div>
 			<a href="javascript:void(0)" on-tap="logout">로그아웃</a>
 		</div>
 	</template>
 </template>
 <script>
-	Polymer({
-		is : "app-navigation",
-		behaviors : [routeBehavior]
-	});
+Polymer({
+	is : "app-navigation",
+	behaviors : [routeBehavior, loginBehavior],
+});
 </script>
 </dom-module>

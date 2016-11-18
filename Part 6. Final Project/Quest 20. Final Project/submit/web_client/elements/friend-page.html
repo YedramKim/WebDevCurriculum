@@ -1,0 +1,46 @@
+<dom-module id="friend-page">
+<style include="common-style">
+:host{
+	display: block;
+}
+</style>
+<template>
+	<!-- 라우트 -->
+	<app-route route="{{route}}" pattern="/:subPage" data="{{subRouteData}}"></app-route>
+
+	<!-- 페이지 -->
+	<iron-pages selected="[[subPage]]" attr-for-selected="name" fallback-selection="page404">
+		<friend-list name="list"></friend-list>
+		<friend-search name="search"></friend-search>
+		<friend-provide name="provide"></friend-provide>
+		<page-404 name="page404"></page-404>
+	</iron-pages>
+</template>
+<script>
+	Polymer({
+		is : "friend-page",
+		behaviors : [routeBehavior, receiveBehavior],
+		observers : [
+			"_subPageObserver(subPage)"
+		],
+		_subPageObserver : function(subPage) { //해당 페이지에 맞는 엘리먼트 불러오기
+			this.subPage = subPage;
+			var element = "";
+			if(subPage === "list") {
+				element = "friend-list.html";
+			}else if(subPage === "search") {
+				element = "friend-search.html";
+			}else if(subPage === "provide") {
+				element = "friend-provide.html";
+			}else{
+				element = "page-404.html";
+			}
+			element = this.resolveUrl(element);
+			this.importHref(element, null, null, true);
+		},
+		ready : function() {
+			window.sub = this;
+		}
+	});
+</script>
+</dom-module>

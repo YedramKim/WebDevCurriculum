@@ -1,7 +1,11 @@
+<script>
+	//Polymer.dom="shady";
+</script>
 <link rel="import" href="/polymer/polymer/polymer.html">
 <link rel="import" href="/polymer/iron-ajax/iron-ajax.html">
 <link rel="import" href="/polymer/iron-pages/iron-pages.html">
 <link rel="import" href="/polymer/iron-selector/iron-selector.html">
+<link rel="import" href="/polymer/paper-styles/shadow.html">
 <link rel="import" href="/polymer/app-layout/app-layout.html">
 <link rel="import" href="/polymer/app-route/app-location.html">
 <link rel="import" href="/polymer/app-route/app-route.html">
@@ -18,6 +22,7 @@
 	display: block;
 	min-height:100vh;
 }
+
 app-drawer-layout{
 	background: var(--app-background);
 }
@@ -43,6 +48,12 @@ login-auth{
 	top: 50%;
 	transform:translate(-50%, -50%);
 }
+.pages > .iron-selected{
+	margin: auto;
+	width: 80%;
+	max-width: 1000px;
+	min-height: 200px;
+}
 </style>
 <template strip-whitespace>
 	<!-- 라우트 -->
@@ -65,16 +76,18 @@ login-auth{
 			</app-header>
 
 			<!-- 로그인 관련 ajax -->
-			<iron-ajax auto url="/login/check" on-response="loginCheck"></iron-ajax>
-			<iron-ajax url="login/logout" on-response="loginCheck" receive-node="{{logoutCall}}"></iron-ajax>
+			<iron-ajax auto url="/login/check" last-response="{{login}}"></iron-ajax>
+			<iron-ajax class="logoutHTTP" url="/login/logout" last-response="{{login}}" on-response="logout" class="lotoutHTTP"></iron-ajax>
+
 			<template is="dom-if" if="{{!login.login}}">
-				<login-auth></login-auth>
+				<login-auth login="{{login}}"></login-auth>
 			</template>
 			<template is="dom-if" if="{{login.login}}">
-				<iron-pages class="pages" selected="[[page]]" attr-for-selected="name">
-					<div name="main">
-						sasas
-					</div>
+				<iron-pages class="pages" selected="[[page]]" attr-for-selected="name" fallback-selection="page404">
+					<app-main name="main" receive-node="{{appMain}}" route="{{subRoute}}"></app-main>
+					<schedule-page name="schedule" route="{{subRoute}}" receive-node="{{schedulePage}}" route="{{subRoute}}"></schedule-page>
+					<friend-page name="friend" route="{{subRoute}}" receive-node="{{friendPage}}"></friend-page>
+					<page-404 name="page404"></page-404>
 				</iron-pages>
 			</template>
 		</app-header-layout>
@@ -84,25 +97,57 @@ login-auth{
 Polymer({
 	is : "schedule-app",
 	behaviors : [routeBehavior],
-	loginCheck : function(data) {
-		this.login = data.detail.response;
+	logout : function() { // 로그아웃 시 처리할 목록들
+
 	},
 	_loginSuccess : function() { //login_redirect.html에서 사용하는 함수
 		this.set("login.login", true);
 		this.toast.alert("로그인 완료");
 	},
+	_loginFailed : function() { //login_redirect.html에서 사용하는 함수
+		this.toast.alert("로그인 실패");
+	},
 	redirect : function(path) {
 		this.set("route.path", path);
 	},
+	observers : [
+		"_pageObserver(page)"
+	],
+	_pageObserver : function(page) { // 태그를 import 시키는 옵저버
+		var element = "";
+		if(page === "main") {
+			element = "app-main.html";
+		}else if(page === "schedule") {
+			element = "schedule-page.html";
+		}else if(page === "friend") {
+			element = "friend-page.html";
+		}else {
+			element = "page-404.html";
+		}
+		element = this.resolveUrl(element);
+		this.importHref(element, null, null, true);
+	},
 	ready : function() {
-		window.app = window.app ? window.app : this;
+		//console.clear();
+		window.app = Polymer.app = Polymer.app ? Polymer.app : this;
 
-		//this.setSocket(); //소켓 설정
+		//기능성 엘리먼트 참조
+		this.logoutHTTP = this.$$(".logoutHTTP");
+		this.toast;
+		window.toastAlert = this.toast.alert.bind(this.toast);
+
+		//페이지 커스텀 엘리먼트
+		// receive-node="{{appMain}}"
+		this.appMain;
+		this.schedulePage;
+		this.friendPage;
+		this.setSocket(); //소켓 설정
 	},
 	setSocket : function() { // 소켓 설정
 		var socket = this.socket = io();
+		var app = this;
 		socket.on("connect", function() {
-			
+			socket.emit("send user", app.login.login); // 유저 정보 전송
 		});
 	}
 });

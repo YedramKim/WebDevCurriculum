@@ -42,6 +42,10 @@ app.use((req, res, next) => {
 const loginRouter = require("./loginRouter");
 app.use("/login", loginRouter);
 
+//로그인 관련 라우터
+const friendRouter = require("./friendRouter");
+app.use("/friend", friendRouter);
+
 //post 처리 설정
 app.use(bodyParser.urlencoded({extended : false}));
 app.use(bodyParser.json());

@@ -11,5 +11,9 @@ var Database = require("./module/sequelize");
 //소켓 서버
 io.on("connection", (socket) => {
 	var sockets = this;
-	var UserIdx = -1;
+	var userIdx = -1;
+
+	socket.on("send user", function(idx) {
+		userIdx = idx;
+	});
 });

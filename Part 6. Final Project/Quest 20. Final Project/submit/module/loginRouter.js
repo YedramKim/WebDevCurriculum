@@ -4,7 +4,8 @@ var router = module.exports = exports = new express.Router();
 
 router.get("/check", (req, res, next) => {
 	res.send({
-		login : req.login
+		login : req.login ? req.session.userIdx : false,
+		site : req.session.site
 	});
 });
 
@@ -19,11 +20,13 @@ router.get("/failed", (req, res) => {
 
 router.get("/logout", (req, res) => {
 	var session = req.session;
+	session.userIdx = undefined;
 	session.account = undefined;
 	session.site = undefined;
 	session.name = undefined;
 
 	res.send({
-		login : false
+		login : false,
+		site : req.session.site
 	});
 });
