@@ -6,7 +6,6 @@
 <link rel="import" href="/polymer/app-route/app-location.html">
 <link rel="import" href="/polymer/app-route/app-route.html">
 <link rel="import" href="/client/style/common-style.html">
-<link rel="import" href="/client/elements/form-input.html">
 <script src="/socket.io/socket.io.js"></script>
 
 <dom-module id="schedule-app">
@@ -21,7 +20,7 @@ app-drawer-layout{
 app-drawer{
 	position: fixed;
 	display: block;
-	background: #000;
+	background: #fff;
 	bottom: 0;
 }
 .menu a{
@@ -32,7 +31,7 @@ app-drawer{
 }
 .sub-menu{
 	display: block;
-	background: #eee;
+	background: rgba(0,0,0,0.08);
 	transition:all .5s;
 }
 .sub-menu a{
@@ -63,35 +62,53 @@ app-header{
 			<app-toolbar>
 				YDSchedule
 			</app-toolbar>
-			<iron-selector class="menu" selected="[[page]]" attr-for-selected="name">
-				<div name="main">
-					<a href="/">HOME</a>
+			<nav>
+				<iron-selector class="menu" selected="[[page]]" attr-for-selected="name">
+					<div name="main">
+						<a href="/">HOME</a>
+					</div>
+					<div name="schedule">
+						<a href="/schedule/check">일정</a>
+						<iron-selector selected="[[subPage]]" class="sub-menu" attr-for-selected="name">
+							<a name="check" href="/schedule/check">일정 확인</a>
+							<a name="plus" href="/schedule/plus">일정 추가</a>
+							<a name="provide" href="/schedule/provide">권유 받은 일정</a>
+						</iron-selector>
+					</div>
+					<div name="friend">
+						<a href="/friend/list">친구</a>
+						<iron-selector selected="[[subPage]]" class="sub-menu" attr-for-selected="name">
+							<a name="list" href="/friend/list">친구 목록</a>
+							<a name="provide" href="/friend/provide">친구 초대</a>
+						</iron-selector>
+					</div>
+				</iron-selector>
+			</nav>
+			<template is="dom-if" if="{{!login.status}}">
+				<div>
+					<a href="/googleOAuth/access" target="_blank">구글 계정으로 로그인</a>
 				</div>
-				<div name="schedule">
-					<a href="/schedule">일정</a>
-					<iron-selector selected="[[subPage]]" class="sub-menu" attr-for-selected="name">
-						<a name="main" href="/schedule">일정 확인</a>
-						<a name="plus" href="/schedule/plus">일정 추가</a>
-					</iron-selector>
-				</div>
-				<div name="friend">
-					<a href="/friend">친구</a>
-					<iron-selector selected="[[subPage]]" class="sub-menu" attr-for-selected="name">
-						<a name="main" href="/friend">친구 목록</a>
-						<a name="provide" href="/friend/provide">친구 초대</a>
-					</iron-selector>
-				</div>
-			</iron-selector>
+			</template>
+			<template is="dom-if" if="{{login.status}}">
+
+			</template>
 		</app-drawer>
 		<app-header-layout>
 			<app-header>
 				<app-toolbar>main site</app-toolbar>
 			</app-header>
-			<iron-ajax id="ajax" auto url="/login/check" last-response="{{login}}"></iron-ajax>
+
+			<!-- 로그인 관련 ajax -->
+			<iron-ajax auto url="/login/check" last-response="{{login}}"></iron-ajax>
 			<template is="dom-if" if="{{!login.status}}">
-				
+				<div>
+					not login
+				</div>
 			</template>
 			<template is="dom-if" if="{{login.status}}">
+				<div>
+					login
+				</div>
 				<iron-pages class="pages" selected="[[page]]" attr-for-selected="name">
 					<div name="main">
 						sasas
@@ -103,6 +120,9 @@ app-header{
 </template>
 <script>
 Polymer({
+	loginSuccess : function() { //login_redirect.html에서 사용하는 함수
+		this.set("login.status", true);
+	},
 	is : "schedule-app",
 	redirect : function(path) {
 		this.set("route.path", path);
@@ -110,7 +130,7 @@ Polymer({
 	ready : function() {
 		window.app = window.app ? window.app : this;
 
-		this.setSocket(); //소켓 설정
+		//this.setSocket(); //소켓 설정
 	},
 	setSocket : function() { // 소켓 설정
 		var socket = this.socket = io();
@@ -120,7 +140,7 @@ Polymer({
 	},
 	observers : [
 		"_routeObserver(routeData.page)",
-		"_subPageObserver(subRouteData.page)"
+		"_subPageObserver(subRouteData.subPage)"
 	],
 	_routeObserver : function(page) {
 		this.page = page ? page : "main";

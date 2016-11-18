@@ -12,7 +12,7 @@ var sequelize = new Sequelize("schedule", "root", "phpmyadmin", {
 });
 
 //회원 테이블 구축
-const User = sequelize.define("user", {
+const User = module.User = sequelize.define("user", {
 	idx : {
 		type : Sequelize.INTEGER,
 		primaryKey : true,
@@ -51,7 +51,7 @@ const User = sequelize.define("user", {
 });
 
 //일정 테이블 구축
-const Schedule = sequelize.define("schedule", {
+const Schedule = module.Schedule = sequelize.define("schedule", {
 	idx : {
 		type : Sequelize.INTEGER,
 		primaryKey : true,
@@ -187,11 +187,6 @@ sequelize.sync({force : true}).then(() => {
 	});
 	return promise;
 }).then(() => {
-	return users[0].getFriends({
-		where : {
-			provide : true
-		}
-	});
 	return users[0].getFriends();
 }).then((friends) => {
 	for(var i in friends[1].get().friend){

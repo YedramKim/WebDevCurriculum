@@ -17,7 +17,8 @@ const Database = require("./sequelize");
 
 //클라이언트 파일 불러오기 설정
 app.use("/polymer", static(path.join(__dirname , "..", "bower_components")));
-app.use("/client", static(path.join(__dirname , "..", "client")));
+app.use("/client", static(path.join(__dirname , "..", "web_client")));
+app.use("/elements", static(path.join(__dirname , "..", "custom_element")));
 
 //세션 설정
 app.use(session({
@@ -47,25 +48,30 @@ app.use(bodyParser.json());
 
 //라우터
 const googleRouter = require("./googleRouter");
-app.use("/google", googleRouter);
+app.use("/googleOAuth", googleRouter);
 
-
-app.post("/form", (req, res) => {
-	res.json(req.body);
+app.get("/api", (req, res, next) => {
+	next();
 });
 
 //기본 페이지 설정
 app.use((req, res) => {
-	res.sendFile(path.join(__dirname, "..", "client", "index.html"))
+	if(req.xhr) { //ajax일 경우
+		res.send({
+			error : req.error ? req.error : "error"
+		});
+	}else {
+		res.sendFile(path.join(__dirname, "..", "client", "index.html"));
+	}
 });
 
 module.listen = (port) => {
 	server = app.listen(port, () => {
 		console.log("Server Running at " + port);
 		//데이터 베이스 실행
-		/*Database.sync().then(() => {
+		Database.sync().then(() => {
 			console.log("Database Start");
-		});*/
+		});
 	});
 
 	return server;

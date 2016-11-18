@@ -8,8 +8,7 @@ var io = socket.listen(server);
 //데이터베이스
 var Database = require("./module/sequelize");
 
-var module = module.exports = exports = io;
-
+//소켓 서버
 io.on("connection", (socket) => {
 	var sockets = this;
 	var UserIdx = -1;
