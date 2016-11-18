@@ -1,0 +1,27 @@
+<script>
+var routeBehavior = {
+	observers : [
+		"_routeObserver(routeData.page)",
+		"_subPageObserver(subRouteData.subPage)"
+	],
+	_routeObserver : function(page) {
+		this.page = page ? page : "main";
+	},
+	_subPageObserver : function(subPage) {
+		this.subPage = subPage ? subPage : "main";
+	}
+}
+var receiveBehavior = { // 부모노드가 자신을 참조할 수 있게 하는 behavior
+	properties : {
+		receiveNode : {
+			type : Object,
+			reflectToAttribute : true,
+			notify : true,
+			readOnly : true
+		},
+	},
+	ready : function() {
+		this._setReceiveNode(this);
+	}
+}
+</script>

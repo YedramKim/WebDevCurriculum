@@ -3,18 +3,20 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+	<title>Schedule</title>
 	<script>
-		window.Polymer = {
-			dom : "shadow"
-		}
+		window.Polymer = {dom : "shadow"}
 	</script>
-	<title>YDSchedule</title>
 	<script src="/polymer/webcomponentsjs/webcomponents.min.js"></script>
 	<link rel="import" href="/elements/schedule-app.html">
 	<style is="custom-style" include="common-style">
+		:root{
+			--app-background : #f6f6f6;
+		}
 		body{
 			min-height: 100vh;
 			color: #333;
+			background: var(--app-background, #f6f6f6);
 		}
 	</style>
 </head>

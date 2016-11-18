@@ -1,13 +1,58 @@
-<dom-module id="element-template">
+<link rel="import" href="/polymer/paper-toast/paper-toast.html">
+
+<dom-module id="toast-alert">
 	<style>
-		
+		a.link{
+			float: right;
+			text-decoration: none;
+			color: #ffec5a;
+		}
 	</style>
 	<template>
-		
+		<paper-toast text="{{text}}" duration="4000">
+			<template is="dom-if" if="{{link}}">
+				<a href="{{link}}" class="link" on-tap="close">이동</a>
+			</template>
+		</paper-toast>
 	</template>
 	<script>
 		Polymer({
-			is : "element-template"
+			is : "toast-alert",
+			behaviors : [receiveBehavior],
+			ready : function() {
+				this.toast = this.$$("paper-toast");
+			},
+			properties : {
+				text : {
+					type : String,
+					value : "",
+					reflectToAttribute : true,
+					notify : true
+				},
+				link : {
+					type : String,
+					value : "",
+					reflectToAttribute : true,
+					notify : true
+				},
+				timer : {
+					type : Number,
+					value : -10
+				}
+			},
+			alert : function(alert, link="") {
+				this.cancelAsync(this.timer);
+				this.toast.close();
+				this.timer = this.async(function() {
+					this.text = alert;
+					this.link = link;
+					this.toast.show();
+				}, 100);
+			},
+			close : function() {
+				this.cancelAsync(this.timer);
+				this.toast.close();
+			}
 		});
 	</script>
 </dom-module>

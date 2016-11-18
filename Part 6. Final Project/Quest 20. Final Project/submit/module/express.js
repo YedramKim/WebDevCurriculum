@@ -18,7 +18,7 @@ const Database = require("./sequelize");
 //클라이언트 파일 불러오기 설정
 app.use("/polymer", static(path.join(__dirname , "..", "bower_components")));
 app.use("/client", static(path.join(__dirname , "..", "web_client")));
-app.use("/elements", static(path.join(__dirname , "..", "custom_element")));
+app.use("/elements", static(path.join(__dirname , "..", "web_client", "elements")));
 
 //세션 설정
 app.use(session({
@@ -61,7 +61,7 @@ app.use((req, res) => {
 			error : req.error ? req.error : "error"
 		});
 	}else {
-		res.sendFile(path.join(__dirname, "..", "client", "index.html"));
+		res.sendFile(path.join(__dirname, "..", "web_client", "index.html"));
 	}
 });
 

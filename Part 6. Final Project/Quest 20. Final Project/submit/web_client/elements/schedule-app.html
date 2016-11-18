@@ -6,6 +6,10 @@
 <link rel="import" href="/polymer/app-route/app-location.html">
 <link rel="import" href="/polymer/app-route/app-route.html">
 <link rel="import" href="/client/style/common-style.html">
+<link rel="import" href="/client/behaviors.html">
+<link rel="import" href="/elements/toast-alert.html">
+<link rel="import" href="/elements/app-navigation.html">
+<link rel="import" href="/elements/login-auth.html">
 <script src="/socket.io/socket.io.js"></script>
 
 <dom-module id="schedule-app">
@@ -15,38 +19,29 @@
 	min-height:100vh;
 }
 app-drawer-layout{
-	background: #f6f6f6;
+	background: var(--app-background);
 }
 app-drawer{
+	--app-drawer-background :#fff;
 	position: fixed;
 	display: block;
 	background: #fff;
 	bottom: 0;
 }
-.menu a{
-	display: block;
-	padding-left: 20px;
-	height: 50px;
-	line-height: 50px;
-}
-.sub-menu{
-	display: block;
-	background: rgba(0,0,0,0.08);
-	transition:all .5s;
-}
-.sub-menu a{
-	padding-left: 40px;
-}
-.menu > .iron-selected > a{
-	font-weight: bold;
-}
-.menu > .iron-selected .sub-menu a.iron-selected{
-	font-weight: bold;
-}
-app-header-layout{	
+app-header-layout{
+	min-height: 100%;
 }
 app-header{
 	background: #fff;
+}
+app-header app-toolbar{
+	padding-left: 10px;
+}
+login-auth{
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform:translate(-50%, -50%);
 }
 </style>
 <template strip-whitespace>
@@ -54,61 +49,28 @@ app-header{
 	<app-location route="{{route}}"></app-location>
 	<app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subRoute}}"></app-route>
 	<app-route route="{{subRoute}}" pattern="/:subPage" data="{{subRouteData}}"></app-route>
+
+	<!-- 알림 토스트 -->
+	<toast-alert receive-node="{{toast}}"></toast-alert>
 	
 	<!-- 레이아웃 -->
 	<app-drawer-layout fullbleed>
 		<!-- 메뉴 -->
 		<app-drawer>
-			<app-toolbar>
-				YDSchedule
-			</app-toolbar>
-			<nav>
-				<iron-selector class="menu" selected="[[page]]" attr-for-selected="name">
-					<div name="main">
-						<a href="/">HOME</a>
-					</div>
-					<div name="schedule">
-						<a href="/schedule/check">일정</a>
-						<iron-selector selected="[[subPage]]" class="sub-menu" attr-for-selected="name">
-							<a name="check" href="/schedule/check">일정 확인</a>
-							<a name="plus" href="/schedule/plus">일정 추가</a>
-							<a name="provide" href="/schedule/provide">권유 받은 일정</a>
-						</iron-selector>
-					</div>
-					<div name="friend">
-						<a href="/friend/list">친구</a>
-						<iron-selector selected="[[subPage]]" class="sub-menu" attr-for-selected="name">
-							<a name="list" href="/friend/list">친구 목록</a>
-							<a name="provide" href="/friend/provide">친구 초대</a>
-						</iron-selector>
-					</div>
-				</iron-selector>
-			</nav>
-			<template is="dom-if" if="{{!login.status}}">
-				<div>
-					<a href="/googleOAuth/access" target="_blank">구글 계정으로 로그인</a>
-				</div>
-			</template>
-			<template is="dom-if" if="{{login.status}}">
-
-			</template>
+			<app-navigation login="{{login}}" route="{{route}}"></app-navigation>
 		</app-drawer>
-		<app-header-layout>
+		<app-header-layout has-scrolling-region>
 			<app-header>
-				<app-toolbar>main site</app-toolbar>
+				<app-toolbar sticky>main site</app-toolbar>
 			</app-header>
 
 			<!-- 로그인 관련 ajax -->
-			<iron-ajax auto url="/login/check" last-response="{{login}}"></iron-ajax>
-			<template is="dom-if" if="{{!login.status}}">
-				<div>
-					not login
-				</div>
+			<iron-ajax auto url="/login/check" on-response="loginCheck"></iron-ajax>
+			<iron-ajax url="login/logout" on-response="loginCheck" receive-node="{{logoutCall}}"></iron-ajax>
+			<template is="dom-if" if="{{!login.login}}">
+				<login-auth></login-auth>
 			</template>
-			<template is="dom-if" if="{{login.status}}">
-				<div>
-					login
-				</div>
+			<template is="dom-if" if="{{login.login}}">
 				<iron-pages class="pages" selected="[[page]]" attr-for-selected="name">
 					<div name="main">
 						sasas
@@ -120,10 +82,15 @@ app-header{
 </template>
 <script>
 Polymer({
-	loginSuccess : function() { //login_redirect.html에서 사용하는 함수
-		this.set("login.status", true);
-	},
 	is : "schedule-app",
+	behaviors : [routeBehavior],
+	loginCheck : function(data) {
+		this.login = data.detail.response;
+	},
+	_loginSuccess : function() { //login_redirect.html에서 사용하는 함수
+		this.set("login.login", true);
+		this.toast.alert("로그인 완료");
+	},
 	redirect : function(path) {
 		this.set("route.path", path);
 	},
@@ -137,29 +104,6 @@ Polymer({
 		socket.on("connect", function() {
 			
 		});
-	},
-	observers : [
-		"_routeObserver(routeData.page)",
-		"_subPageObserver(subRouteData.subPage)"
-	],
-	_routeObserver : function(page) {
-		this.page = page ? page : "main";
-	},
-	_subPageObserver : function(subPage) {
-		this.subPage = subPage ? subPage : "main";
-	},
-	properties : {
-		route : {
-			type : Object
-		},
-		page : {
-			type : String,
-			value : ""
-		},
-		subPage : {
-			type : String,
-			value : ""
-		}
 	}
 });
 </script>

@@ -7,8 +7,9 @@
 <body>
 	<script>
 		if(opener){
-			opener.app.loginSuccess();
+			opener.app._logout();
 		}
+		close();
 	</script>
 </body>
 </html>
