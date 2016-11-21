@@ -70,27 +70,22 @@ login-auth{
 		<app-drawer>
 			<app-navigation login="{{login}}" route="{{route}}"></app-navigation>
 		</app-drawer>
-		<app-header-layout has-scrolling-region>
-			<app-header>
-				<app-toolbar sticky>main site</app-toolbar>
-			</app-header>
 
-			<!-- 로그인 관련 ajax -->
-			<iron-ajax auto url="/login/check" last-response="{{login}}"></iron-ajax>
-			<iron-ajax class="logoutHTTP" url="/login/logout" last-response="{{login}}" on-response="logout" class="lotoutHTTP"></iron-ajax>
+		<!-- 로그인 관련 ajax -->
+		<iron-ajax auto url="/login/check" last-response="{{login}}"></iron-ajax>
+		<iron-ajax class="logoutHTTP" url="/login/logout" last-response="{{login}}" on-response="logout" class="lotoutHTTP"></iron-ajax>
 
-			<template is="dom-if" if="{{!login.login}}">
-				<login-auth login="{{login}}"></login-auth>
-			</template>
-			<template is="dom-if" if="{{login.login}}">
-				<iron-pages class="pages" selected="[[page]]" attr-for-selected="name" fallback-selection="page404">
-					<app-main name="main" receive-node="{{appMain}}" route="{{subRoute}}"></app-main>
-					<schedule-page name="schedule" route="{{subRoute}}" receive-node="{{schedulePage}}" route="{{subRoute}}"></schedule-page>
-					<friend-page name="friend" route="{{subRoute}}" receive-node="{{friendPage}}"></friend-page>
-					<page-404 name="page404"></page-404>
-				</iron-pages>
-			</template>
-		</app-header-layout>
+		<template is="dom-if" if="{{!login.login}}">
+			<login-auth login="{{login}}"></login-auth>
+		</template>
+		<template is="dom-if" if="{{login.login}}">
+			<iron-pages class="pages" selected="[[page]]" attr-for-selected="name" fallback-selection="page404">
+				<app-main name="main" receive-node="{{appMain}}" route="{{subRoute}}"></app-main>
+				<schedule-page name="schedule" route="{{subRoute}}" receive-node="{{schedulePage}}" route="{{subRoute}}"></schedule-page>
+				<friend-page name="friend" route="{{subRoute}}" receive-node="{{friendPage}}"></friend-page>
+				<page-404 name="page404"></page-404>
+			</iron-pages>
+		</template>
 	</app-drawer-layout>
 </template>
 <script>

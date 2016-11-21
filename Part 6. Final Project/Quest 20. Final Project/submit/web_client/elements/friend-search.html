@@ -80,10 +80,10 @@
 .results > li .account {
 	flex-basis: 65%;
 }
-.results > li .provide {
+.results > li .invite {
 	flex-basis: 15%;
 }
-.results > li .provide paper-button{
+.results > li .invite paper-button{
 	width: 80%;
 	height: 80%;
 	background: #ff6262;
@@ -100,22 +100,27 @@
 }
 </style>
 <template>
-	<iron-ajax class="searchHTTP" url="/friend/searchuser" params="[[searchKeyword]]" last-response="{{users}}"></iron-ajax>
+	<!-- 검색 AJAX -->
+	<iron-ajax id="searchHTTP" url="/friend/searchuser" params="[[searchKeyword]]" last-response="{{users}}"></iron-ajax>
+	<!-- 초대 AJAX -->
+	<iron-ajax id="inviteHTTP" url="/friend/invite" params="[[inviteParam]]" on-response="invitedUser"></iron-ajax>
+	<!-- 유저 검색 폼 -->
 	<form class="search-input" on-submit="searchFriend">
 		<input type="text" value="{{keyword::input}}" placeholder="검색할 친구의 이메일이나 아이디 혹은 이름을 입력하세요.">
 		<button>
 			<iron-icon icon="icons:search"></iron-icon>
 		</button>
 	</form>
+	<!-- 검색 결과 유저 리스트 -->
 	<ul class="results">
 		<li>
 			<div class="name">이름</div>
 			<div class="account">계정</div>
-			<div class="provide">초대하기</div>
+			<div class="invite">초대하기</div>
 		</li>
 		<template is="dom-if" if="{{!users.length}}">
 			<li class="nf tac">
-				<iron-icon icon="icons:search" on-tap="searchFriend"></iron-icon>
+				<iron-icon icon="icons:search"></iron-icon>
 				<h2>검색하면 목록이 나옵니다.</h2>
 			</li>
 		</template>
@@ -123,8 +128,8 @@
 			<li>
 				<div class="name">{{item.name}}</div>
 				<div class="account">{{item.account}}</div>
-				<div class="provide">
-					<paper-button raised provide-idx="{{item.idx}}">초대하기</paper-button>
+				<div class="invite">
+					<paper-button raised invite-idx$="{{item.idx}}" on-tap="inviteFriend">초대하기</paper-button>
 				</div>
 			</li>
 		</template>
@@ -133,12 +138,29 @@
 <script>
 	Polymer({
 		is : "friend-search",
-		ready : function() {
-			this.searchHTTP = this.$$(".searchHTTP");
-			this.searchKeyword = {
-				length : 0
+		invitedUser : function(e) { // 유저에게 초대 메세지를 보낸후의 이벤트
+			var result = e.detail.response;
+			console.log(result);
+			if(result.result) {
+				Polymer.app.toast.alert("친구 초대에 성공했습니다.");
+			}else {
+				Polymer.app.toast.alert("존재하지 않는 유저이거나 이미 초대한 상태입니다.", "/friend/list")
 			}
+		},
+		inviteFriend : function(e) { // 유저에게 친구 초대 메세지를 보낸다.
+			var inviteIdx = e.target.getAttribute("invite-idx");
+			this.inviteParam = {
+				inviteIdx : inviteIdx
+			};
+			this.inviteHTTP.generateRequest();
+		},
+		ready : function() {
+			this.searchHTTP = this.$.searchHTTP;
+			this.inviteHTTP = this.$.inviteHTTP;
+
+			this.searchKeyword = {};
 			this.users = [];
+			window.sub = this;
 		},
 		searchFriend : function(e) {
 			e.preventDefault();

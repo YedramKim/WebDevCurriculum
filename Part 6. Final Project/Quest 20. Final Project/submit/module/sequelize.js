@@ -91,13 +91,7 @@ const Schedule = module.Schedule = sequelize.define("schedule", {
 //관계 테이블 구축
 // 친구 테이블
 // provide가 false 일 경우 일정 초대 목록에 true일 경우 친구 목록에 표시
-const friend = sequelize.define("friend", {
-	idx : {
-		type : Sequelize.INTEGER,
-		primaryKey : true,
-		autoIncrement : true,
-		allowNull : false
-	},
+const Friend = sequelize.define("friend", {
 	provide : {
 		type : Sequelize.BOOLEAN,
 		defaultValue : false,
@@ -111,18 +105,12 @@ const friend = sequelize.define("friend", {
 // join이 false 일 경우 일정 공유 권유 목록에 true일 경우 일정 목록에 표시
 // owner가 true일 경우 해당 일정을 자신이 삭제할 수 있다.
 const UserScheduleRelation = sequelize.define("userScheduleRelation", {
-	idx : {
-		type : Sequelize.INTEGER,
-		primaryKey : true,
-		autoIncrement : true,
-		allowNull : false
-	},
-	join : {
+	join : { // 일정을 보기로 결정
 		type : Sequelize.BOOLEAN,
 		defaultValue : false,
 		allowNull : false
 	},
-	owner : {
+	owner : { // 자신이 주인인가(true일 경우 삭제 가능)
 		type : Sequelize.BOOLEAN,
 		defaultValue : false,
 		allowNull : false
@@ -135,7 +123,7 @@ const UserScheduleRelation = sequelize.define("userScheduleRelation", {
 //친구 관계
 User.belongsToMany(User, {
 	as : "friends",
-	through : "friend"
+	through : Friend
 });
 //유저와 일정의 관계
 User.belongsToMany(Schedule, {
