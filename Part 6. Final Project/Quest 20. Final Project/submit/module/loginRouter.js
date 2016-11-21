@@ -9,6 +9,14 @@ router.get("/check", (req, res, next) => {
 	});
 });
 
+// 사이트 내부의 계정으로 로그인 (window.open으로 접속)
+router.get("/sitelogin", (req, res) => {
+	if(req.login) { // 만약 로그인 중인 상태이면 홈페이지로 돌아감
+		res.redirect(302, "/");
+	}
+	res.sendFile(path.join(__dirname, "..", "web_client", "site_login.html"));
+});
+
 // 이 라우터 혹은 다른 다우터를 통해 로그인이 처리되었을 때 리다이렉트를 처리함
 router.get("/success", (req, res) => {
 	res.sendFile(path.join(__dirname, "..", "web_client", "success_redirect.html"));

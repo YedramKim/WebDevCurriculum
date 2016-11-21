@@ -12,7 +12,7 @@
 	<template>
 		<paper-toast text="{{text}}" duration="4000">
 			<template is="dom-if" if="{{link}}">
-				<a href="{{link}}" class="link" on-tap="close">이동</a>
+				<a href="{{link}}" class="link" on-tap="close">{{linkText}}</a>
 			</template>
 		</paper-toast>
 	</template>
@@ -41,12 +41,13 @@
 					value : -10
 				}
 			},
-			alert : function(alert, link="") {
+			alert : function(alert, link="", linkText = "이동") {
 				this.cancelAsync(this.timer);
 				this.toast.close();
 				this.timer = this.async(function() {
 					this.text = alert;
 					this.link = link;
+					this.linkText = linkText;
 					this.toast.show();
 				}, 100);
 			},

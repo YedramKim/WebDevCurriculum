@@ -59,33 +59,28 @@
 	height: 40px;
 	line-height: 40px;
 	background: #fff;
-	border-bottom: 1px #ddd solid;
+	border-top: 1px #ddd solid;
 }
 .results > li:first-child{
 	height: 50px;
 	line-height: 50px;
 	background: #66b0ff;
 	color: #fff;
-	border-bottom: 0;
 }
-.results > li:last-of-type{
-	border-bottom: 0;
-}
-.results > li:not(.nf) > * {
-	text-align: center;
+.results > li:first-child, .results > li:nth-child(2) {
+	border-top: 0;
 }
 .results > li .name {
-	flex-basis: 20%;
-}
-.results > li .account {
-	flex-basis: 65%;
+	flex-basis: 80%;
+	padding-left: 20px;
 }
 .results > li .invite {
-	flex-basis: 15%;
+	flex-basis: 20%;
+	text-align: center;
 }
 .results > li .invite paper-button{
-	width: 80%;
-	height: 80%;
+	width: 100px;
+	height: 32px;
 	background: #ff6262;
 	color: #fff;
 }
@@ -103,31 +98,29 @@
 	<!-- 검색 AJAX -->
 	<iron-ajax id="searchHTTP" url="/friend/searchuser" params="[[searchKeyword]]" last-response="{{users}}"></iron-ajax>
 	<!-- 초대 AJAX -->
-	<iron-ajax id="inviteHTTP" url="/friend/invite" params="[[inviteParam]]" on-response="invitedUser"></iron-ajax>
+	<iron-ajax id="inviteHTTP" method="POST" content-type="application/json" url="/friend/invite" body="[[inviteParam]]" on-response="invitedUser"></iron-ajax>
 	<!-- 유저 검색 폼 -->
 	<form class="search-input" on-submit="searchFriend">
 		<input type="text" value="{{keyword::input}}" placeholder="검색할 친구의 이메일이나 아이디 혹은 이름을 입력하세요.">
 		<button>
-			<iron-icon icon="icons:search"></iron-icon>
+			<iron-icon icon="search"></iron-icon>
 		</button>
 	</form>
 	<!-- 검색 결과 유저 리스트 -->
 	<ul class="results">
 		<li>
 			<div class="name">이름</div>
-			<div class="account">계정</div>
 			<div class="invite">초대하기</div>
 		</li>
 		<template is="dom-if" if="{{!users.length}}">
 			<li class="nf tac">
-				<iron-icon icon="icons:search"></iron-icon>
+				<iron-icon icon="search"></iron-icon>
 				<h2>검색하면 목록이 나옵니다.</h2>
 			</li>
 		</template>
 		<template is="dom-repeat" items="{{users}}">
 			<li>
-				<div class="name">{{item.name}}</div>
-				<div class="account">{{item.account}}</div>
+				<div class="name">{{item.name}}<sub>{{writeSite(item.site)}}</sub></div>
 				<div class="invite">
 					<paper-button raised invite-idx$="{{item.idx}}" on-tap="inviteFriend">초대하기</paper-button>
 				</div>
@@ -136,44 +129,46 @@
 	</ul>
 </template>
 <script>
-	Polymer({
-		is : "friend-search",
-		invitedUser : function(e) { // 유저에게 초대 메세지를 보낸후의 이벤트
-			var result = e.detail.response;
-			console.log(result);
-			if(result.result) {
-				Polymer.app.toast.alert("친구 초대에 성공했습니다.", "/friend/provide");
-			}else {
-				Polymer.app.toast.alert("친구 초대에 문제가 발생했습니다.", "/friend/list")
-			}
-		},
-		inviteFriend : function(e) { // 유저에게 친구 초대 메세지를 보낸다.
-			var inviteIdx = e.target.getAttribute("invite-idx");
-			this.inviteParam = {
-				inviteIdx : inviteIdx
-			};
-			this.inviteHTTP.generateRequest();
-		},
-		ready : function() {
-			this.searchHTTP = this.$.searchHTTP;
-			this.inviteHTTP = this.$.inviteHTTP;
-
-			this.searchKeyword = {};
-			this.users = [];
-			window.sub = this;
-		},
-		searchFriend : function(e) {
-			e.preventDefault();
-			var keyword = this.keyword ? this.keyword : "";
-			keyword = keyword.trim();
-			if(keyword === "") {
-				Polymer.app.toast.alert("검색할 키워드를 입력하세요.");
-				return;
-			}
-			this.searchKeyword['keyword'] = keyword;
-
-			this.searchHTTP.generateRequest();
+Polymer({
+	is : "friend-search",
+	behaviors : [receiveBehavior, writeSiteBehavior],
+	invitedUser : function(e) { // 유저에게 초대 메세지를 보낸후의 이벤트
+		var result = e.detail.response;
+		console.log(result);
+		if(result.success) {
+			Polymer.app.toast.alert("친구 초대에 성공했습니다.", "/friend/list", "친구 목록으로 이동");
+		}else {
+			Polymer.app.toast.alert("친구 초대에 문제가 발생했습니다.", "/friend/list", "친구 목록으로 이동");
 		}
-	});
+		this.inviteParam = {}; // 완료되면 ajax로 보낸 데이터는 초기화한다.
+	},
+	inviteFriend : function(e) { // 유저에게 친구 초대 메세지를 보낸다.
+		var inviteIdx = e.target.getAttribute("invite-idx");
+		this.inviteParam = {
+			inviteIdx : inviteIdx
+		};
+		this.inviteHTTP.generateRequest();
+	},
+	ready : function() {
+		this.searchHTTP = this.$.searchHTTP;
+		this.inviteHTTP = this.$.inviteHTTP;
+
+		this.searchKeyword = {};
+		this.users = [];
+		window.sub = this;
+	},
+	searchFriend : function(e) {
+		e.preventDefault();
+		var keyword = this.keyword ? this.keyword : "";
+		keyword = keyword.trim();
+		if(keyword === "") {
+			Polymer.app.toast.alert("검색할 키워드를 입력하세요.");
+			return;
+		}
+		this.searchKeyword['keyword'] = keyword;
+
+		this.searchHTTP.generateRequest();
+	}
+});
 </script>
 </dom-module>

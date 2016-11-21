@@ -1,4 +1,5 @@
 <script>
+//최상위 라우터를 다루는 behavior
 var routeBehavior = {
 	observers : [
 		"_routeObserver(routeData.page)",
@@ -11,7 +12,9 @@ var routeBehavior = {
 		this.subPage = subPage ? subPage : "main";
 	}
 };
-var receiveBehavior = { // 부모노드가 자신을 참조할 수 있게 하는 behavior
+//id방식의 노드 참조의 약간 문제(?)가 있는 것 같아 만든 behavior 입니다.
+//receive-node속성을 이용해서 부모노드가 자신을 참조할 수 있게 하는 behavior
+var receiveBehavior = {
 	properties : {
 		receiveNode : {
 			type : Object,
@@ -24,14 +27,29 @@ var receiveBehavior = { // 부모노드가 자신을 참조할 수 있게 하는
 		this._setReceiveNode(this);
 	}
 };
+//로그인과 관련된 behavior
 var loginBehavior = { //on-tap 메소드 형태로 사용
-	googlelogin : function() {
+	googleLogin : function() {
 		var option = "titlebar=no,menubar=no,resizable=no,scrollbars=no,width=500,height=500,left=400,top=200";
 		window.open("/googleOAuth/auth", "google oauth", option);
+	},
+	siteLogin : function() {
+		var option = "titlebar=no,menubar=no,resizable=no,scrollbars=no,width=500,height=500,left=400,top=200";
+		window.open("/login/sitelogin", "google oauth", option);
 	},
 	logout : function() {
 		Polymer.app.logoutHTTP.generateRequest();
 		Polymer.app.toast.alert("로그아웃");
 	}
 };
+
+var writeSiteBehavior = {
+	writeSite : function(site) {
+		if(["google", "facebook"].indexOf(site) !== -1) { //google 혹은 facebook일 경우 그대로 통과하고
+			return site;
+		}else { // 아닐경우 'schedule site'라고 표시한다.
+			return "schedule";
+		}
+	}
+}
 </script>

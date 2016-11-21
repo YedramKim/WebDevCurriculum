@@ -4,23 +4,25 @@
 	display: block;
 	width: 400px;
 	background: #fff;
-	padding: 20px!important;
+	padding: 20px !important;
 	border-radius: 3px;
 	@apply(--shadow-elevation-2dp);
 }
 .auth{
 	display: block;
 	height: 40px;
-	color: #fff;
 	margin: 10px 0;
 	line-height: 38px;
 	border-radius: 3px;
 	overflow: hidden;
 	padding-left: 55px;
+	cursor: pointer;
 }
 .google.auth{
+	color: #fff;
 	background: #4285f4;
 	border: 1px #4285f4 solid;
+	@apply(--shadow-elevation-2dp);
 }
 .logo{
 	display: inline-block;
@@ -39,10 +41,14 @@
 </style>
 <template>
 	<h3>Login</h3>
-	<a href="javascript:void(0)" on-tap="googlelogin" class="google roboto auth">
+	<div on-tap="googleLogin" class="google roboto auth">
 		<span class="logo"></span>
 		SIGN IN WITH GOOGLE
-	</a>
+	</div>
+	<div on-tap="siteLogin" class="schedule roboto auth">
+		<span class="logo"></span>
+		사이트 계정으로 로그인
+	</div>
 </template>
 <script>
 Polymer({

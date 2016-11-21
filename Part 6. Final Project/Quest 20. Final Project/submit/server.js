@@ -17,3 +17,5 @@ io.on("connection", (socket) => {
 		userIdx = idx;
 	});
 });
+
+var module = module.exports = {};

@@ -1,16 +1,129 @@
+<link rel="import" href="/polymer/iron-icon/iron-icon.html">
+<link rel="import" href="/polymer/iron-icons/iron-icons.html">
+<link rel="import" href="/polymer/paper-button/paper-button.html">
+
 <dom-module id="friend-invite">
 <style include="common-style">
-	:host{
-		display: block;
-	}
+:host{
+	display: block;
+}
+.refresh{
+	margin-top: 50px;
+	margin-bottom: 10px;
+}
+.refresh paper-button{
+	min-width :auto;
+	padding:0 10px;
+	height: 30px;
+	display: inline-block;
+	text-align: center;
+	line-height: 30px;
+	background: #ff6262;
+	color: #fff;
+}
+.refresh iron-icon{
+	width: 20px;
+	height: 20px;
+}
+.invites {
+	border-radius: 3px;
+	overflow: hidden;
+	@apply(--shadow-elevation-2dp);
+}
+.invites li{
+	height: 45px;
+	background: #fff;
+	border-top: 1px #ddd solid;
+	line-height: 44px;
+	display: flex;
+}
+.invites li:first-child{
+	background: #66b0ff;
+	color: #fff;
+	height: 50px;
+	line-height: 50px;
+	border-top-color: transparent;
+}
+.invites li:nth-child(2) {
+	border-top-color: transparent;
+}
+.invites li .name {
+	flex-basis : 80%;
+	padding-left: 20px;
+	font-size: 1.1em;
+}
+.invites li .accept {
+	flex-basis : 20%;
+	text-align: center;
+}
+.invites li .accept paper-button {
+	width: 90px;
+	height: 30px;
+	background: #ff6262;
+	color: #fff;
+}
 </style>
+
 <template>
-	<iron-ajax id="invited" auto url="/friend/invitelist" last-response="inviteList"></iron-ajax>
+<iron-ajax id="inviteHTTP" auto url="/friend/invitelist" last-response="{{inviteList}}"></iron-ajax>
+<iron-ajax id="acceptHTTP" method="POST" content-type="application/json" url="/friend/acceptInvite" on-response="acceptedInvite" body="{{acceptParam}}"></iron-ajax>
+
+<!-- 초대 목록 초기화 버튼 -->
+<div class="tar refresh">
+	<paper-button raised on-tap="refreshInvite"> 
+		<iron-icon icon="refresh"></iron-icon>
+		새로 고침
+	</paper-button>
+</div>
+<ul class="invites">
+	<li>
+		<div class="name">초대한 사람</div>
+		<div class="accept">수락</div>
+	</li>
+	<template is="dom-repeat" items="[[inviteList]]">
+		<li>
+			<div class="name">
+				{{item.name}}<sub>{{writeSite(item.site)}}</sub>
+			</div>
+			<div class="accept">
+				<paper-button sender-idx$="{{item.idx}}" on-tap="acceptFriendInvite" raised>수락</paper-button>
+			</div>
+		</li>
+	</template>
+</ul>
 </template>
+
 <script>
-	Polymer({
-		is : "friend-invite",
-		behaviors : [receiveBehavior],
-	});
+Polymer({
+	is : "friend-invite",
+	behaviors : [receiveBehavior, writeSiteBehavior],
+	acceptedInvite : function(e) {
+		this.acceptParam = {}; // ajax 전송 데이터 초기화
+		var result = e.detail.response;
+		if(result.success) {
+			Polymer.app.toast.alert("수락이 완료되었습니다.", "/friend/list");
+		}else {
+			Polymer.app.toast.alert("수락이 실패되었습니다.");
+		}
+	},
+	refreshInvite : function() {
+		this.inviteHTTP.generateRequest();
+	},
+	acceptFriendInvite : function(e) {
+		var senderIdx = e.target.getAttribute("sender-idx");
+		this.acceptParam = {
+			senderIdx : senderIdx
+		};
+		var list = e.target.closest("li");
+		list.parentNode.removeChild(list);
+		this.acceptHTTP.generateRequest();
+	},
+	ready : function() {
+		//초대한 사람 리스트를 불러오는 iron-ajax 태그
+		this.inviteHTTP = this.$.inviteHTTP;
+		//초대를 수락한다고 전하는 iron-ajax 태그
+		this.acceptHTTP = this.$.acceptHTTP;
+	}
+});
 </script>
 </dom-module>

@@ -1,16 +1,115 @@
+<link rel="import" href="/polymer/iron-icon/iron-icon.html">
+<link rel="import" href="/polymer/paper-button/paper-button.html">
+
 <dom-module id="friend-list">
 <style include="common-style">
-	:host{
-		display: block;
-	}
+:host{
+	display: block;
+}
+h3{
+	margin: 80px 0 20px;
+}
+ul{
+	border-radius: 3px;
+	font-size: 1.1em;
+	overflow: hidden;
+	@apply(--shadow-elevation-2dp);
+}
+ul > li{
+	display: flex;
+	height: 45px;
+	line-height: 45px;
+	background: #fff;
+}
+ul > li:first-child{
+	height: 50px;
+	line-height: 50px;
+	background: #66b0ff;
+	color: #fff;
+}
+ul > li > *:first-child{
+	flex-basis: 80%;
+	padding-left: 20px;
+}
+ul > li > *:nth-child(2){
+	flex-basis: 20%;
+	text-align: center;
+}
+ul paper-button {
+	width: 100px;
+	height: 32px;
+	background: #ff6262;
+	color: #fff;
+	font-size: 0.9em;
+}
 </style>
 <template>
-	list
+	<iron-ajax url="/friend/friends" auto last-response="{{friends}}" id="friendsHTTP"></iron-ajax>
+	<iron-ajax url="/friend/deleteFriend" method="POST" content-type="application/json" on-response="finisheddelete" body="{{deleteParam}}" id="deleteHTTP"></iron-ajax>
+
+	<h3>보낸 친구 요청</h3>
+	<ul class="friends">
+		<li>
+			<div>
+				이름
+			</div>
+			<div>
+				취소
+			</div>
+		</li>
+		<template is="dom-repeat" items="{{friends.beforeAccept}}">
+			<li>
+				<div>
+					{{item.name}}<sub>{{writeSite(item.site)}}</sub>
+				</div>
+				<div>
+					<paper-button on-tap="deleteFriend" delete-idx$="{{item.idx}}" raised>취소</paper-button>
+				</div>
+			</li>
+		</template>
+	</ul>
+	<h3>친구 목록</h3>
+	<ul class="friends">
+		<li>
+			<div>
+				이름
+			</div>
+			<div>
+				삭제
+			</div>
+		</li>
+		<template is="dom-repeat" items="{{friends.afterAccept}}">
+			<li>
+				<div>
+					{{item.name}}<sub>{{writeSite(item.site)}}</sub>
+				</div>
+				<div>
+					<paper-button on-tap="deleteFriend" delete-idx$="{{item.idx}}" raised>삭제</paper-button>
+				</div>
+			</li>
+		</template>
+	</ul>
 </template>
 <script>
-	Polymer({
-		is : "friend-list",
-		behaviors : [receiveBehavior],
-	});
+Polymer({
+	is : "friend-list",
+	behaviors : [receiveBehavior, writeSiteBehavior],
+	finisheddelete : function(e) { // 삭제 http 처리가 끝났을 때
+		this.deleteParam = {}; // 남은 데이터 처리
+		Polymer.app.toast.alert("완료되었습니다.");
+	},
+	deleteFriend : function(e) { // 친구 삭제(자신) 혹은 초대 취소
+		var list = e.target.closest("li");
+		list.parentNode.removeChild(list);
+		this.deleteParam = {
+			deleteIdx : e.target.getAttribute("delete-idx")
+		}
+		this.deleteHTTP.generateRequest();
+	},
+	ready : function() {
+		this.friendsHTTP = this.$.friendsHTTP;
+		window.htp = this.deleteHTTP = this.$.deleteHTTP;
+	}
+});
 </script>
 </dom-module>

@@ -20,6 +20,10 @@ app.use("/polymer", static(path.join(__dirname , "..", "bower_components")));
 app.use("/client", static(path.join(__dirname , "..", "web_client")));
 app.use("/elements", static(path.join(__dirname , "..", "web_client", "elements")));
 
+//post 처리 설정
+app.use(bodyParser.urlencoded({extended : false}));
+app.use(bodyParser.json());
+
 //세션 설정
 app.use(session({
 	resave : false,
@@ -45,10 +49,6 @@ app.use("/login", loginRouter);
 //로그인 관련 라우터
 const friendRouter = require("./friendRouter");
 app.use("/friend", friendRouter);
-
-//post 처리 설정
-app.use(bodyParser.urlencoded({extended : false}));
-app.use(bodyParser.json());
 
 //라우터
 const googleRouter = require("./googleRouter");
