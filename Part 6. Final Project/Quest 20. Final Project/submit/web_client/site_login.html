@@ -4,10 +4,28 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
 	<title>Document</title>
-	<link rel="stylesheet" href="/client/style/login.css">
+	<script src="/polymer/webcomponentsjs/webcomponents.min.js"></script>
 	<script src="/client/script/login.js"></script>
+	<link rel="import" href="/elements/toast-alert.html">
+	<link rel="stylesheet" href="/client/style/login.css">
 </head>
 <body>
-	
+	<form action="/login/auth" method="post" class="loginForm">
+		<label>
+			<input placeholder="아이디" type="text" name="scheduleId" class="id">
+		</label>
+		<label>
+			<input placeholder="비밀번호" type="password" name="schedulePass" class="pass">
+		</label>
+		<div class="button_wrap">
+			<button>
+				로그인
+			</button>
+		</div>
+	</form>
+	<toast-alert bottom></toast-alert>
+<script>
+login = new Form(".loginForm");
+</script>
 </body>
 </html>

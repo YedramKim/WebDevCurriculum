@@ -17,6 +17,10 @@ router.get("/sitelogin", (req, res) => {
 	res.sendFile(path.join(__dirname, "..", "web_client", "site_login.html"));
 });
 
+router.post("/auth", (req, res) => {
+	res.send([]);
+});
+
 // 이 라우터 혹은 다른 다우터를 통해 로그인이 처리되었을 때 리다이렉트를 처리함
 router.get("/success", (req, res) => {
 	res.sendFile(path.join(__dirname, "..", "web_client", "success_redirect.html"));
