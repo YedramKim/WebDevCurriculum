@@ -1,15 +1,15 @@
-<dom-module id="friend-provide">
+<dom-module id="friend-invite">
 <style include="common-style">
 	:host{
 		display: block;
 	}
 </style>
 <template>
-	provide
+	<iron-ajax id="invited" auto url="/friend/invitelist" last-response="inviteList"></iron-ajax>
 </template>
 <script>
 	Polymer({
-		is : "friend-provide",
+		is : "friend-invite",
 		behaviors : [receiveBehavior],
 	});
 </script>

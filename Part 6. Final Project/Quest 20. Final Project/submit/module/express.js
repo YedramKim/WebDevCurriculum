@@ -54,10 +54,6 @@ app.use(bodyParser.json());
 const googleRouter = require("./googleRouter");
 app.use("/googleOAuth", googleRouter);
 
-app.get("/api", (req, res, next) => {
-	next();
-});
-
 //기본 페이지 설정
 app.use((req, res) => {
 	if(req.xhr) { //ajax일 경우

@@ -5,7 +5,13 @@ var router = module.exports = exports = new express.Router();
 //데이터베이스 관련 모듈 객체
 const Database = require("./sequelize");
 
+router.use((req, res, next) => {
+	console.log(req.xhr, req.xhr);
+	next();
+});
+
 router.use("/searchuser", (req, res) => {
+	console.log(req.xhr, req.xhr);
 	if(req.login === false) { //로그인 상태가 아닐 경우
 		res.send([]);
 		return;
@@ -41,7 +47,7 @@ router.use("/searchuser", (req, res) => {
 		});
 
 	}).then((friends) => {
-		console.log(friends);
+		//console.log(friends);
 		return User.findAll({ // 자신과 친구들을 제외한 키워드에 맞는 아이디,이메일, 이름을 가진 사람을 가져온다.
 			where : {
 				idx : {
@@ -64,11 +70,12 @@ router.use("/searchuser", (req, res) => {
 			}
 		});
 	}).then((users) => {
-		console.log(users.length);
+		//console.log(users.length);
 		res.send(users);
 	});
 });
 
+//친구 초대
 router.get("/invite", (req, res) => {
 	if(req.login === false) { //로그인 상태가 아닐 경우
 		res.send({
@@ -89,7 +96,7 @@ router.get("/invite", (req, res) => {
 		friend = inviteUser;
 		return my.addFriend(inviteIdx); // 친구 초청 보내기
 	}).then(() => {
-		return friend.addFriend(myIdx);
+		return friend.addFriend(myIdx, {beInvited : true});
 	}).then(() => {
 		res.send({
 			result : true
@@ -99,4 +106,10 @@ router.get("/invite", (req, res) => {
 			result : false
 		});
 	});
+});
+
+//친구 초대 리스트 전달
+router.get("/invitelist", (req, res) => {
+
+	res.send([]);
 });

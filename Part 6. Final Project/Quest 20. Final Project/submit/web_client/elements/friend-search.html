@@ -142,9 +142,9 @@
 			var result = e.detail.response;
 			console.log(result);
 			if(result.result) {
-				Polymer.app.toast.alert("친구 초대에 성공했습니다.");
+				Polymer.app.toast.alert("친구 초대에 성공했습니다.", "/friend/provide");
 			}else {
-				Polymer.app.toast.alert("존재하지 않는 유저이거나 이미 초대한 상태입니다.", "/friend/list")
+				Polymer.app.toast.alert("친구 초대에 문제가 발생했습니다.", "/friend/list")
 			}
 		},
 		inviteFriend : function(e) { // 유저에게 친구 초대 메세지를 보낸다.

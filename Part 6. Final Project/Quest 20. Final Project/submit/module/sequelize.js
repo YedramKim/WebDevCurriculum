@@ -92,7 +92,12 @@ const Schedule = module.Schedule = sequelize.define("schedule", {
 // 친구 테이블
 // provide가 false 일 경우 일정 초대 목록에 true일 경우 친구 목록에 표시
 const Friend = sequelize.define("friend", {
-	provide : {
+	beInvited : { // 자신이 초대받아 생긴 데이터이면 true, 초대해서 생긴 데이터이면 true 
+		type : Sequelize.BOOLEAN,
+		defaultValue : false,
+		allowNull : false
+	},
+	friend : { // 수락받은 상태인지 표시
 		type : Sequelize.BOOLEAN,
 		defaultValue : false,
 		allowNull : false

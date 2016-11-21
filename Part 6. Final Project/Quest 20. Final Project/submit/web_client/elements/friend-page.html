@@ -12,7 +12,7 @@
 	<iron-pages selected="[[subPage]]" attr-for-selected="name" fallback-selection="page404">
 		<friend-list name="list"></friend-list>
 		<friend-search name="search"></friend-search>
-		<friend-provide name="provide"></friend-provide>
+		<friend-invite name="invite"></friend-invite>
 		<page-404 name="page404"></page-404>
 	</iron-pages>
 </template>
@@ -30,8 +30,8 @@
 				element = "friend-list.html";
 			}else if(subPage === "search") {
 				element = "friend-search.html";
-			}else if(subPage === "provide") {
-				element = "friend-provide.html";
+			}else if(subPage === "invite") {
+				element = "friend-invite.html";
 			}else{
 				element = "page-404.html";
 			}
