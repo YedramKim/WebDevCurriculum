@@ -48,7 +48,7 @@ app-toolbar{
 				<a href="/schedule/check">일정</a>
 				<iron-selector selected="[[subPage]]" class="sub-menu" attr-for-selected="name">
 					<a name="check" href="/schedule/check">일정 확인</a>
-					<a name="plus" href="/schedule/plus">일정 추가</a>
+					<a name="addtion" href="/schedule/addtion">일정 추가</a>
 					<a name="invite" href="/schedule/invite">권유 받은 일정</a>
 				</iron-selector>
 			</div>
@@ -77,7 +77,7 @@ app-toolbar{
 <script>
 Polymer({
 	is : "app-navigation",
-	behaviors : [routeBehavior, loginBehavior],
+	behaviors : [routeBehavior, loginBehavior]
 });
 </script>
 </dom-module>

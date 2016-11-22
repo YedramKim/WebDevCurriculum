@@ -64,7 +64,9 @@
 </style>
 
 <template>
+<!-- 초대 리스트 호출 ajax -->
 <iron-ajax id="inviteHTTP" auto url="/friend/invitelist" last-response="{{inviteList}}"></iron-ajax>
+<!-- 초대 수락 ajax -->
 <iron-ajax id="acceptHTTP" method="POST" content-type="application/json" url="/friend/acceptInvite" on-response="acceptedInvite" body="{{acceptParam}}"></iron-ajax>
 
 <!-- 초대 목록 초기화 버튼 -->
@@ -122,8 +124,10 @@ Polymer({
 		//초대를 수락한다고 전하는 iron-ajax 태그
 		this.acceptHTTP = this.$.acceptHTTP;
 
+		//다시 로그인 될때마다 실행하는 이벤트
+		var node = this;
 		Polymer.app.addEventListener("login", function(){
-			console.log("login");
+			node.inviteHTTP.generateRequest();
 		});
 	}
 });

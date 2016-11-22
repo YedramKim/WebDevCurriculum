@@ -167,6 +167,12 @@ Polymer({
 		this.searchKeyword['keyword'] = keyword;
 
 		this.searchHTTP.generateRequest();
+
+		//다시 로그인 될때마다 실행하는 이벤트
+		var node = this;
+		Polymer.app.addEventListener("login", function(){
+			node.users = [];
+		});
 	}
 });
 </script>

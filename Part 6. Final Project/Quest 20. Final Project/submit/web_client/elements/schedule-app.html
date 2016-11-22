@@ -11,6 +11,7 @@
 <link rel="import" href="/polymer/app-route/app-route.html">
 <link rel="import" href="/client/style/common-style.html">
 <link rel="import" href="/client/behaviors.html">
+<link rel="import" href="/elements/page-404.html">
 <link rel="import" href="/elements/toast-alert.html">
 <link rel="import" href="/elements/app-navigation.html">
 <link rel="import" href="/elements/login-auth.html">
@@ -95,10 +96,10 @@ Polymer({
 	_loginSuccess : function() { //login_redirect.html에서 사용하는 함수
 		this.set("login.login", true);
 		this.toast.alert("로그인 완료");
-	},
+	},/*
 	_loginFailed : function() { //login_redirect.html에서 사용하는 함수
 		this.toast.alert("로그인 실패");
-	},
+	},*/
 	redirect : function(path) {
 		this.set("route.path", path);
 	},
@@ -110,6 +111,7 @@ Polymer({
 		//login 이벤트는 다른 유저로 변경되어 로그인이 되었을 경우 정보를 수정해야 할 커스텀엘리먼트에게 정보를 변경해야 된다고 알리기 위해 만든 노드 입니다.
 		if(login) {
 			this.fire("login");
+			this.loginHTTP.generateRequest
 		}
 	},
 	_pageObserver : function(page) { // 태그를 import 시키는 옵저버
@@ -131,6 +133,7 @@ Polymer({
 		window.app = Polymer.app = Polymer.app ? Polymer.app : this;
 
 		//기능성 엘리먼트 참조
+		this.loginHTTP = this.$$(".loginHTTP");
 		this.logoutHTTP = this.$$(".logoutHTTP");
 		this.toast;
 		window.toastAlert = this.toast.alert.bind(this.toast);

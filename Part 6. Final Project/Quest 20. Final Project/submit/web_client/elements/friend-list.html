@@ -108,6 +108,12 @@ Polymer({
 	ready : function() {
 		this.friendsHTTP = this.$.friendsHTTP;
 		window.htp = this.deleteHTTP = this.$.deleteHTTP;
+
+		//다시 로그인 될때마다 실행하는 이벤트
+		var node = this;
+		Polymer.app.addEventListener("login", function(){
+			node.friendsHTTP.generateRequest();
+		});
 	}
 });
 </script>

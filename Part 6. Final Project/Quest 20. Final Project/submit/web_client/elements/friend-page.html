@@ -17,27 +17,27 @@
 	</iron-pages>
 </template>
 <script>
-	Polymer({
-		is : "friend-page",
-		behaviors : [routeBehavior, receiveBehavior],
-		observers : [
-			"_subPageObserver(subPage)"
-		],
-		_subPageObserver : function(subPage) { //해당 페이지에 맞는 엘리먼트 불러오기
-			this.subPage = subPage;
-			var element = "";
-			if(subPage === "list") {
-				element = "friend-list.html";
-			}else if(subPage === "search") {
-				element = "friend-search.html";
-			}else if(subPage === "invite") {
-				element = "friend-invite.html";
-			}else{
-				element = "page-404.html";
-			}
-			element = this.resolveUrl(element);
-			this.importHref(element, null, null, true);
+Polymer({
+	is : "friend-page",
+	behaviors : [routeBehavior, receiveBehavior],
+	observers : [
+		"_subPageObserver(subPage)"
+	],
+	_subPageObserver : function(subPage) { //해당 페이지에 맞는 엘리먼트 불러오기
+		this.subPage = subPage;
+		var element = "";
+		if(subPage === "list") {
+			element = "friend-list.html";
+		}else if(subPage === "search") {
+			element = "friend-search.html";
+		}else if(subPage === "invite") {
+			element = "friend-invite.html";
+		}else{
+			element = "page-404.html";
 		}
-	});
+		element = this.resolveUrl(element);
+		this.importHref(element, null, null, true);
+	}
+});
 </script>
 </dom-module>

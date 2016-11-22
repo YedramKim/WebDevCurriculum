@@ -164,8 +164,6 @@ router.get("/logout", (req, res) => {
 	session.name = undefined;
 
 	res.send({
-		login : false,
-		site : req.session.site,
-		name : req.session.name
+		login : false
 	});
 });

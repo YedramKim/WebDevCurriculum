@@ -51,6 +51,10 @@ app.use((req, res, next) => {
 	next();
 });
 
+//일정 관련 라우터
+const scheduleRouter = require("./scheduleRouter");
+app.use("/schedule", scheduleRouter);
+
 //로그인 관련 라우터
 const loginRouter = require("./loginRouter");
 app.use("/login", loginRouter);
@@ -59,7 +63,7 @@ app.use("/login", loginRouter);
 const friendRouter = require("./friendRouter");
 app.use("/friend", friendRouter);
 
-//라우터
+//구글 api 라우터
 const googleRouter = require("./googleRouter");
 app.use("/googleOAuth", googleRouter);
 
