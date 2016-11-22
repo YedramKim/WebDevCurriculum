@@ -1,19 +1,26 @@
 <dom-module id="schedule-check">
-<style>
+<style include="common-style">
 :host{
 	display: block;
 	min-height: 50px;
 	background: #fff;
 	margin-top: 50px;
 	@apply(--shadow-elevation-2dp);
+	padding: 10px;
 }
 </style>
 <template>
-	schedule-checkdsds
+	<app-route route="{{route}}" pattern="/:index" data="{{indexRouteData}}"></app-route>
 </template>
 <script>
 Polymer({
-	is : "schedule-check"
+	is : "schedule-check",
+	observers : [
+		"_observer(indexRouteData.index)"
+	],
+	_observer : function(index) {
+		console.log(index);
+	}
 });
 </script>
 </dom-module>

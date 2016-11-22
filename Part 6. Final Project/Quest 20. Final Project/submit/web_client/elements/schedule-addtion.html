@@ -1,20 +1,59 @@
+<link rel="import" href="/polymer/google-map/google-map.html">
+
 <dom-module id="schedule-addtion">
-<style>
+<style include="common-style">
 :host{
 	display: block;
-	min-height: 50px;
-	background: #fff;
 	margin-top: 50px;
+}
+google-map{
+	height: 200px;
+	width: 200px;
+}
+form > div {
+	background: #fff;
+	min-height: 100px;
+	margin-bottom: 40px;
 	padding: 10px;
-	@apply(--shadow-elevation-2dp);
+	@apply(--transition-style);
 }
 </style>
 <template>
-	add
+	<form action="/schedule/register" method="post">
+		<div class="schedule-info" shadow>
+			정보입력
+		</div>
+		<div shadow>
+			<input type="checkbox" name="useMap" class="map-check" checked="{{showMap::change}}">
+			<input type="hidden" name="latitude" value="{{latitude}}">
+			<input type="hidden" name="longitude" value="{{longitude}}">
+			<!-- 구글 맵 -->
+			<template is="dom-if" if="{{showMap}}">
+				<google-map latitude="37.4961565" longitude="127.02821999999999" api-key="AIzaSyAs_wF3yQGFXm2GrsNtwNg1Pehja_kqVs8" disable-street-view-control disable-map-type-control click-events on-google-map-click="googleMapTap" zoom="12">
+					<google-map-marker latitude="{{latitude}}" longitude="{{longitude}}" title="first marker" animation="BOUNCE">
+					</google-map-marker>
+				</google-map>
+			</template>
+		</div>
+		<div shadow>친구 동참</div>
+	</form>
 </template>
 <script>
 Polymer({
-	is : "schedule-addtion"
+	is : "schedule-addtion",
+	ready : function() {
+		this.map = this.$$("google-map");
+		this.marker = this.$$("google-map-marker");
+
+		this.latitude = 37.4961565;
+		this.longitude = 127.02821999999999;
+
+		window.sub = this;
+	},
+	googleMapTap : function(e) { // 지도를 클릭하면 그에 따라 마커도 이동한다.
+		this.latitude = e.detail.latLng.lat();
+		this.longitude = e.detail.latLng.lng();
+	}
 });
 </script>
 </dom-module>

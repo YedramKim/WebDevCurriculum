@@ -9,11 +9,11 @@
 	padding-top: 100px;
 }
 .search-input{
+	position: relative;
 	margin-top: 40px;
 	height: 40px;
 	border-radius: 3px;
 	overflow: hidden;
-	@apply(--shadow-elevation-2dp);
 }
 .search-input input{
 	border: 0;
@@ -51,7 +51,6 @@
 	margin-top: 50px;
 	border-radius: 3px;
 	overflow: hidden;
-	@apply(--shadow-elevation-2dp);
 	border: 1px #ddd solid;
 }
 .results > li:not(.nf) {
@@ -88,6 +87,7 @@
 	color: rgba(0,0,0,.4);
 	background: #fff;
 	height: 250px;
+	text-align: center;
 }
 .results > li.nf > iron-icon{
 	width: 180px;
@@ -100,20 +100,20 @@
 	<!-- 초대 AJAX -->
 	<iron-ajax id="inviteHTTP" method="POST" content-type="application/json" url="/friend/invite" body="[[inviteParam]]" on-response="invitedUser"></iron-ajax>
 	<!-- 유저 검색 폼 -->
-	<form class="search-input" on-submit="searchFriend">
+	<form class="search-input" on-submit="searchFriend" shadow>
 		<input type="text" value="{{keyword::input}}" placeholder="검색할 친구의 이메일이나 아이디 혹은 이름을 입력하세요.">
 		<button>
 			<iron-icon icon="search"></iron-icon>
 		</button>
 	</form>
 	<!-- 검색 결과 유저 리스트 -->
-	<ul class="results">
+	<ul class="results" shadow>
 		<li>
 			<div class="name">이름</div>
 			<div class="invite">초대하기</div>
 		</li>
 		<template is="dom-if" if="{{!users.length}}">
-			<li class="nf tac">
+			<li class="nf">
 				<iron-icon icon="search"></iron-icon>
 				<h2>검색하면 목록이 나옵니다.</h2>
 			</li>
@@ -142,6 +142,11 @@ Polymer({
 		this.inviteParam = {}; // 완료되면 ajax로 보낸 데이터는 초기화한다.
 	},
 	inviteFriend : function(e) { // 유저에게 친구 초대 메세지를 보낸다.
+		var item = e.model.item;
+		var idx = this.users.indexOf(item);
+		this.splice("users", idx, 1);
+		console.log(idx);
+
 		var inviteIdx = e.target.getAttribute("invite-idx");
 		this.inviteParam = {
 			inviteIdx : inviteIdx

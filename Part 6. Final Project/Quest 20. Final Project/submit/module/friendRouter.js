@@ -58,9 +58,13 @@ router.post("/deleteFriend", (req, res) => {
 		});
 	}).then((user) => { // 삭제할 친구 회원의 정보 가져오기
 		deleteFriend = user[0];
-		return my.removeFriend(deleteIdx); // 해당 idx의 친구와의 관계 삭제
+		return my.removeFriend(deleteIdx, {
+			paranoid : false
+		}); // 해당 idx의 친구와의 관계 삭제
 	}).then(() => {
-		return deleteFriend.removeFriend(myIdx); // 해당 idx의 친구와의 관계 삭제
+		return deleteFriend.removeFriend(myIdx, {
+			paranoid : false
+		}); // 해당 idx의 친구와의 관계 삭제
 	}).then(() => {
 		res.send({
 			success : true
@@ -91,41 +95,29 @@ router.get("/searchuser", (req, res) => {
 		return user.getFriends({ // 우선 자신의 친구들 idx 정보 가져오기
 			attributes : ["idx"],
 			where : {
-				$or : [
-					{
-						account : {
-							$like : "%" + keyword + "%"
-						}
-					}, {
-						name : {
-							$like : "%" + keyword + "%"
-						}
-					}
-				]
+				name : {
+					$like : "%" + keyword + "%"
+				}
 			}
 		});
 	}).then((friends) => {
-		//console.log(friends);
+		return friends.map((friend) => friend.idx);
+	}).then((friends) => {
+		if(friends.length === 0) {
+			friends = [-1];
+		}
 		return User.findAll({ // 자신과 친구들을 제외한 키워드에 맞는 아이디,이메일, 이름을 가진 사람을 가져온다.
 			attributes : ["idx", "name", "site"],
 			where : {
 				idx : {
 					$and : [
-						{ $ne : userIdx }/*,
-						{ $notIn : friends }*/
+						{ $ne : userIdx },
+						{ $notIn : friends }
 					]
 				},
-				$or : [
-					{
-						account : {
-							$like : "%" + keyword + "%"
-						}
-					},{
-						name : {
-							$like : "%" + keyword + "%"
-						}
-					},
-				]
+				name : {
+					$like : "%" + keyword + "%"
+				}
 			}
 		});
 	}).then((users) => {
@@ -171,6 +163,20 @@ router.post("/invite", (req, res) => {
 			success : false
 		});
 	});
+
+	/*User.findById(myIdx).then((user) => {
+		my = user;
+		return User.findById(inviteIdx);
+	}).then((inviteUser) => {
+		friend = inviteUser;
+		return my.hasFriend(friend); // 친구 초청 보내기
+	}).then((result) => {
+		console.log(result);
+	});
+
+	res.send({
+		success : false
+	});*/
 });
 
 //자신한테 보낸 초대 데이터 전달

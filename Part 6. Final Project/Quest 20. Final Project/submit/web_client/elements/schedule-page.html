@@ -6,9 +6,11 @@
 </style>
 <template>
 	<!-- 라우트 -->
-	<app-route route="{{route}}" pattern="/:subPage" data="{{subRouteData}}"></app-route>
+	<app-route route="{{route}}" pattern="/:subPage" data="{{subRouteData}}" tail="{{indexRoute}}"></app-route>
+
+	<!-- 페이지 -->
 	<iron-pages attr-for-selected="name" selected="{{subPage}}" fallback-selection="page404">
-		<schedule-check name="check"></schedule-check>
+		<schedule-check name="check" route="{{indexRoute}}"></schedule-check>
 		<schedule-addtion name="addtion"></schedule-addtion>
 		<schedule-invite name="invite"></schedule-invite>
 		<page-404 name="page404"></page-404>
@@ -35,9 +37,6 @@ Polymer({
 		}
 		element = this.resolveUrl(element);
 		this.importHref(element, null, null, true);
-	},
-	ready : function() {
-
 	}
 });
 </script>

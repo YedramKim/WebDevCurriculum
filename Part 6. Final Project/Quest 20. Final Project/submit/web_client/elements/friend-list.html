@@ -12,7 +12,6 @@ h3{
 ul{
 	border-radius: 3px;
 	overflow: hidden;
-	@apply(--shadow-elevation-2dp);
 }
 ul > li{
 	display: flex;
@@ -47,7 +46,7 @@ ul paper-button {
 	<iron-ajax url="/friend/deleteFriend" method="POST" content-type="application/json" on-response="finisheddelete" body="{{deleteParam}}" id="deleteHTTP"></iron-ajax>
 
 	<h3>보낸 친구 요청</h3>
-	<ul class="friends">
+	<ul class="friends" shadow>
 		<li>
 			<div>
 				이름
@@ -68,7 +67,7 @@ ul paper-button {
 		</template>
 	</ul>
 	<h3>친구 목록</h3>
-	<ul class="friends">
+	<ul class="friends" shadow>
 		<li>
 			<div>
 				이름

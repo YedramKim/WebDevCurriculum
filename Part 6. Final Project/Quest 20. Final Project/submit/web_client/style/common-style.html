@@ -12,7 +12,7 @@
 	box-sizing:border-box;
 	font-family: "Malgun Gothic";
 }
-p,ul,li,ol,a,div{
+p,ul,li,ol,a,div,button,input,textarea{
 	margin: 0;
 	padding: 0;
 }
@@ -34,41 +34,11 @@ sub {
 button {
 	cursor: pointer;
 }
-.tal{
-	text-align: left;
-}
-.tac{
-	text-align: center;
-}
-.tar{
-	text-align: right;
-}
-.fb{
-	font-weight: bold;
-}
-.fn{
-	font-weight: normal;
-}
-.por{
-	position: relative;
-}
-.poa{
-	position: absolute;
-}
-.pof{
-	position: fixed;
-}
-.dib{
-	display: inline-block;
-}
-.db{
-	display: block;
-}
-.dn{
-	display: none;
-}
 .roboto{
 	font-family: 'Roboto';
+}
+[shadow]{
+	@apply(--shadow-elevation-2dp);
 }
 </style>
 </template>

@@ -104,7 +104,8 @@ const Friend = sequelize.define("friend", {
 		allowNull : false
 	}
 }, {
-	tableName : "friend"
+	tableName : "friend",
+	paranoid : false
 });
 
 // 일정 테이블
