@@ -27,6 +27,8 @@
     "iron-icons": "PolymerElements/iron-icons#^1.2.0",
     "paper-button": "PolymerElements/paper-button#^1.0.14",
     "google-map": "GoogleWebComponents/google-map#^1.1.14",
-    "paper-input": "PolymerElements/paper-input#^1.1.22"
+    "paper-input": "PolymerElements/paper-input#^1.1.22",
+    "paper-checkbox": "PolymerElements/paper-checkbox#^1.4.1",
+    "iron-form": "PolymerElements/iron-form#^1.1.4"
   }
 }

@@ -1,4 +1,5 @@
 <link rel="import" href="/polymer/google-map/google-map.html">
+<link rel="import" href="/polymer/paper-input/paper-input.html">
 
 <dom-module id="schedule-addtion">
 <style include="common-style">
@@ -16,14 +17,22 @@ form > div {
 	padding: 10px;
 	@apply(--transition-style);
 }
+form > div > .coords-input {
+	width: 49%;
+	display: inline-block;
+}
 </style>
 <template>
-	<form action="/schedule/register" method="post">
+	<form is="iron-form" action="/schedule/register" method="post">
 		<div class="schedule-info" shadow>
 			정보입력
 		</div>
 		<div shadow>
-			<input type="checkbox" name="useMap" class="map-check" checked="{{showMap::change}}">
+			<div>
+				<input type="checkbox" name="useMap" class="map-check" checked="{{showMap::change}}">
+			</div>
+			<paper-input class="coords-input" name="latitude" value="{{latitude}}" placeholder="위도"></paper-input>
+			<paper-input class="coords-input" name="longitude" value="{{longitude}}" placeholder="경도"></paper-input>
 			<input type="hidden" name="latitude" value="{{latitude}}">
 			<input type="hidden" name="longitude" value="{{longitude}}">
 			<!-- 구글 맵 -->
@@ -35,6 +44,7 @@ form > div {
 			</template>
 		</div>
 		<div shadow>친구 동참</div>
+		<button>등록</button>
 	</form>
 </template>
 <script>
