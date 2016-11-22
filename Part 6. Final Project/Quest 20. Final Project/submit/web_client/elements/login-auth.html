@@ -1,6 +1,10 @@
 <dom-module id="login-auth">
 <style include="common-style">
 :host{
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform:translate(-50%, -50%);
 	display: block;
 	width: 400px;
 	background: #fff;
@@ -9,6 +13,7 @@
 	@apply(--shadow-elevation-2dp);
 }
 .auth{
+	position: relative;
 	display: block;
 	height: 40px;
 	margin: 10px 0;
