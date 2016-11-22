@@ -5,6 +5,7 @@ var router = module.exports = exports = new express.Router();
 
 //데이터베이스 관련 모듈 객체
 const Database = require("./sequelize");
+const User = Database.User;
 
 //google api 관련 파일
 const google = require("googleapis");
@@ -62,7 +63,6 @@ router.get("/token", (req, res) => {
 });
 
 router.get("/login", (req, res, next) => {
-	var User = Database.User;
 	var OAuthProfile = req.session.OAuthProfile;
 	req.session.OAuthProfile = undefined;
 	if(!OAuthProfile) { // 정상적인 방법으로 들어온 것이 아닐 경우 홈페이지로 이동

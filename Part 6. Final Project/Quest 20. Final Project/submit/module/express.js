@@ -24,6 +24,15 @@ app.use("/elements", static(path.join(__dirname , "..", "web_client", "elements"
 app.use(bodyParser.urlencoded({extended : false}));
 app.use(bodyParser.json());
 
+//res.prev([message=""]) : 이전 페이지로 이동, window.open으로 연 페이지 전용
+//message는 opener의 toast-alert에서 출력이 된다. 
+app.use((req, res, next) => {
+	res.prev = function(message="오류입니다.") {
+		this.send('<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Document</title></head><body><script>if(opener){opener.Polymer.app.toast.alert("' + message + '")}else{alert("' + message + '")}location.href=document.referrer;</script></body></html>');
+	}
+	next();
+});
+
 //세션 설정
 app.use(session({
 	resave : false,

@@ -72,8 +72,8 @@ login-auth{
 		</app-drawer>
 
 		<!-- 로그인 관련 ajax -->
-		<iron-ajax auto url="/login/check" last-response="{{login}}"></iron-ajax>
-		<iron-ajax class="logoutHTTP" url="/login/logout" last-response="{{login}}" on-response="logout" class="lotoutHTTP"></iron-ajax>
+		<iron-ajax class="loginHTTP" auto url="/login/check" last-response="{{login}}"></iron-ajax>
+		<iron-ajax class="logoutHTTP" url="/login/logout" last-response="{{login}}"></iron-ajax>
 
 		<template is="dom-if" if="{{!login.login}}">
 			<login-auth login="{{login}}"></login-auth>
@@ -92,9 +92,6 @@ login-auth{
 Polymer({
 	is : "schedule-app",
 	behaviors : [routeBehavior],
-	logout : function() { // 로그아웃 시 처리할 목록들
-		
-	},
 	_loginSuccess : function() { //login_redirect.html에서 사용하는 함수
 		this.set("login.login", true);
 		this.toast.alert("로그인 완료");
@@ -106,8 +103,15 @@ Polymer({
 		this.set("route.path", path);
 	},
 	observers : [
-		"_pageObserver(page)"
+		"_pageObserver(page)",
+		"_loginObserver(login.login)"
 	],
+	_loginObserver : function(login) { // login이 되어있으면 login 이벤트를 발동시킨다.
+		//login 이벤트는 다른 유저로 변경되어 로그인이 되었을 경우 정보를 수정해야 할 커스텀엘리먼트에게 정보를 변경해야 된다고 알리기 위해 만든 노드 입니다.
+		if(login) {
+			this.fire("login");
+		}
+	},
 	_pageObserver : function(page) { // 태그를 import 시키는 옵저버
 		var element = "";
 		if(page === "main") {

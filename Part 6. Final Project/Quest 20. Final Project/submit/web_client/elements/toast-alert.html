@@ -42,14 +42,13 @@ Polymer({
 		},
 		bottom : {
 			type : Boolean,
-			value : true,
+			value : false,
 			notify : true,
 			reflectToAttribute : true,
 			observer : "_bottomObserver"
 		}
 	},
 	_bottomObserver : function(value) {
-		console.log(this.toggleClass, this.toast);
 		this.toggleClass("fit-bottom", value, this.$$("paper-toast"));
 	},
 	alert : function(alert, link="", linkText = "이동") {

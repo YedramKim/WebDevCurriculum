@@ -4,6 +4,7 @@ var router = module.exports = exports = new express.Router();
 
 //데이터베이스 관련 모듈 객체
 const Database = require("./sequelize");
+const User = Database.User;
 
 //친구 목록 가져오기
 router.get("/friends", (req, res, next) => {
@@ -12,7 +13,6 @@ router.get("/friends", (req, res, next) => {
 		return;
 	}
 	var myIdx = req.session.userIdx;
-	var User = Database.User;
 	var friends = { // 전송할 유저 목록
 		beforeAccept : [], // 아직 친구 요청을 수락하지 않은 유저 목록
 		afterAccept : [] // 친구요청이 서로 수락한 유저 목록
@@ -49,7 +49,6 @@ router.post("/deleteFriend", (req, res) => {
 	var deleteFriend = null; // 삭제할 회원의 정보
 	var type = req.body.type; // 처리 방식
 
-	var User = Database.User;
 	User.findById(myIdx).then((user) => { //로그인 중인 회원 정보 가져오기
 		my = user;
 		return my.getFriends({
@@ -84,7 +83,6 @@ router.get("/searchuser", (req, res) => {
 	var userIdx = req.session.userIdx;
 	var keyword = req.query.keyword;
 
-	var User = Database.User;
 	var friendIdxs = []; //친구들의 idx번호
 	var users = []; // 유저들 정보
 	// 우선 자신의 인스턴스를 가져오고
@@ -156,7 +154,6 @@ router.post("/invite", (req, res) => {
 	var my = null; //user 테이블의 자기 자신의 데이터가 담긴 인스턴스
 	var friend = null; //user 테이블의 초대받는 사람의 데이터가 담긴 인스턴스
 
-	var User = Database.User;
 	User.findById(myIdx).then((user) => {
 		my = user;
 		return User.findById(inviteIdx);
@@ -183,7 +180,6 @@ router.get("/invitelist", (req, res) => {
 		return;
 	}
 	
-	var User = Database.User;
 	var userIdx = req.session.userIdx;
 	var my = null; //유저 자기 자신
 	User.findById(userIdx).then((user) => { // 우선 자신을 초대하거나 자신이 초대한 친구들의 목록을 전부 가져온다.
@@ -220,7 +216,6 @@ router.post("/acceptInvite", (req, res) => {
 	var senderIdx = req.body.senderIdx; // 초대한 유저의 idx
 	var sender = null; // user테이블에서 가져온 초대한 유저의 인스턴스
 
-	var User = Database.User;
 	User.findById(myIdx).then((user) => { // user테이블에서 자기 자신의 인스턴스를 가져오기
 		my = user;
 		return my.getFriends({ // user 테이블에서 초대자의 인스턴스를 가져온다.

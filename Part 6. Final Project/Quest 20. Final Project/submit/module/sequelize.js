@@ -6,6 +6,7 @@ var sequelize = new Sequelize("schedule", "root", "phpmyadmin", {
 	dialog : "mysql",
 	host : "localhost",
 	logging : false,
+	timezone : "+09:00",
 	define : {
 		paranoid : true
 	}

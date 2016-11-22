@@ -10,13 +10,19 @@
 	<link rel="stylesheet" href="/client/style/login.css">
 </head>
 <body>
-	<form action="/login/auth" method="post" class="loginForm shadow">
-		<h2 class="roboto">로그인</h2>
+	<form action="/login/joinUser" method="post" class="joinForm shadow">
+		<h2 class="roboto">회원가입</h2>
+		<label>
+			<input placeholder="이름" type="text" name="scheduleName" class="name">
+		</label>
 		<label>
 			<input placeholder="아이디" type="text" name="scheduleId" class="id">
 		</label>
 		<label>
 			<input placeholder="비밀번호" type="password" name="schedulePass" class="pass">
+		</label>
+		<label>
+			<input placeholder="비밀번호 확인" type="password" name="rePass" class="repass">
 		</label>
 		<div class="button_wrap">
 			<button>
@@ -26,7 +32,7 @@
 	</form>
 	<toast-alert bottom></toast-alert>
 <script>
-login = new Form(".loginForm");
+login = new Form(".joinForm");
 </script>
 </body>
 </html>

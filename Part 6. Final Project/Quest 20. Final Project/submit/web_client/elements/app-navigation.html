@@ -64,11 +64,12 @@ app-toolbar{
 	</nav>
 	<template is="dom-if" if="{{!login.login}}">
 		<div>
-			<a href="/googleOAuth/auth" on-tap="login">구글 계정으로 로그인</a>
+			<a href="javascript:void(0)" on-tap="googleLogin">구글 계정으로 로그인</a>
 		</div>
 	</template>
 	<template is="dom-if" if="{{login.login}}">
 		<div>
+			<p>{{login.name}}</p>
 			<a href="javascript:void(0)" on-tap="logout">로그아웃</a>
 		</div>
 	</template>

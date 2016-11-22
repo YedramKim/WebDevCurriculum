@@ -134,7 +134,6 @@ Polymer({
 	behaviors : [receiveBehavior, writeSiteBehavior],
 	invitedUser : function(e) { // 유저에게 초대 메세지를 보낸후의 이벤트
 		var result = e.detail.response;
-		console.log(result);
 		if(result.success) {
 			Polymer.app.toast.alert("친구 초대에 성공했습니다.", "/friend/list", "친구 목록으로 이동");
 		}else {

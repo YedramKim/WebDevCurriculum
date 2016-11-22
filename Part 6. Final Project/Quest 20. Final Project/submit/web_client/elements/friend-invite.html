@@ -50,7 +50,6 @@
 .invites li .name {
 	flex-basis : 80%;
 	padding-left: 20px;
-	font-size: 1.1em;
 }
 .invites li .accept {
 	flex-basis : 20%;
@@ -78,7 +77,6 @@
 <ul class="invites">
 	<li>
 		<div class="name">초대한 사람</div>
-		<div class="accept">수락</div>
 	</li>
 	<template is="dom-repeat" items="[[inviteList]]">
 		<li>
@@ -123,6 +121,10 @@ Polymer({
 		this.inviteHTTP = this.$.inviteHTTP;
 		//초대를 수락한다고 전하는 iron-ajax 태그
 		this.acceptHTTP = this.$.acceptHTTP;
+
+		Polymer.app.addEventListener("login", function(){
+			console.log("login");
+		});
 	}
 });
 </script>

@@ -37,6 +37,10 @@ var loginBehavior = { //on-tap 메소드 형태로 사용
 		var option = "titlebar=no,menubar=no,resizable=no,scrollbars=no,width=500,height=500,left=400,top=200";
 		window.open("/login/sitelogin", "google oauth", option);
 	},
+	siteJoin : function() {
+		var option = "titlebar=no,menubar=no,resizable=no,scrollbars=no,width=500,height=500,left=400,top=200";
+		window.open("/login/sitejoin", "google oauth", option);
+	},
 	logout : function() {
 		Polymer.app.logoutHTTP.generateRequest();
 		Polymer.app.toast.alert("로그아웃");

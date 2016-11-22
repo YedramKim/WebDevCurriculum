@@ -7,7 +7,7 @@ var Form = function(selector) {
 		var length = inputs.length;
 		for(var i = 0; i < length; i++) {
 			if(inputs[i].value.trim() === "") {
-				toast.alert(inputs[i].placeholder + "를 입력하세요.");
+				toast.alert(inputs[i].placeholder + "을(를) 입력하세요.");
 				inputs[i].focus();
 				e.preventDefault();
 				return;
@@ -15,16 +15,4 @@ var Form = function(selector) {
 		}
 	});
 }
-var receiveBehavior = {
-	properties : {
-		receiveNode : {
-			type : Object,
-			reflectToAttribute : true,
-			notify : true,
-			readOnly : true
-		},
-	},
-	ready : function() {
-		this._setReceiveNode(this);
-	}
-};
+var receiveBehavior = {};
