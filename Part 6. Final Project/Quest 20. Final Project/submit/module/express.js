@@ -6,10 +6,12 @@ const fs = require("fs");
 
 //express 관련 기본 모듈과 객체
 const express = require("express");
-const bodyParser = require("body-parser");
 const static = require("serve-static");
+const bodyParser = require("body-parser");
+const multer = require("multer");
+var upload = multer({dest : path.join(__dirname, "multer_upload/")});
 const session = require("express-session");
-var app = module.app = express();
+const app = module.app = express();
 var server = null;
 
 //데이터베이스 관련 모듈 객체
@@ -19,6 +21,7 @@ const Database = require("./sequelize");
 app.use("/polymer", static(path.join(__dirname , "..", "bower_components")));
 app.use("/client", static(path.join(__dirname , "..", "web_client")));
 app.use("/elements", static(path.join(__dirname , "..", "web_client", "elements")));
+app.use("/upload", static(path.join(__dirname , "..", "multer_upload")));
 
 //post 처리 설정
 app.use(bodyParser.urlencoded({extended : false}));
