@@ -8,8 +8,6 @@ const fs = require("fs");
 const express = require("express");
 const static = require("serve-static");
 const bodyParser = require("body-parser");
-const multer = require("multer");
-var upload = multer({dest : path.join(__dirname, "multer_upload/")});
 const session = require("express-session");
 const app = module.app = express();
 var server = null;
@@ -74,7 +72,7 @@ app.use("/googleOAuth", googleRouter);
 app.use((req, res) => {
 	if(req.xhr) { //ajax일 경우
 		res.send({
-			error : req.error ? req.error : "error"
+			error : true
 		});
 	}else {
 		res.sendFile(path.join(__dirname, "..", "web_client", "index.html"));

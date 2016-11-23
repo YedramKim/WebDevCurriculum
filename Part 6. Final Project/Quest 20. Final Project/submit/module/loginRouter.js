@@ -45,8 +45,8 @@ router.get("/sitelogin", (req, res) => {
 
 // 위의 페이지의 로그인을 처리
 router.post("/auth", (req, res) => { // 사이트 내에서 로그인 인증
-	var id = req.body.scheduleId ? req.body.scheduleId : "";
-	var pass = req.body.schedulePass ? req.body.schedulePass : "";
+	var id = req.body.scheduleId || "";
+	var pass = req.body.schedulePass || "";
 
 	User.findOne({
 		attributes : ["idx", "site", "account", "name", "password", "salt"],

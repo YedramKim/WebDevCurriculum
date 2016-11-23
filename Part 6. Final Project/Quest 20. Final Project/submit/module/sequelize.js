@@ -68,8 +68,16 @@ const Schedule = module.Schedule = sequelize.define("schedule", {
 		type : Sequelize.TEXT,
 		allowNull : false
 	},
+	startTime : {
+		type : Sequelize.BIGINT,
+		allowNull : false
+	},
+	endTime : {
+		type : Sequelize.BIGINT,
+		allowNull : false
+	},
 	image : {
-		type : Sequelize.STRING(15),
+		type : Sequelize.STRING(60),
 		allowNull : true
 	},
 	useMap : {
@@ -112,12 +120,12 @@ const Friend = sequelize.define("friend", {
 // join이 false 일 경우 일정 공유 권유 목록에 true일 경우 일정 목록에 표시
 // owner가 true일 경우 해당 일정을 자신이 삭제할 수 있다.
 const UserScheduleRelation = sequelize.define("userScheduleRelation", {
-	join : { // 일정을 보기로 결정
+	owner : { // 자신이 주인인가(true일 경우 삭제 가능)
 		type : Sequelize.BOOLEAN,
 		defaultValue : false,
 		allowNull : false
 	},
-	owner : { // 자신이 주인인가(true일 경우 삭제 가능)
+	see : { // 일정을 보기로 결정
 		type : Sequelize.BOOLEAN,
 		defaultValue : false,
 		allowNull : false

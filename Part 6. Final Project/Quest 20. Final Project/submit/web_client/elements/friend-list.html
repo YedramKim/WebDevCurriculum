@@ -91,7 +91,7 @@ ul paper-button {
 <script>
 Polymer({
 	is : "friend-list",
-	behaviors : [receiveBehavior, writeSiteBehavior],
+	behaviors : [writeSiteBehavior],
 	finisheddelete : function(e) { // 삭제 http 처리가 끝났을 때
 		this.deleteParam = {}; // 남은 데이터 처리
 		Polymer.app.toast.alert("완료되었습니다.");

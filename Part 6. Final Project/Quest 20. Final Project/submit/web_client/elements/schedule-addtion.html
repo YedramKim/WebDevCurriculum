@@ -1,63 +1,268 @@
 <link rel="import" href="/polymer/google-map/google-map.html">
-<link rel="import" href="/polymer/paper-input/paper-input.html">
+<link rel="import" href="/polymer/iron-form/iron-form.html">
+<link rel="import" href="/polymer/iron-icons/image-icons.html">
+<link rel="import" href="/polymer/iron-icon/iron-icon.html">
+<link rel="import" href="/polymer/paper-button/paper-button.html">
+<link rel="import" href="/polymer/paper-input/all-imports.html">
+<link rel="import" href="/polymer/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="/elements/paper-datetime-picker.html">
 
 <dom-module id="schedule-addtion">
 <style include="common-style">
 :host{
 	display: block;
 	margin-top: 50px;
+	--checkbox--checked-color : #3f51b5;
+	--checkbox--unchecked-color : #3f51b5;
+	--paper-picker-color : #3f51b5;
+	--paper-checkbox-checked-color: var(--checkbox--checked-color);
+	--paper-checkbox-checked-ink-color: var(--checkbox--checked-color);
+	--paper-checkbox-unchecked-color: var(--checkbox--unchecked-color);
+	--paper-checkbox-unchecked-ink-color: var(--checkbox--unchecked-color);
 }
 google-map{
 	height: 200px;
 }
 form > div {
 	background: #fff;
-	min-height: 100px;
 	margin-bottom: 40px;
 	padding: 10px;
-	@apply(--transition-style);
+}
+form > div > .map-check {
+	display: block;
 }
 form > div > .coords-input {
 	width: 49%;
 	display: inline-block;
 }
+form [flex] {
+	background: none;
+	flex-direction: row;
+	padding: 0;
+	justify-content: space-between;
+}
+form [flex] > *{
+	background: #fff;
+	flex-basis: 49%;
+	width: 49%;
+}
+form [flex] > div{
+	padding: 10px;
+}
+form input[type=file]{
+	display: none;
+}
+.schedule-info{
+	position: relative;
+	z-index: 1000;
+}
+.image-upload {
+	display: block;
+	width: 100%;
+	min-height: 20px;
+	margin-top: 10px;
+	cursor: pointer;
+}
+.image-upload .before-preview{
+	display: block;
+	width: 100%;
+	padding: 10px;
+	text-align: center;
+	border: 1px #ddd solid;
+	color: #ccc;
+}
+.image-upload .before-preview iron-icon {
+	width: 100%;
+	height: 100px;
+	margin-bottom: 20px;
+}
+.image-upload .image-title{
+	padding: 5px 0;
+	border-bottom: 1px solid #3f51b5;
+	margin-bottom: 10px;
+	display: none;
+}
+.preview-image {
+	display: none;
+	max-width: 100%;
+	max-height: 500px;
+	width: auto;
+	height: auto;
+}
+.image-upload.uploaded .before-preview {
+	display: none;
+}
+.image-upload.uploaded .image-title, .image-upload.uploaded .preview-image{
+	display: block;
+}
+.friends li {
+	height: 40px;
+	line-height: 49px;
+	padding-left: 10px;
+}
+.friends li paper-checkbox {
+	display: inline-block;
+	width: 100%;
+}
+form [flex] > paper-button{
+	display: block;
+	text-align: center;
+	color: #fff;
+	background: #de4040;
+}
 </style>
 <template>
-	<form is="iron-form" action="/schedule/register" method="post">
-		<div class="schedule-info" shadow>
-			정보입력
+<form is="iron-form" enctype="multipart/formdata" action="/schedule/register" method="post" on-iron-form-presubmit="scheduleSubmit">
+	<!-- 일정 제목과 내용과 날짜 -->
+	<div class="schedule-info" shadow>
+		<paper-input label="제목" name="title" class="schedule-title"></paper-input>
+		<paper-textarea label="일정에 관한 내용" class="schedule-content" name="content"></paper-textarea>
+		{{val}}
+		<div flex>
+			<paper-datetime-picker datetime="2dsd" name="startTime" class="start-time" label="일정 시작 시간"></paper-datetime-picker>
+			<paper-datetime-picker name="endTime" class="end-time" label="일정 종료 시간"></paper-datetime-picker>
 		</div>
+	</div>
+	<div shadow>
+		<paper-checkbox name="useMap" class="map-check" checked="{{useMap::change}}">
+			지도 사용
+		</paper-checkbox>
+		<!-- 구글 맵 -->
+		<template is="dom-if" if="{{useMap}}">
+			<paper-input class="coords-input" name="latitude" readonly value="{{latitude}}" label="위도"></paper-input>
+			<paper-input class="coords-input" name="longitude" readonly value="{{longitude}}" label="경도"></paper-input>
+			<google-map latitude="37.4961565" longitude="127.02821999999999" api-key="AIzaSyAs_wF3yQGFXm2GrsNtwNg1Pehja_kqVs8" disable-street-view-control disable-map-type-control click-events on-google-map-click="googleMapTap" zoom="12">
+				<google-map-marker latitude="{{latitude}}" longitude="{{longitude}}" title="first marker">
+				</google-map-marker>
+			</google-map>
+		</template>
+	</div>
+	<!-- 이미지와 일정을 공유할 친구를 등록하는 장소 -->
+	<div flex class="image-and-friend">
+		<!-- 이미지 -->
 		<div shadow>
-			<div>
-				<input type="checkbox" name="useMap" class="map-check" checked="{{showMap::change}}">
-			</div>
-			<paper-input class="coords-input" name="latitude" value="{{latitude}}" placeholder="위도"></paper-input>
-			<paper-input class="coords-input" name="longitude" value="{{longitude}}" placeholder="경도"></paper-input>
-			<input type="hidden" name="latitude" value="{{latitude}}">
-			<input type="hidden" name="longitude" value="{{longitude}}">
-			<!-- 구글 맵 -->
-			<template is="dom-if" if="{{showMap}}">
-				<google-map latitude="37.4961565" longitude="127.02821999999999" api-key="AIzaSyAs_wF3yQGFXm2GrsNtwNg1Pehja_kqVs8" disable-street-view-control disable-map-type-control click-events on-google-map-click="googleMapTap" zoom="12">
-					<google-map-marker latitude="{{latitude}}" longitude="{{longitude}}" title="first marker" animation="BOUNCE">
-					</google-map-marker>
-				</google-map>
+			<paper-checkbox name="useImage" class="use-image" checked="{{useImage::change}}">
+				이미지 사용
+			</paper-checkbox>
+				<input type="file" name="image" accept="image/*" on-change="imagePreview" id="imageUpload">
+			<template is="dom-if" if="{{useImage}}">
+				<label class="image-upload" for="imageUpload">
+					<span class="before-preview">
+						<iron-icon icon="image:collections"></iron-icon>
+						이곳을 클릭해서 업로드할 이미지를 선택하세요.
+					</span>
+					<template is="dom-if" if="{{imageTitle}}">
+						<p class="image-title">
+							{{imageTitle}}
+						</p>
+					</template>
+					<img src="/" class="preview-image" alt="{{imageTitle}}" title="{{imageTitle}}">
+				</label>
 			</template>
 		</div>
-		<div shadow>친구 동참</div>
-		<button>등록</button>
-	</form>
+		<!-- 친구 목록 -->
+		<div shadow>
+			<paper-checkbox name="shareFriend" class="share-friend" checked="{{shareFriend::change}}">친구들과 공유</paper-checkbox>
+			<template is="dom-if" if="{{shareFriend}}">
+				<iron-ajax url="/friend/friends?after" auto last-response="{{friends}}"></iron-ajax>
+				<ul class="friends">
+					<template is="dom-repeat" items="{{friends}}">
+						<li>
+							<paper-checkbox name="friends[]" value="{{item.idx}}">
+								{{item.name}}
+							</paper-checkbox>
+						</li>
+					</template>
+				</ul>
+			</template>
+		</div>
+	</div>
+	<div flex>
+		<paper-button raised on-tap="scheduleRegister">등록</paper-button>
+		<paper-button raised on-tap="scheduleReset">초기화</paper-button>
+	</div>
+</form>
 </template>
 <script>
 Polymer({
 	is : "schedule-addtion",
+	scheduleSubmit : function(e) { //제출 전에 내용을 검사
+		//제목 검사
+		var title = this.$$(".schedule-title").value || "";
+		title = title.trim();
+		if(title === "") {
+			Polymer.app.toast.alert("제목을 입력하세요.");
+			e.preventDefault();
+			return;
+		}
+
+		//내용 검사
+		var content = this.$$(".schedule-content").value || "";
+		content = content.trim();
+		if(content === "") {
+			Polymer.app.toast.alert("제목을 입력하세요.");
+			e.preventDefault();
+			return;
+		}
+
+		//시간 검사
+		var startTime = this.$$(".start-time").value || "";
+		window.starttime = this.$$(".start-time");
+		startTime = startTime.trim();
+		if(startTime === "") {
+			Polymer.app.toast.alert("일정 시작 시간을 입력하세요.");
+			e.preventDefault();
+			return;
+		}
+
+		var endTime = this.$$(".end-time").value || "";
+		endTime = endTime.trim();
+		if(endTime === "") {
+			Polymer.app.toast.alert("일정 종료 시간을 입력하세요.");
+			e.preventDefault();
+			return;
+		}
+	},
+	scheduleRegister : function() { // 스케쥴을 등록하는 ajax를 실행하는 함수
+		this.$$("form").submit();
+	},
+	scheduleReset : function() { // form에 있는 모든 내용을 초기화한다.
+		this.$$(".schedule-title").value = "";
+		this.$$(".schedule-content").value = "";
+		this.$$(".start-time").value = "";
+		this.$$(".end-time").value = "";
+		this.useMap = false;
+		this.useImage = false;
+		this.shareFriend = false;
+	},
+	imagePreview : function(e) {
+		var file = e.target.files[0];
+		if(!file) { //파일이 제대로 지정되지 않았으면 종료
+			return;
+		}
+
+		this.imageTitle = file ? file.name : "";
+		var fileReader = new FileReader();
+		var previewImage = this.$$(".image-upload");
+		fileReader.onload = (e) => {
+			previewImage.querySelector("img").src = e.target.result;
+			this.toggleClass("uploaded", true, previewImage)
+		}
+		fileReader.readAsDataURL(file)
+	},
 	ready : function() {
+		//form 관련 요소들과 변수 설정
 		this.map = this.$$("google-map");
 		this.marker = this.$$("google-map-marker");
 
 		this.latitude = 37.4961565;
 		this.longitude = 127.02821999999999;
 
-		window.sub = this;
+		//로그인 이벤트
+		var node = this;
+		Polymer.app.addEventListener("login", (e) => {
+			node.scheduleReset();
+		});
 	},
 	googleMapTap : function(e) { // 지도를 클릭하면 그에 따라 마커도 이동한다.
 		this.latitude = e.detail.latLng.lat();

@@ -95,7 +95,7 @@
 <script>
 Polymer({
 	is : "friend-invite",
-	behaviors : [receiveBehavior, writeSiteBehavior],
+	behaviors : [writeSiteBehavior],
 	acceptedInvite : function(e) {
 		this.acceptParam = {}; // ajax 전송 데이터 초기화
 		var result = e.detail.response;

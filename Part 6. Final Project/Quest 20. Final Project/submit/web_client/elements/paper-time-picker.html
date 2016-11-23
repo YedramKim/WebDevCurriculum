@@ -1,0 +1,220 @@
+<link rel="import" href="/polymer/iron-icon/iron-icon.html">
+<link rel="import" href="/polymer/iron-icons/iron-icons.html">
+<link rel="import" href="/polymer/paper-button/paper-button.html">
+
+<dom-module id="paper-time-picker">
+<style include="common-style">
+:host{
+	display: block;
+	background: #fff;
+	--paper-time-picker-color : var(--paper-picker-color, #3f51b5);
+}
+.picker-header{
+	padding: 10px;
+	background: var(--paper-time-picker-color);
+	color: #fff;
+}
+.picker-header .year{
+	color: rgba(255,255,255,.85);
+}
+.picker-header h2{
+	font-weight: normal;
+	margin: 3px 0;
+}
+.picker-body{
+	padding:10px 20px 20px;
+}
+.time-select{
+	padding:0 40px;
+	font-size: 2.0em;
+	font-weight: bold;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+.time-select>*{
+	flex-basis: 30%;
+	text-align: center;
+}
+.time-select>.colon{
+	flex-basis: 5%;
+	line-height: 130px;
+}
+.time-select iron-icon{
+	width: 100%;
+	height: 30px;
+	cursor: pointer;
+}
+.button-wrap {
+	margin-top: 20px;
+	text-align: right;
+}
+</style>
+<template>
+	<div class="picker-header roboto">
+		<p class="year">{{year}}</p>
+		<h2>{{year}}.{{month}}.{{dates}}</h2>
+	</div>
+	<div class="picker-body">
+		<div class="time-select" flex>
+			<div>
+				<iron-icon icon="icons:expand-less" on-down="startPlusHour" on-up="endPlusHour"></iron-icon>
+				{{formatNum(hour)}}
+				<iron-icon icon="icons:expand-more" on-down="startMinusHour" on-up="endMinusHour"></iron-icon>
+			</div>
+			<div class="colon">:</div>
+			<div>
+				<iron-icon icon="icons:expand-less" on-down="startPlusMin" on-up="endPlusMin"></iron-icon>
+				{{formatNum(min)}}
+				<iron-icon icon="icons:expand-more" on-down="startMinusMin" on-up="endMinusMin"></iron-icon>
+			</div>
+			<div class="colon">:</div>
+			<div>
+				<iron-icon icon="icons:expand-less" on-down="startPlusSec" on-up="endPlusSec"></iron-icon>
+				{{formatNum(sec)}}
+				<iron-icon icon="icons:expand-more" on-down="startMinusSec" on-up="endMinusSec"></iron-icon>
+			</div>
+		</div>
+		<div class="button-wrap">
+			<paper-button on-tap="settingValue">설정</paper-button>
+			<paper-button on-tap="cancelSetting">취소</paper-button>
+		</div>
+	</div>
+</template>
+<script>
+Polymer({
+	is : "paper-time-picker",
+	controlRange : function(path, plusOrMinus, max) { // 특정 값의 범위를 조정
+		var value = this.get("path");
+		if(plusOrMinus) { // plusOrMinus 가 true일 경우 1플러스 
+
+		}else {
+
+		}
+	},
+	//시간과 분, 초를 다루는 함수들
+	minusHour : function() {
+		this.hour = this.hour > 1 ? this.hour - 1 : 23;
+		this.debounce("time", this.minusHour, 50);
+	},
+	startMinusHour : function(e) {
+		this.debounce("time", this.minusHour, 50);
+	},
+	endMinusHour : function() {
+		this.cancelDebouncer("time");
+	},
+	plusHour : function() {
+		this.hour = this.hour < 23 ? this.hour + 1 : 0;
+		this.debounce("time", this.plusHour, 50);
+	},
+	startPlusHour : function(e) {
+		this.debounce("time", this.plusHour, 50);
+	},
+	endPlusHour : function() {
+		this.cancelDebouncer("time");
+	},
+	minusMin : function() {
+		this.min = this.min > 1 ? this.min - 1 : 59;
+		this.debounce("time", this.minusMin, 30);
+	},
+	startMinusMin : function(e) {
+		this.debounce("time", this.minusMin, 30);
+	},
+	endMinusMin : function() {
+		this.cancelDebouncer("time");
+	},
+	plusMin : function() {
+		this.min = this.min < 59 ? this.min + 1 : 0;
+		this.debounce("time", this.plusMin, 30);
+	},
+	startPlusMin : function(e) {
+		this.debounce("time", this.plusMin, 30);
+	},
+	endPlusMin : function() {
+		this.cancelDebouncer("time");
+	},
+
+	minusSec : function() {
+		this.sec = this.sec > 1 ? this.sec - 1 : 59;
+		this.debounce("time", this.minusSec, 30);
+	},
+	startMinusSec : function(e) {
+		this.debounce("time", this.minusSec, 30);
+	},
+	endMinusSec : function() {
+		this.cancelDebouncer("time");
+	},
+	plusSec : function() {
+		this.sec = this.sec < 59 ? this.sec + 1 : 0;
+		this.debounce("time", this.plusSec, 30);
+	},
+	startPlusSec : function(e) {
+		this.debounce("time", this.plusSec, 30);
+	},
+	endPlusSec : function() {
+		this.cancelDebouncer("time");
+	},
+	formatNum : function(num) {
+		return num < 10 ? "0" + num : num;
+	},
+	settingValue : function() {
+		var hour = this.hour < 10 ? "0" + this.hour : this.hour;
+		var min = this.min < 10 ? "0" + this.min : this.min;
+		var sec = this.sec < 10 ? "0" + this.sec : this.sec;
+		this._setValue(hour + ":" + min + ":" + sec);
+	},
+	cancelSetting : function() {
+		this.toggleClass("show", false);
+	},
+	properties : {
+		date : {
+			type : String,
+			value : "",
+			notify : true,
+			reflectToAttribute : true,
+			observer : "_dateObserver"
+		},
+		time : {
+			type : String,
+			value : "",
+			notify : true,
+			reflectToAttribute : true,
+			observer : "_timeObserver"
+		},
+		value : {
+			type : String,
+			value : "",
+			notify : true,
+			readOnly : true,
+			observer : "fireChangeEvent"
+		}
+	},
+	_dateObserver : function() {
+		if(this.date[0]) { //date가 배열일 경우
+			var date = this.date.split("-");
+			this.year = date[0];
+			this.month = date[1];
+			this.dates = date[2];
+		}
+	},
+	_timeObserver : function(time) {
+		if(time.search(/^[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}$/) === -1) {
+		// 올바르지 않은 시간 형식일 경우 지금 시간으로 변경한다.
+			var date = new Date();
+			var hour = this.hour = date.getHours();
+			var min = this.min = date.getMinutes();
+			var sec = this.sec = date.getSeconds();
+			var time = this.time = hour + ":" + min + ":" + sec;
+		}
+	},
+	fireChangeEvent : function() {
+		this.fire("change");
+	},
+	ready : function() {
+		window.t = this;
+	}
+});
+</script>
+</dom-module>

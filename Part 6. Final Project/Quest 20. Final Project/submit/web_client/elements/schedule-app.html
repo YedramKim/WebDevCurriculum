@@ -57,7 +57,7 @@ app-header app-toolbar{
 	<app-route route="{{subRoute}}" pattern="/:subPage" data="{{subRouteData}}"></app-route>
 
 	<!-- 알림 토스트 -->
-	<toast-alert receive-node="{{toast}}"></toast-alert>
+	<toast-alert id="toast"></toast-alert>
 	
 	<!-- 레이아웃 -->
 	<app-drawer-layout fullbleed>
@@ -75,9 +75,9 @@ app-header app-toolbar{
 		</template>
 		<template is="dom-if" if="{{login.login}}">
 			<iron-pages class="pages" selected="[[page]]" attr-for-selected="name" fallback-selection="page404">
-				<app-main name="main" receive-node="{{appMain}}" route="{{subRoute}}"></app-main>
-				<schedule-page name="schedule" route="{{subRoute}}" receive-node="{{schedulePage}}" route="{{subRoute}}"></schedule-page>
-				<friend-page name="friend" route="{{subRoute}}" receive-node="{{friendPage}}"></friend-page>
+				<app-main name="main" route="{{subRoute}}"></app-main>
+				<schedule-page name="schedule" route="{{subRoute}}" route="{{subRoute}}"></schedule-page>
+				<friend-page name="friend" route="{{subRoute}}"></friend-page>
 				<page-404 name="page404"></page-404>
 			</iron-pages>
 		</template>
@@ -129,11 +129,11 @@ Polymer({
 		//기능성 엘리먼트 참조
 		this.loginHTTP = this.$$(".loginHTTP");
 		this.logoutHTTP = this.$$(".logoutHTTP");
-		this.toast;
+		this.toast = this.$.toast;
 		window.toastAlert = this.toast.alert.bind(this.toast);
 
 		//페이지 커스텀 엘리먼트
-		// receive-node="{{appMain}}"
+		//
 		this.appMain;
 		this.schedulePage;
 		this.friendPage;

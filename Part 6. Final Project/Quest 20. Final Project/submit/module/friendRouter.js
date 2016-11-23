@@ -31,7 +31,12 @@ router.get("/friends", (req, res, next) => {
 				friends.beforeAccept.push(users[i]);
 			}
 		}
-		res.send(friends);
+
+		if(req.query.after !== undefined) { //?after가 붙어있으면 afterAccept만 전송
+			res.send(friends.afterAccept);
+		}else {
+			res.send(friends);
+		}
 	});
 });
 

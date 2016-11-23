@@ -14,7 +14,8 @@ var routeBehavior = {
 };
 //id방식의 노드 참조의 약간 문제(?)가 있는 것 같아 만든 behavior 입니다.
 //receive-node속성을 이용해서 부모노드가 자신을 참조할 수 있게 하는 behavior
-var receiveBehavior = {
+//일단 보류
+/*var receiveBehavior = {
 	properties : {
 		receiveNode : {
 			type : Object,
@@ -26,7 +27,7 @@ var receiveBehavior = {
 	ready : function() {
 		this._setReceiveNode(this);
 	}
-};
+};*/
 //로그인과 관련된 behavior
 var loginBehavior = { //on-tap 메소드 형태로 사용
 	googleLogin : function() {

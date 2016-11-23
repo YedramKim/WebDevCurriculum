@@ -12,7 +12,7 @@
 	box-sizing:border-box;
 	font-family: "Malgun Gothic";
 }
-p,ul,li,ol,a,div,button,input,textarea{
+p,ul,li,ol,a,div,button,input,textarea,h1,h2,h3,h4,h5,h6{
 	margin: 0;
 	padding: 0;
 }
@@ -39,6 +39,15 @@ button {
 }
 [shadow]{
 	@apply(--shadow-elevation-2dp);
+}
+[flex]{
+	display: flex;
+}
+[flex][column]{
+	flex-direction: row;
+}
+[flex][wrap]{
+	flex-wrap: wrap;
 }
 </style>
 </template>

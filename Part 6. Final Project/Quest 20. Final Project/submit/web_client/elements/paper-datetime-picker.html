@@ -1,0 +1,129 @@
+<link rel="import" href="/polymer/paper-input/paper-input.html">
+<link rel="import" href="/polymer/paper-styles/shadow.html">
+<link rel="import" href="/elements/paper-date-picker.html">
+<link rel="import" href="/elements/paper-time-picker.html">
+
+<dom-module id="paper-datetime-picker">
+<style include="common-style">
+:host{
+	display: block;
+	position: relative;
+}
+paper-input{
+
+}
+paper-date-picker, paper-time-picker{
+	display: none;
+	position: absolute;
+	width: 100%;
+	left: 0;
+	top: 100%;
+	margin-top: -8px;
+	@apply(--shadow-elevation-2dp);
+}
+.show{
+	display: block;
+}
+</style>
+<template>
+	<paper-input name="[[name]]" label="[[label]]" placeholder="[[placeholder]]" readonly on-focus="showDatePicker" value="{{dateTimeValue}}"></paper-input>
+	<paper-date-picker id="datePicker" date="[[date]]" on-change="dateChangeEvent" value="{{dataValue}}"></paper-date-picker>
+	<paper-time-picker id="timePicker" date="{{dataValue}}" time="[[time]]" on-change="timeChangeEvent"></paper-time-picker>
+</template>
+<script>
+Polymer({
+	is : "paper-datetime-picker",
+	showDatePicker : function() {
+		this.toggleClass("show", false, this.timePicker);
+		this.toggleClass("show", true, this.datePicker);
+	},
+	dateChangeEvent : function() {
+		this.toggleClass("show", false, this.datePicker);
+		this.toggleClass("show", true, this.timePicker);
+	},
+	timeChangeEvent : function(e) {
+		var value = e.target.value;
+		if(value) { // 제대로 된 값으로 변경되었을 때
+			var dateTimeValue = this.dataValue + " " + value;
+			this.dateTimeValue = dateTimeValue;
+			this.value = dateTimeValue;
+			this.toggleClass("show", false, this.timePicker);
+		}
+	},
+	properties : {
+		name : { // paper-input 속성
+			type : String,
+			value : "",
+			notify : true,
+			reflectToAttribute : true
+		},
+		label : { // paper-input 속성
+			type : String,
+			value : "",
+			notify : true,
+			reflectToAttribute : true
+		},
+		placeholder : { // paper-input 속성
+			type : String,
+			value : "",
+			notify : true,
+			reflectToAttribute : true
+		},
+		datetime : { // 날짜 시간
+			type : String,
+			value : new Date(),
+			reflectToAttribute : true,
+			observer : "_datetimeObserver"
+		},
+		date : { // 날짜
+			type : String,
+			value : "",
+			readOnly : true
+		},
+		time : { // 시간
+			type : String,
+			value : "",
+			readOnly : true
+		}
+	},
+	_datetimeObserver : function(datetime) { // 시간 검사
+		var date = window.date = new Date(datetime);
+		if(isNaN(date.getFullYear())) { // 제대로 된 날짜가 아닐경우
+			this.datetime = new Date(); //현재 날짜를 넣는다.
+			return;
+		}
+
+		//날짜 얻기
+		var year = date.getFullYear();
+		var month = date.getMonth() + 1;
+		var dates = date.getDate();
+		var hour = date.getHours();
+		var min = date.getMinutes();
+		var sec = date.getSeconds();
+
+		this._setDate(year + "-" + month + "-" + dates);
+		this._setTime(hour + ":" + min + ":" + sec);
+		this.datetime = this.date + " " + this.time;
+
+		//자식 노드
+		this.datePicker = this.$.datePicker;
+		this.timePicker = this.$.timePicker;
+
+		//자기 자신 이외의 요소를 클릭하면 datepicker와 timepicker가 사라지게 하는 이벤트들
+		var node = this;
+		this.listen(this, "tap", "stopPropagation");
+		this.listen(window, "tap", "pickerHide");
+	},
+	pickerHide : function(e) {
+		this.toggleClass("show", false, this.datePicker);
+		this.toggleClass("show", false, this.timePicker);
+	},
+	stopPropagation : function(e) {
+		e.stopPropagation();
+	},
+	ready : function() {
+		window.sub = this;
+	}
+});
+</script>
+</dom-module>

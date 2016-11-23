@@ -1,0 +1,84 @@
+<dom-module id="date-input">
+<style>
+input{
+	width: auto;
+	border: 0;
+	background: rgba(255,255,255,.3);
+	color: #000;
+}
+</style>
+<template>
+<input type="text" value="{{year::input}}" max-length="4" size="4">
+-
+<input type="text" value="{{month::input}}" max-length="2" size="4">
+-
+<input type="text" value="{{date::input}}" max-length="2" size="2">
+  
+<input type="text" value="{{hour::input}}" max-length="2" size="2">
+ : 
+<input type="text" value="{{min::input}}" max-length="2" size="2">
+ : 
+<input type="text" value="{{second::input}}" max-length="2" size="2">
+</template>
+<script>
+Polymer({
+	is : "date-input",
+	observers : [
+		"_setDate(year, month, date, hour, min, second)"
+	],
+	_setDate : function() { // value 값 설정
+		var now = new Date();
+
+		var year = this.year || "";
+		if(isNaN(year)) {
+			year = now.getFullYear();
+		}
+
+		var month = this.month || "";
+		if(isNaN(month) || month > 12) {
+			month = now.getMonth() + 1;
+		}
+		if(month < 10) {
+			month = "0" + month;
+		}
+		
+		
+		var date = this.date || "";
+		if(isNaN(year)) {
+			year = now.getFullYear();
+		}
+		
+		
+		var hour = this.hour || "";
+		if(isNaN(year)) {
+			year = now.getFullYear();
+		}
+		
+		
+		var min = this.min || "";
+		if(isNaN(year)) {
+			year = now.getFullYear();
+		}
+		
+		
+		var second = this.second || "";
+		if(isNaN(year)) {
+			year = now.getFullYear();
+		}
+		
+		
+		var value = year + "-" + month + "-" + date + " " + hour + ":" + min + ":" + second;
+		console.log(value);
+		this._setValue(value);
+	},
+	properties : {
+		value : {
+			type : String,
+			value : "",
+			notify : true,
+			readOnly : true
+		}
+	}
+});
+</script>
+</dom-module>

@@ -131,7 +131,7 @@
 <script>
 Polymer({
 	is : "friend-search",
-	behaviors : [receiveBehavior, writeSiteBehavior],
+	behaviors : [writeSiteBehavior],
 	invitedUser : function(e) { // 유저에게 초대 메세지를 보낸후의 이벤트
 		var result = e.detail.response;
 		if(result.success) {
