@@ -19,7 +19,7 @@ const Database = require("./sequelize");
 app.use("/polymer", static(path.join(__dirname , "..", "bower_components")));
 app.use("/client", static(path.join(__dirname , "..", "web_client")));
 app.use("/elements", static(path.join(__dirname , "..", "web_client", "elements")));
-app.use("/upload", static(path.join(__dirname , "..", "multer_upload")));
+app.use("/upload", static(path.join(__dirname , "..", "scheduleImages")));
 
 //post 처리 설정
 app.use(bodyParser.urlencoded({extended : false}));

@@ -125,7 +125,7 @@ const UserScheduleRelation = sequelize.define("userScheduleRelation", {
 		defaultValue : false,
 		allowNull : false
 	},
-	see : { // 일정을 보기로 결정
+	join : { // 일정에 참가하기로 결정
 		type : Sequelize.BOOLEAN,
 		defaultValue : false,
 		allowNull : false

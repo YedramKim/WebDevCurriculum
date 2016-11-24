@@ -1,19 +1,153 @@
+<link rel="import" href="/polymer/paper-button/paper-button.html">
+
 <dom-module id="schedule-invite">
 <style include="common-style">
 :host{
 	display: block;
 	min-height: 50px;
-	background: #fff;
 	margin-top: 50px;
+}
+h3{
+	margin: 10px 0;
+}
+.scheduleList {
+	border-radius: 4px;
+	overflow: hidden;
+	background: #fff;
+}
+.scheduleList li {
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+}
+.scheduleList li:first-child {
+	background: #3f51b5;
+	color: #fff;
+}
+.scheduleList .title {
+	flex-basis: 20%;
+}
+.scheduleList .startTime {
+	flex-basis: 25%;
+}
+.scheduleList .endTime {
+	flex-basis: 25%;
+}
+.scheduleList .join {
+	flex-basis: 15%;
+}
+.scheduleList .view {
+	flex-basis: 15%;
+}
+paper-button {
+	height: 30px;
+	background: #e22460;
+	color: #fff;
+}
+.shecule-info {
 	padding: 10px;
+	min-height: 20px;
+	background: #fff;
 }
 </style>
 <template>
-	inv
+	<!-- ajax -->
+	<iron-ajax url="/schedule/invites" id="inviteHTTP" auto last-response="{{invites}}"></iron-ajax>
+	<iron-ajax id="joinScheduleHTTP" url="/schedule/joinSchedule" content-type="application/json" on-response="joinedSchedule" body="{{scheduleInfo}}" method="POST"></iron-ajax>
+	<iron-ajax id="getScheduleHTTP" url="/schedule/summary" params="{{scheduleInfo}}" on-response="showSchedule"></iron-ajax>
+
+	<!-- 일정 간단히 보기 -->
+	<template is="dom-if" if="[[viewScheduleInfo.idx]]">
+		<div class="shecule-info" shadow>
+			<h3>
+				'[[viewScheduleInfo.title]]'
+			</h3>
+			<p>[[viewScheduleInfo.startTime]]</p>
+			<p>[[viewScheduleInfo.endTime]]</p>
+			<div id="content" inner-h-t-m-l="[[viewScheduleInfo.content]]">
+				
+			</div>
+		</div>
+	</template>
+
+	<!-- 일정 목록 -->
+	<h3>
+		권유 받은 일정 목록
+	</h3>
+	<ul class="scheduleList" shadow>
+		<li flex>
+			<div class="title">일정 제목</div>
+			<div class="startTime">시작 시간</div>
+			<div class="endTime">종료 시간</div>
+			<div class="join">일정 참가</div>
+			<div class="view">일정 보기</div>
+		</li>
+		<template is="dom-repeat" items="[[invites]]">
+			<li flex>
+				<div class="title">[[item.title]]</div>
+				<div class="startTime">[[item.startTime]]</div>
+				<div class="endTime">[[item.endTime]]</div>
+				<div class="join">
+					<paper-button on-tap="joinSchedule" raised>참가</paper-button>
+				</div>
+				<div class="view">
+					<paper-button on-tap="viewSchedule" raised>보기</paper-button>
+				</div>
+			</li>
+		</template>
+	</ul>
 </template>
 <script>
 Polymer({
-	is : "schedule-invite"
+	is : "schedule-invite",
+	joinedSchedule : function(e) { // 일정 참가하기 response
+		var result = e.detail.response;
+		if(result.success) {
+			Polymer.app.toast.alert("성공했습니다.", "/schedule/view/" + result.link);
+			//등록한 일정을 ul에서 잘라낸다.
+			this.splice("invites", this.invites.indexOf(this.joinScheduleInfo), 1);
+		}else {
+			var cause = result.cause || "";
+			if(cause.indexOf("timeCrash") === -1){ // 일정이 겹칠경우
+				var scheduleIdx = cause.replace("timeCrash", "");
+				Polymer.app.toast.alert("겹치는 일정이 있습니다.", "/schedule/view/" + scheduleIdx);
+			}else {
+				Polymer.app.toast.alert("오류가 발생했습니다.");
+			}
+		}
+	},
+	showSchedule : function(e) { // 일정 간략하게 보여주기
+		this.set("viewScheduleInfo.content", e.detail.response.content);
+
+	},
+	joinSchedule : function(e) { // `참가` 버튼 tap 이벤트
+		this.scheduleInfo = {
+			idx : e.model.item.idx,
+			startTime : e.model.item.startTime,
+			endTime : e.model.item.endTime,
+		}
+
+		this.joinScheduleInfo = e.model.item;
+		this.joinScheduleHTTP.generateRequest();
+	},
+	viewSchedule : function(e) { // `보기` 버튼 tap 이벤트
+		this.scheduleInfo = {
+			idx : e.model.item.idx
+		}
+		this.viewScheduleInfo = e.model.item;
+		this.getScheduleHTTP.generateRequest();
+	},
+	ready : function() {
+		//iron-ajax 객체
+		this.inviteHTTP = this.$.inviteHTTP;
+		this.joinScheduleHTTP = this.$.joinScheduleHTTP;
+		this.getScheduleHTTP = this.$.getScheduleHTTP;
+
+		var node = this;
+		Polymer.app.addEventListener("login", (e) => {
+			node.inviteHTTP.generateRequest();
+		});
+	}
 });
 </script>
 </dom-module>

@@ -1,25 +1,60 @@
+<link rel="import" href="/elements/schedule-viewer.html">
+<link rel="import" href="/elements/schedule-list.html">
+
 <dom-module id="schedule-view">
 <style include="common-style">
 :host{
 	display: block;
-	min-height: 50px;
-	background: #fff;
 	margin-top: 50px;
-	@apply(--shadow-elevation-2dp);
-	padding: 10px;
 }
 </style>
 <template>
+	<!-- 라우트 -->
 	<app-route route="{{route}}" pattern="/:index" data="{{indexRouteData}}"></app-route>
+	<iron-ajax id="scheduleHTTP" url="/schedule/mySchedules" auto last-response="{{schedules}}"></iron-ajax>
+	<iron-pages selected="[[indexRouteData.index]]" attr-for-selected="name" fallback-selection="main">
+		<schedule-list name="main" schedules="[[schedules]]"></schedule-list>
+		<template is="dom-repeat" items="[[schedules]]" on-dom-change="listLoaded">
+			<schedule-viewer name$="[[item.idx]]" schedule-idx="[[item.idx]]">{{item.idx}}</schedule-viewer>
+		</template>
+	</iron-pages>
 </template>
 <script>
 Polymer({
 	is : "schedule-view",
+	listLoaded : function() {
+		this._pageIndexObserver(this.indexRouteData.index);
+		console.log(Polymer.dom(this.pages).children);
+		this.pages.select("page6");
+	},
 	observers : [
-		"_observer(indexRouteData.index)"
+		"_pageIndexObserver(indexRouteData.index)"
 	],
-	_observer : function(index) {
-		console.log(index);
+	_pageIndexObserver : function(index) {
+		if(!index) {
+			return false;
+		}
+		var pagesDom = Polymer.dom(this.$$("iron-pages"));
+		var pages = pagesDom.children;
+
+		var length = pages.length;
+		for(var i = 0; i < length; i++) { // 일정을 보여주는 schedule-viewer 태그들의 name일 비교해서 idx랑 일치하는 태그는 hide 속성을 지운다.
+			var name = pages[i].getAttribute("name");
+			if(index == name) {
+				pages[i].hide = false;
+			}
+		}
+	},
+	ready : function() {
+		this.scheduleHTTP = this.$.scheduleHTTP;
+
+		this.pages = this.$$("iron-pages");
+
+		var node = this;
+		Polymer.app.addEventListener("login", (e) => {
+			node.scheduleHTTP.generateRequest();
+		});
+		window.view = this;
 	}
 });
 </script>

@@ -1,0 +1,165 @@
+<link rel="import" href="/polymer/paper-button/paper-button.html">
+<link rel="import" href="/polymer/google-map/google-map.html">
+
+<dom-module id="schedule-viewer">
+<style include="common-style">
+:host{
+	display: block;
+}
+.schedule-title{
+	margin: 20px 0;
+	border-bottom: 1px #ccc solid;
+	padding: 0 10px;
+	padding-bottom: 15px;
+	position: relative;
+}
+.schedule-title img{
+	vertical-align: middle;
+	max-width: 50%;
+	max-height: 100px;
+	width: auto;
+	height: auto;
+	float: right;
+}
+.schedule-title .count {
+	position: absolute;
+	bottom: 10px;
+	left: 0px;
+	font-weight: normal;
+	font-size: .5em;
+	color: #777;
+	padding: 10px;
+	border-bottom: 3px #2d28c7 solid;
+}
+.schedule-title::after{
+	content:'';
+	display: block;
+	clear: both;
+}
+.viewer {
+	background: #fff;
+	padding: 10px;
+}
+.viewer h3 {
+	margin: 10px 0;
+}
+.viewer google-map {
+	height: 200px;
+}
+.viewer .info {
+	margin: 10px 0;
+	justify-content: space-between;
+}
+.viewer .info div{
+	position: relative;
+	flex-basis: 49.5%;
+	height: 40px;
+	line-height: 37px;
+	border-bottom: 3px #2d28c7 solid;
+	font-weight: bold;
+	padding-left: 10px;
+}
+.viewer .info div sub{
+	float: right;
+	display: inline;
+	margin-right: 10px;
+	font-weight: normal;
+}
+.viewer .content-title {
+	margin-top: 30px;
+	margin-bottom: 5px;
+	font-size: 0.9em;
+	color: #888;
+}
+.schedule-content {
+	margin-bottom: 20px;
+	padding: 10px;
+	border-bottom: 3px #2d28c7 solid;
+}
+.list-link{
+	margin: 10px 0;
+	text-align: right;
+}
+.list-link paper-button{
+	background: #e22460;
+	color: #fff;
+}
+</style>
+<template>
+	<iron-ajax url$="/schedule/load?idx={{scheduleIdx}}" id="loadHTTP" last-response="{{schedule}}"></iron-ajax>
+	<div class="viewer" shadow>
+		<h2 class="schedule-title">
+			{{schedule.title}}
+			<template is="dom-if" if="[[schedule.image]]">
+				<img src$="/upload/[[schedule.image]]" alt$="[[schedule.image]]" title$="[[schedule.image]]">
+			</template>
+			<div class="count" shadow>
+				일정 참여 인수 : [[schedule.count]]명
+			</div>
+		</h2>
+		<div flex class="info">
+			<div shadow>
+				<sub>시작 시간</sub>
+				[[schedule.startTime]]
+			</div>
+			<div shadow>
+				<sub>종료 시간</sub>
+				[[schedule.endTime]]
+			</div>
+		</div>
+		<template is="dom-if" if="[[schedule.useMap]]">
+			<div flex class="info">
+				<div shadow>
+					<sub>위도</sub>
+					[[schedule.latitude]]
+				</div>
+				<div shadow>
+					<sub>경도</sub>
+					[[schedule.longitude]]
+				</div>
+			</div>
+			<div class="content-title">장소</div>
+			<google-map latitude="[[schedule.latitude]]" longitude="[[schedule.longitude]]" api-key="AIzaSyAs_wF3yQGFXm2GrsNtwNg1Pehja_kqVs8" disable-street-view-control disable-map-type-control click-events zoom="16" shadow>
+				<google-map-marker latitude="[[schedule.latitude]]" longitude="[[schedule.longitude]]" title="first marker">
+				</google-map-marker>
+			</google-map>
+		</template>
+		<p class="content-title">일정 내용</p>
+		<div class="schedule-content" inner-h-t-m-l="[[schedule.content]]" shadow>
+		</div>
+		<div class="list-link">
+			<a href="/schedule/view/">
+				<paper-button raised>
+					목록으로 이동
+				</paper-button>
+			</a>
+		</div>
+	</div>
+</template>
+<script>
+Polymer({
+	is : "schedule-viewer",
+	properties : {
+		hide : {
+			type : Boolean,
+			value : true,
+			notify : true,
+			reflectToAttribute : true,
+			observer : "_hideObserver"
+		},
+		scheduleIdx : {
+			type : Boolean,
+			notify : true
+		}
+	},
+	_hideObserver : function(hide) { // hide가 false가 되면 schedule을 불러온다.
+		if(!hide) {
+			this.loadHTTP.generateRequest();
+		}
+	},
+	ready : function() {
+		this.loadHTTP = this.$.loadHTTP;
+	}
+});
+</script>
+</dom-module>

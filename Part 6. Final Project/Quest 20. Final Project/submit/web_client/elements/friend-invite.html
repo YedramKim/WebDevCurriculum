@@ -1,29 +1,10 @@
-<link rel="import" href="/polymer/iron-icon/iron-icon.html">
-<link rel="import" href="/polymer/iron-icons/iron-icons.html">
 <link rel="import" href="/polymer/paper-button/paper-button.html">
 
 <dom-module id="friend-invite">
 <style include="common-style">
 :host{
 	display: block;
-}
-.refresh{
-	margin-top: 50px;
-	margin-bottom: 10px;
-}
-.refresh paper-button{
-	min-width :auto;
-	padding:0 10px;
-	height: 30px;
-	display: inline-block;
-	text-align: center;
-	line-height: 30px;
-	background: #ff6262;
-	color: #fff;
-}
-.refresh iron-icon{
-	width: 20px;
-	height: 20px;
+	padding-top: 50px;
 }
 .invites {
 	border-radius: 3px;
@@ -69,12 +50,6 @@
 <iron-ajax id="acceptHTTP" method="POST" content-type="application/json" url="/friend/acceptInvite" on-response="acceptedInvite" body="{{acceptParam}}"></iron-ajax>
 
 <!-- 초대 목록 초기화 버튼 -->
-<div class="tar refresh">
-	<paper-button raised on-tap="refreshInvite"> 
-		<iron-icon icon="refresh"></iron-icon>
-		새로 고침
-	</paper-button>
-</div>
 <ul class="invites" shadow>
 	<li>
 		<div class="name">초대한 사람</div>
@@ -104,9 +79,6 @@ Polymer({
 		}else {
 			Polymer.app.toast.alert("수락이 실패되었습니다.");
 		}
-	},
-	refreshInvite : function() {
-		this.inviteHTTP.generateRequest();
 	},
 	acceptFriendInvite : function(e) {
 		var senderIdx = e.target.getAttribute("sender-idx");

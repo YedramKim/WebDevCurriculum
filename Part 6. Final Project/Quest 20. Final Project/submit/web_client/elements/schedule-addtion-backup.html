@@ -113,10 +113,14 @@ form [flex] > paper-button{
 </style>
 <template>
 <form is="iron-form" enctype="multipart/form-data" action="/schedule/register" method="post" on-iron-form-presubmit="scheduleSubmit" on-iron-form-response="scheduleSubmited">
+	<!-- 실질적으로 폼의 정보는 모두 이곳으로 모인다. -->
+	<div class="forminfo">
+		
+	</div>
 	<!-- 일정 제목과 내용과 날짜 -->
 	<div class="schedule-info" shadow>
-		<paper-input label="제목" name="title" class="schedule-title"></paper-input>
-		<paper-textarea label="일정에 관한 내용" class="schedule-content" name="content"></paper-textarea>
+		<paper-input value="1" label="제목" name="title" class="schedule-title"></paper-input>
+		<paper-textarea value="1" label="일정에 관한 내용" class="schedule-content" name="content"></paper-textarea>
 		{{val}}
 		<div flex>
 			<paper-datetime-picker datetime="2dsd" name="startTime" class="start-time" label="일정 시작 시간"></paper-datetime-picker>
@@ -190,55 +194,55 @@ Polymer({
 		//제목 검사
 		var title = this.$$(".schedule-title").value || "";
 		title = title.trim();
-		if(title === "") {
+		/*if(title === "") {
 			Polymer.app.toast.alert("제목을 입력하세요.");
 			e.preventDefault();
 			return;
 		}
-
+*/
 		//내용 검사
 		var content = this.$$(".schedule-content").value || "";
 		content = content.trim();
-		if(content === "") {
+		/*if(content === "") {
 			Polymer.app.toast.alert("제목을 입력하세요.");
 			e.preventDefault();
 			return;
 		}
-		
+		*/
 
 		//시간 검사
 		var startTime = this.$$(".start-time").value || "";
 		window.starttime = this.$$(".start-time");
 		startTime = startTime.trim();
-		if(startTime === "") {
+		/*if(startTime === "") {
 			Polymer.app.toast.alert("일정 시작 시간을 입력하세요.");
 			e.preventDefault();
 			return;
 		}
-
+*/
 		var endTime = this.$$(".end-time").value || "";
 		endTime = endTime.trim();
-		if(endTime === "") {
+		/*if(endTime === "") {
 			Polymer.app.toast.alert("일정 종료 시간을 입력하세요.");
 			e.preventDefault();
 			return;
 		}
-
+*/
 		//시작 시간 비교 ( 지금 시간과 비교해서 지금 보다 전일 경우 취소 )
 		var now = Date.now();
 		startTime = (new Date(startTime)).getTime();
-		if(now > startTime) {
+		/*if(now > startTime) {
 			Polymer.app.toast.alert("일정 시작 시간은 지금보다 뒤의 시간이어야 합니다.");
 			e.preventDefault();
 			return;
-		}
+		}*/
 
 		//일정 시간 비교
-		if(startTime >= endTime) {
+		/*if(startTime >= endTime) {
 			Polymer.app.toast.alert("일정 종료 시간은 시작 시간보다 뒤에 있어야 합니다.");
 			e.preventDefault();
 			return;
-		}
+		}*/
 	},
 	scheduleSubmited : function(e) {
 		var result = e.detail.response;
@@ -250,35 +254,9 @@ Polymer({
 			}else { // 그 외의 경우
 				Polymer.app.toast.alert("실패했습니다.")
 			}
-			return;
-		}
-		var useImage = this.$$(".use-image");
-		if(useImage.checked && this.$.imageUpload.files[0]) { // 이미지 업로드 하기로 결정했는지 확인
-			Polymer.app.toast.alert("이미지를 업로드하는 중입니다.")
 		}else {
 			Polymer.app.toast.alert("성공했습니다.")
 		}
-		
-		//이미지 업로드
-		var formData = new FormData();
-		window.fs = formData;
-		formData.append("image", this.$.imageUpload.files[0]);
-		formData.append("scheduleIdx", result.success);
-
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", "/schedule/imageUpload", true);
-		xhr.onreadystatechange = function(e) {
-			if(this.readyState === 4 && this.status === 200) {
-				var result = JSON.parse(e.target.responseText);
-				console.log(result);
-				if(result.success) {
-					Polymer.app.toast.alert("스케쥴 작성과 이미지 업로드가 완료되었습니다.", "/schedule/view/" + result.link);
-				}else {
-					Polymer.app.toast.alert("이미지 업로드가 실패되었습니다.")
-				}
-			}
-		};
-		xhr.send(formData);
 	},
 	scheduleRegister : function() { // 스케쥴을 등록하는 ajax를 실행하는 함수
 		this.$$("form").submit();

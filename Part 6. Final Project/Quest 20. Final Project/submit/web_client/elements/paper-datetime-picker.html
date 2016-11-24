@@ -26,7 +26,7 @@ paper-date-picker, paper-time-picker{
 }
 </style>
 <template>
-	<paper-input name="[[name]]" label="[[label]]" placeholder="[[placeholder]]" readonly on-focus="showDatePicker" value="{{dateTimeValue}}"></paper-input>
+	<paper-input name="[[name]]" label="[[label]]" placeholder="[[placeholder]]" readonly on-focus="showDatePicker" value="[[value]]"></paper-input>
 	<paper-date-picker id="datePicker" date="[[date]]" on-change="dateChangeEvent" value="{{dataValue}}"></paper-date-picker>
 	<paper-time-picker id="timePicker" date="{{dataValue}}" time="[[time]]" on-change="timeChangeEvent"></paper-time-picker>
 </template>
@@ -44,9 +44,8 @@ Polymer({
 	timeChangeEvent : function(e) {
 		var value = e.target.value;
 		if(value) { // 제대로 된 값으로 변경되었을 때
-			var dateTimeValue = this.dataValue + " " + value;
-			this.dateTimeValue = dateTimeValue;
-			this.value = dateTimeValue;
+			this._setValue(this.dataValue + " " + value);
+			/*this.value = ;*/
 			this.toggleClass("show", false, this.timePicker);
 		}
 	},
@@ -84,6 +83,11 @@ Polymer({
 			type : String,
 			value : "",
 			readOnly : true
+		},
+		value : {
+			type : String,
+			readOnly : true,
+			notify : true
 		}
 	},
 	_datetimeObserver : function(datetime) { // 시간 검사
