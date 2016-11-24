@@ -119,6 +119,7 @@ Polymer({
 		var month = this.month < 10 ? "0" + this.month : this.month;
 		date = this.dates = date < 10 ? "0" + date : date;
 		this._setValue(this.year + "-" + month + "-" + date);
+		this.fire("change");
 	},
 	properties : {
 		date : {
@@ -131,8 +132,7 @@ Polymer({
 		value : {
 			type : String,
 			notify : true,
-			readOnly : true,
-			observer : "fireChangeEvent"
+			readOnly : true
 		}
 	},
 	_dateObserver : function(date) { // date 옵저버
@@ -146,9 +146,6 @@ Polymer({
 		var dates = this.dates = date.getDate();
 
 		this.date = year + "-" + month + "-" + dates;
-	},
-	fireChangeEvent : function() {
-		this.fire("change");
 	},
 	observers : [
 		"refreshDatePicker(year, month)"
@@ -178,7 +175,12 @@ Polymer({
 		}
 	},
 	ready : function() {
-		
+		var date = new Date();
+		var year = this.year = date.getFullYear();
+		var month = this.month = date.getMonth() + 1;
+		var dates = this.dates = date.getDate();
+		this._setValue(year + "-" + month + "-" + dates);
+		window.dateee = this;
 	}
 });
 </script>

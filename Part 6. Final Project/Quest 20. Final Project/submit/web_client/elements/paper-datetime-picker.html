@@ -108,21 +108,12 @@ Polymer({
 		//자식 노드
 		this.datePicker = this.$.datePicker;
 		this.timePicker = this.$.timePicker;
-
-		//자기 자신 이외의 요소를 클릭하면 datepicker와 timepicker가 사라지게 하는 이벤트들
-		var node = this;
-		this.listen(this, "tap", "stopPropagation");
-		this.listen(window, "tap", "pickerHide");
-	},
-	pickerHide : function(e) {
-		this.toggleClass("show", false, this.datePicker);
-		this.toggleClass("show", false, this.timePicker);
-	},
-	stopPropagation : function(e) {
-		e.stopPropagation();
 	},
 	ready : function() {
 		window.sub = this;
+
+		//자기 자신 이외의 요소를 클릭하면 datepicker와 timepicker가 사라지게 하는 이벤트들
+		var node = this;
 	}
 });
 </script>

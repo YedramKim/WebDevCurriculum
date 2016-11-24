@@ -112,7 +112,7 @@ form [flex] > paper-button{
 }
 </style>
 <template>
-<form is="iron-form" enctype="multipart/formdata" action="/schedule/register" method="post" on-iron-form-presubmit="scheduleSubmit">
+<form is="iron-form" enctype="multipart/formdata" action="/schedule/register" method="post" on-iron-form-presubmit="scheduleSubmit" on-iron-form-response="scheduleSubmited">
 	<!-- 일정 제목과 내용과 날짜 -->
 	<div class="schedule-info" shadow>
 		<paper-input label="제목" name="title" class="schedule-title"></paper-input>
@@ -131,7 +131,7 @@ form [flex] > paper-button{
 		<template is="dom-if" if="{{useMap}}">
 			<paper-input class="coords-input" name="latitude" readonly value="{{latitude}}" label="위도"></paper-input>
 			<paper-input class="coords-input" name="longitude" readonly value="{{longitude}}" label="경도"></paper-input>
-			<google-map latitude="37.4961565" longitude="127.02821999999999" api-key="AIzaSyAs_wF3yQGFXm2GrsNtwNg1Pehja_kqVs8" disable-street-view-control disable-map-type-control click-events on-google-map-click="googleMapTap" zoom="12">
+			<google-map latitude="37.4961565" longitude="127.02821999999999" api-key="AIzaSyAs_wF3yQGFXm2GrsNtwNg1Pehja_kqVs8" disable-street-view-control disable-map-type-control click-events on-google-map-click="googleMapTap" zoom="15">
 				<google-map-marker latitude="{{latitude}}" longitude="{{longitude}}" title="first marker">
 				</google-map-marker>
 			</google-map>
@@ -204,6 +204,7 @@ Polymer({
 			e.preventDefault();
 			return;
 		}
+		this.$$(".schedule-content").value = content.split("\n").join("<br>");
 
 		//시간 검사
 		var startTime = this.$$(".start-time").value || "";
@@ -221,6 +222,27 @@ Polymer({
 			Polymer.app.toast.alert("일정 종료 시간을 입력하세요.");
 			e.preventDefault();
 			return;
+		}
+
+		//일정 시간 비교
+		if(startTime >= endTime) {
+			Polymer.app.toast.alert("일정 종료 시간은 시작 시간보다 뒤에 있어야 합니다.");
+			e.preventDefault();
+			return;
+		}
+	},
+	scheduleSubmited : function(e) {
+		var result = e.detail.response;
+		if(result.success === false) { //실패했을 경우
+			var cause = result.cause || "??";
+			if(cause.indexOf("timeCrash") !== -1) { // 겹쳐지는 일정이 있을 경우
+				var idx = cause.replace("timeCrash", "");
+				Polymer.app.toast.alert("겹쳐지는 일정이 있습니다.", "/schedule/view/" + idx);
+			}else { // 그 외의 경우
+				Polymer.app.toast.alert("실패했습니다.")
+			}
+		}else {
+			Polymer.app.toast.alert("성공했습니다.")
 		}
 	},
 	scheduleRegister : function() { // 스케쥴을 등록하는 ajax를 실행하는 함수

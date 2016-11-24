@@ -46,6 +46,7 @@ router.post("/register", (req, res) => {
 		});
 		return;
 	}
+
 	var userIdx = req.session.userIdx;
 	var scheduleData = {}; // 데이터 베이스에 보낼 데이터
 	//제목 검사
@@ -66,12 +67,10 @@ router.post("/register", (req, res) => {
 		});
 	}
 	//시작 날짜 (만에 하나 지정 되어 있지 않으면 지금 시간을 지정)
-	var startTime = new Date(req.body.startTime || Date.now());
-	startTime = scheduleData.startTime = startTime.getTime();
+	var startTime = scheduleData.startTime = req.body.startTime || "";
 
 	//종료 날짜(만에 하나 지정되어 있지 않으면 startTime의 1시간 뒤)
-	var endTime = new Date(req.body.endTime || startTime + 36000000);
-	endTime = scheduleData.endTime = endTime.getTime();
+	var endTime = scheduleData.endTime = req.body.endTime || "";
 
 	//이미지 설정
 	var useImage = false;
@@ -93,32 +92,59 @@ router.post("/register", (req, res) => {
 	}
 
 	var createSchedule = null;
-	res.send({
-		success : true
-	});
-	/*Schedule.create(scheduleData).then((schedule) => { // 우선 스케쥴을 추가하고
-		req.scheduleIdx = schedule.idx;
-		createSchedule = schedule;
-		return schedule.addUser(userIdx, { // 추가한 유저와 연결한다.
-			owner : true,
-			see : true
+	User.findById(idx).then((user) => {
+		return user.getSchedules({ // 겹치는 시간대 찾아보기
+			attributes : ["idx", "startTime", "endTime"],
+			where : {
+				$or : [
+					{
+						endTime : {
+							$gte : startTime
+						},
+						startTime : {
+							$lte : startTime
+						}
+					},
+					{
+						startTime : {
+							$lte : endTime
+						},
+						endTime : {
+							$gte : endTime
+						}
+					}
+				]
+			},
+			limit : 1
 		});
+	}).then((schedules) => {
+		if(schedules.length) { // 겹치는 시간대가 있으면 예외처리를 던져 스케쥴 생성을 중단한다.
+			throw "timeCrash" + schedule[0].idx;
+		}
+		return Schedule.create(scheduleData).then((schedule) => { // 우선 스케쥴을 추가하고
+			req.scheduleIdx = schedule.idx;
+			createSchedule = schedule;
+			return schedule.addUser(userIdx, { // 추가한 유저와 연결한다.
+				owner : true,
+				see : true
+			});
+		})
 	}).then(() => {
 		// 공유하기로 설정한 친구가 있으면 우선 관계를 맺는다.
 		// 우선 일정에 참가한다는 join은 false
+		console.log("create Schedule");
 		if(shareFriend.length) {
 			return createSchedule.addUsers(shareFriend);
 		}
 	}).then(() => {
 		res.send({
-			success : true,
+			success : req.scheduleIdx,
 			file : req.file
 		});
-		console.log(req.body);
-	}).catch(() => {
+	}).catch((error) => {
 		res.send({
 			success : false,
-			cause : "??"
+			cause : error
 		});
-	});*/
+	});
 });

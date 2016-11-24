@@ -10,7 +10,7 @@
 
 	<!-- 페이지 -->
 	<iron-pages attr-for-selected="name" selected="{{subPage}}" fallback-selection="page404">
-		<schedule-check name="check" route="{{indexRoute}}"></schedule-check>
+		<schedule-view name="view" route="{{indexRoute}}"></schedule-view>
 		<schedule-addtion name="addtion"></schedule-addtion>
 		<schedule-invite name="invite"></schedule-invite>
 		<page-404 name="page404"></page-404>
@@ -26,8 +26,8 @@ Polymer({
 	_subPageObserver : function(subPage) { //해당 페이지에 맞는 엘리먼트 불러오기
 		this.subPage = subPage;
 		var element = "";
-		if(subPage === "check") {
-			element = "schedule-check.html";
+		if(subPage === "view") {
+			element = "schedule-view.html";
 		}else if(subPage === "addtion") {
 			element = "schedule-addtion.html";
 		}else if(subPage === "invite") {

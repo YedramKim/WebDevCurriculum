@@ -164,6 +164,7 @@ Polymer({
 		var min = this.min < 10 ? "0" + this.min : this.min;
 		var sec = this.sec < 10 ? "0" + this.sec : this.sec;
 		this._setValue(hour + ":" + min + ":" + sec);
+		this.fire("change");
 	},
 	cancelSetting : function() {
 		this.toggleClass("show", false);
@@ -188,7 +189,6 @@ Polymer({
 			value : "",
 			notify : true,
 			readOnly : true,
-			observer : "fireChangeEvent"
 		}
 	},
 	_dateObserver : function() {
@@ -208,9 +208,6 @@ Polymer({
 			var sec = this.sec = date.getSeconds();
 			var time = this.time = hour + ":" + min + ":" + sec;
 		}
-	},
-	fireChangeEvent : function() {
-		this.fire("change");
 	},
 	ready : function() {
 		window.t = this;

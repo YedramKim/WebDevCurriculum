@@ -69,11 +69,11 @@ const Schedule = module.Schedule = sequelize.define("schedule", {
 		allowNull : false
 	},
 	startTime : {
-		type : Sequelize.BIGINT,
+		type : Sequelize.CHAR(19),
 		allowNull : false
 	},
 	endTime : {
-		type : Sequelize.BIGINT,
+		type : Sequelize.CHAR(19),
 		allowNull : false
 	},
 	image : {
