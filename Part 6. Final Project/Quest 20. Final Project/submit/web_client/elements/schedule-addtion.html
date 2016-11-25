@@ -130,7 +130,7 @@ form [flex] > paper-button{
 		<template is="dom-if" if="{{useMap}}">
 			<paper-input class="coords-input" name="latitude" readonly value="{{latitude}}" label="위도"></paper-input>
 			<paper-input class="coords-input" name="longitude" readonly value="{{longitude}}" label="경도"></paper-input>
-			<google-map latitude="37.4961565" longitude="127.02821999999999" api-key="AIzaSyAs_wF3yQGFXm2GrsNtwNg1Pehja_kqVs8" disable-street-view-control disable-map-type-control click-events on-google-map-click="googleMapTap" zoom="15">
+			<google-map latitude="37.497869567264324" longitude="127.02760149724782" api-key="AIzaSyAs_wF3yQGFXm2GrsNtwNg1Pehja_kqVs8" disable-street-view-control disable-map-type-control click-events on-google-map-click="googleMapTap" zoom="15">
 				<google-map-marker latitude="{{latitude}}" longitude="{{longitude}}" title="first marker">
 				</google-map-marker>
 			</google-map>
@@ -264,12 +264,12 @@ Polymer({
 		formData.append("image", this.$.imageUpload.files[0]);
 		formData.append("scheduleIdx", result.success);
 
+		//이미지 업로드 ajax 실행
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", "/schedule/imageUpload", true);
 		xhr.onreadystatechange = function(e) {
 			if(this.readyState === 4 && this.status === 200) {
 				var result = JSON.parse(e.target.responseText);
-				console.log(result);
 				if(result.success) {
 					Polymer.app.toast.alert("스케쥴 작성과 이미지 업로드가 완료되었습니다.", "/schedule/view/" + result.link);
 				}else {
@@ -279,6 +279,7 @@ Polymer({
 		};
 		xhr.send(formData);
 
+		//스케쥴이 추가되면 그 정보를 schedule-view 엘리먼트에 옮기기 위해 이벤트를 fire시킨다.
 		var title = this.$$(".schedule-title").value;
 		var content = this.$$(".schedule-content").value;
 		var userIdx = result.link;
@@ -327,8 +328,8 @@ Polymer({
 		this.map = this.$$("google-map");
 		this.marker = this.$$("google-map-marker");
 
-		this.latitude = 37.4961565;
-		this.longitude = 127.02821999999999;
+		this.latitude = 37.497869567264324;
+		this.longitude = 127.02760149724782;
 
 		//로그인 이벤트
 		var node = this;

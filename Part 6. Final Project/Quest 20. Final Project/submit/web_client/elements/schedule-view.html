@@ -58,7 +58,6 @@ Polymer({
 
 		var node = this;
 		Polymer.app.addEventListener("add-schedule", (e) => {
-			console.log(e.detail);
 			node.push("schedules", e.detail);
 		});
 
