@@ -126,7 +126,6 @@ router.get("/searchuser", (req, res) => {
 			}
 		});
 	}).then((users) => {
-		//console.log(users.length);
 		res.send(users);
 	});
 });
@@ -168,20 +167,6 @@ router.post("/invite", (req, res) => {
 			success : false
 		});
 	});
-
-	/*User.findById(myIdx).then((user) => {
-		my = user;
-		return User.findById(inviteIdx);
-	}).then((inviteUser) => {
-		friend = inviteUser;
-		return my.hasFriend(friend); // 친구 초청 보내기
-	}).then((result) => {
-		console.log(result);
-	});
-
-	res.send({
-		success : false
-	});*/
 });
 
 //자신한테 보낸 초대 데이터 전달
