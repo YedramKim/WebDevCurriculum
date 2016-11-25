@@ -45,7 +45,6 @@ app-toolbar{
 .user-buttons > div > *{
 	display: block;
 	width: 100%;
-	bottom: 100%;
 	height: 40px;
 	line-height: 40px;
 	text-align: center;
@@ -72,9 +71,6 @@ app-toolbar{
 	</app-toolbar>
 	<nav>
 		<iron-selector class="menu" selected="[[page]]" attr-for-selected="name">
-			<div name="main">
-				<a href="/">HOME</a>
-			</div>
 			<div name="schedule">
 				<a href="/schedule/view/">일정</a>
 				<iron-selector selected="[[subPage]]" class="sub-menu" attr-for-selected="name">
@@ -99,12 +95,15 @@ app-toolbar{
 				<a href="javascript:void(0)" on-tap="googleLogin">
 					<paper-button>구글 계정으로 로그인</paper-button>
 				</a>
+				<a href="javascript:void(0)" on-tap="siteLogin">
+					<paper-button>사이트 계정으로 로그인</paper-button>
+				</a>
 			</div>
 		</template>
 		<template is="dom-if" if="{{login.login}}">
 			<div>
 				<p>
-					{{login.name}}
+					{{login.name}}님, 환영합니다.
 					<paper-ripple></paper-ripple>
 				</p>
 				<a href="javascript:void(0)" on-tap="logout">

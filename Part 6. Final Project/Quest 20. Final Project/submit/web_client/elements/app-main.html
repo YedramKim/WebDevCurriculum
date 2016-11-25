@@ -1,16 +1,33 @@
+<link rel="import" href="/elements/paper-date-picker.html">
+
 <dom-module id="app-main">
 <style include="common-style">
 :host{
 	display: block;
+	--picker-date-size : 30px;
+}
+paper-date-picker{
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	width: 300px;
 }
 </style>
 <template>
-	main
+
+	<div flex>
+		<paper-date-picker shadow on-change="change"></paper-date-picker>
+	</div>
 </template>
 <script>
 	Polymer({
 		is : "app-main",
 		behaviors : [routeBehavior],
+		change : function(e) {
+			console.log(e.target.value);
+		},
 		ready : function() {
 
 		}

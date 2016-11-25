@@ -83,7 +83,7 @@ router.get("/load", (req, res) => {
 			return user.userScheduleRelation.join;
 		});
 	}).then((users) => { // 데이터 전송
-		schedule.count = users.length - 1;
+		schedule.count = users.length;
 		res.send({
 			content : schedule.content,
 			endTime : schedule.endTime,
@@ -101,22 +101,28 @@ router.get("/load", (req, res) => {
 	})
 });
 
-//이미지 업로드
-router.post("/imageUpload", upload.single("image"), (req, res) => {
-	var scheduleIdx = req.body.scheduleIdx;
-	var filePath = scheduleIdx + "__" + req.file.originalname;
-	filePath = path.join(__dirname, "..", "scheduleImages", filePath);
-	fs.rename(req.file.path, filePath, (err) => {
-		if(err) {
-			res.send({
-				success : false
-			});
-		}else {
-			res.send({
-				success : true,
-				link : scheduleIdx
-			});
-		}
+//일정 참여 취소
+router.post("/exitSchedule", (req, res) => {
+	if(req.login === false) { //로그인 상태가 아닐 경우 실패 데이터 전송
+		res.send({
+			success : false,
+			cause : "login"
+		});
+		return;
+	}
+	var userIdx = req.session.userIdx;
+	var scheduleIdx = req.body.idx;
+
+	User.findById(userIdx).then((user) => {
+		return user.removeSchedule(scheduleIdx);
+	}).then((result) => {
+		res.send({
+			success : true
+		});
+	}).catch((e) => {
+		res.send({
+			success : false
+		});
 	});
 });
 
@@ -209,7 +215,6 @@ router.post("/register",  (req, res) => {
 			req.scheduleIdx = schedule.idx;
 			createSchedule = schedule;
 			return schedule.addUser(userIdx, { // 추가한 유저와 연결한다.
-				owner : true,
 				join : true
 			});
 		})
@@ -228,6 +233,25 @@ router.post("/register",  (req, res) => {
 			success : false,
 			cause : error
 		});
+	});
+});
+
+//이미지 업로드
+router.post("/imageUpload", upload.single("image"), (req, res) => {
+	var scheduleIdx = req.body.scheduleIdx;
+	var filePath = scheduleIdx + "__" + req.file.originalname;
+	filePath = path.join(__dirname, "..", "scheduleImages", filePath);
+	fs.rename(req.file.path, filePath, (err) => {
+		if(err) {
+			res.send({
+				success : false
+			});
+		}else {
+			res.send({
+				success : true,
+				link : scheduleIdx
+			});
+		}
 	});
 });
 
@@ -356,7 +380,7 @@ router.get("/summary", (req, res) => {
 	var schedule = null;
 
 	Schedule.findById(scheduleIdx, {
-		attributes : ["idx", "content"]
+		attributes : ["idx", "title", "content", "startTime", "endTime"]
 	}).then((s) => { // 일정 정보 얻기
 		schedule = s;
 		return schedule.getUsers({

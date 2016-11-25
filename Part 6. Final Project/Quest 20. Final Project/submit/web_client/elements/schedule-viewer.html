@@ -21,14 +21,18 @@
 	height: auto;
 	float: right;
 }
-.schedule-title .count {
+.schedule-title .infos {
 	position: absolute;
 	bottom: 10px;
 	left: 0px;
 	font-weight: normal;
 	font-size: .5em;
 	color: #777;
+}
+.schedule-title .infos div {
+	display: inline-block;
 	padding: 10px;
+	margin-right: 10px;
 	border-bottom: 3px #2d28c7 solid;
 }
 .schedule-title::after{
@@ -87,14 +91,21 @@
 </style>
 <template>
 	<iron-ajax url$="/schedule/load?idx={{scheduleIdx}}" id="loadHTTP" last-response="{{schedule}}"></iron-ajax>
+	<iron-ajax url="/schedule/exitSchedule" body="{{exitInfo}}" id="exitHTTP" content-type="application/json" method="post" on-response="exitedSchedule"></iron-ajax>
 	<div class="viewer" shadow>
 		<h2 class="schedule-title">
 			{{schedule.title}}
 			<template is="dom-if" if="[[schedule.image]]">
-				<img src$="/upload/[[schedule.image]]" alt$="[[schedule.image]]" title$="[[schedule.image]]">
+				<img src$="/upload/[[schedule.image]]" alt$="[[schedule.image]]" title$="[[schedule.image]]" shadow>
 			</template>
-			<div class="count" shadow>
-				일정 참여 인수 : [[schedule.count]]명
+			<div class="infos">
+				<div shadow>
+					일정 참여 인수 : [[schedule.count]]명
+				</div>
+				<!-- 과거의 일정인지 검사 -->
+				<template is="dom-if" if="[[checkPast(schedule.endTime)]]">
+					<div shadow>지나간 일정입니다.</div>
+				</template>
 			</div>
 		</h2>
 		<div flex class="info">
@@ -128,6 +139,7 @@
 		<div class="schedule-content" inner-h-t-m-l="[[schedule.content]]" shadow>
 		</div>
 		<div class="list-link">
+			<paper-button raised exit-idx="[[schedule.idx]]" on-tap="exitSchedule">일정 불참</paper-button>
 			<a href="/schedule/view/">
 				<paper-button raised>
 					목록으로 이동
@@ -139,8 +151,29 @@
 <script>
 Polymer({
 	is : "schedule-viewer",
+	exitedSchedule : function(e) { // 일정 참가 취소 ajax 실행 이후 이벤트
+		var result = e.detail.response;
+		if(result.success === true) {
+			Polymer.app.toast.alert("일정 참가를 취소하였습니다.");
+			Polymer.app.redirect("/schedule/view/");
+		}
+		//exited-schedule라는 이벤트를 발동시켜서 해당 일정을 리스트에 삭제해야 한다. schedule-view 엘리먼트에 전한다.
+		this.fire("exited-schedule", this.exitInfo.idx);
+		this.exitInfo.idx = undefined;
+	},
+	checkPast : function(time) {
+		time = (new Date(time)).getTime();
+		return Date.now() > time;
+	},
+	exitSchedule : function(e) { // 일정 참가 취소 ajax 실행
+		var target = e.target;
+		this.exitInfo = {
+			idx : e.target.exitIdx
+		};
+		this.exitHTTP.generateRequest();
+	},
 	properties : {
-		hide : {
+		hide : { //hide가 사라질때 일정 정보를 load한다.
 			type : Boolean,
 			value : true,
 			notify : true,
@@ -159,6 +192,7 @@ Polymer({
 	},
 	ready : function() {
 		this.loadHTTP = this.$.loadHTTP;
+		this.exitHTTP = this.$.exitHTTP;
 	}
 });
 </script>

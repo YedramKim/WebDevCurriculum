@@ -7,11 +7,12 @@
 	display: block;
 }
 h3{
-	margin: 80px 0 20px;
+	margin-bottom: 20px;
 }
 ul{
 	border-radius: 3px;
 	overflow: hidden;
+	margin-bottom: 80px;
 }
 ul > li{
 	display: flex;
@@ -45,7 +46,7 @@ ul paper-button {
 	<iron-ajax url="/friend/friends" auto last-response="{{friends}}" id="friendsHTTP"></iron-ajax>
 	<iron-ajax url="/friend/deleteFriend" method="POST" content-type="application/json" on-response="finisheddelete" body="{{deleteParam}}" id="deleteHTTP"></iron-ajax>
 
-	<h3>보낸 친구 요청</h3>
+	<h3 is="polymer-tag">보낸 친구 요청</h3>
 	<ul class="friends" shadow>
 		<li>
 			<div>

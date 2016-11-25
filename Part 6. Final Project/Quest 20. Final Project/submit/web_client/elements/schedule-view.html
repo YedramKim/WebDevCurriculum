@@ -5,7 +5,6 @@
 <style include="common-style">
 :host{
 	display: block;
-	margin-top: 50px;
 }
 </style>
 <template>
@@ -24,11 +23,13 @@ Polymer({
 	is : "schedule-view",
 	listLoaded : function() {
 		this._pageIndexObserver(this.indexRouteData.index);
-		console.log(Polymer.dom(this.pages).children);
-		this.pages.select("page6");
+		this.pages.select("main");
+		this.async(() => {
+			this.pages.select(this.indexRouteData.index);
+		}, 1);
 	},
 	observers : [
-		"_pageIndexObserver(indexRouteData.index)"
+		"_pageIndexObserver(indexRouteData.index)",
 	],
 	_pageIndexObserver : function(index) {
 		if(!index) {
@@ -54,7 +55,25 @@ Polymer({
 		Polymer.app.addEventListener("login", (e) => {
 			node.scheduleHTTP.generateRequest();
 		});
-		window.view = this;
+
+		var node = this;
+		Polymer.app.addEventListener("add-schedule", (e) => {
+			console.log(e.detail);
+			node.push("schedules", e.detail);
+		});
+
+		// schedule-viewer 엘리먼트들이 발생시키는 "exited-schedule" 이벤트 여기에서 처리한다.
+		this.listen(this, "exited-schedule", "spliceSchedule");
+	},
+	spliceSchedule : function(e) {
+		var length = this.schedules.length;
+		var spliceIdx = 0;
+		for(var i = 0; i < length; i++) {
+			if(e.detail === this.schedules[i].idx) {
+				break;
+			}
+		}
+		this.splice("schedules", spliceIdx, 1);
 	}
 });
 </script>

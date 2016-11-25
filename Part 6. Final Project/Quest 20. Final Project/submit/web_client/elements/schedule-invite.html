@@ -4,8 +4,6 @@
 <style include="common-style">
 :host{
 	display: block;
-	min-height: 50px;
-	margin-top: 50px;
 }
 h3{
 	margin: 10px 0;
@@ -44,27 +42,66 @@ paper-button {
 	background: #e22460;
 	color: #fff;
 }
-.shecule-info {
+.schedule-info {
 	padding: 10px;
-	min-height: 20px;
+	margin-bottom: 40px;
 	background: #fff;
+}
+.schedule-info *[flex] {
+	justify-content: space-between;
+	margin: 10px 0;
+}
+.schedule-info *[flex] > *{
+	flex-basis: 49%;
+	height: 40px;
+	line-height: 37px;
+	border-bottom: 3px solid #3f51b5;
+	padding-left: 10px;
+	position: relative;
+}
+.schedule-info *[flex] sub {
+	position: absolute;
+	height: 100%;
+	right: 10px;
+	top: 0;
+}
+.schedule-info .content{
+	position: relative;
+	padding: 10px;
+	border-bottom: 3px solid #3f51b5;
+}
+.schedule-info .content::after{
+	content:'내용';
+	color: #aaa;
+	font-size: .8em;
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
 }
 </style>
 <template>
 	<!-- ajax -->
 	<iron-ajax url="/schedule/invites" id="inviteHTTP" auto last-response="{{invites}}"></iron-ajax>
 	<iron-ajax id="joinScheduleHTTP" url="/schedule/joinSchedule" content-type="application/json" on-response="joinedSchedule" body="{{scheduleInfo}}" method="POST"></iron-ajax>
-	<iron-ajax id="getScheduleHTTP" url="/schedule/summary" params="{{scheduleInfo}}" on-response="showSchedule"></iron-ajax>
+	<iron-ajax id="getScheduleHTTP" url="/schedule/summary" params="{{scheduleInfo}}" last-response="{{viewScheduleInfo}}"></iron-ajax>
 
 	<!-- 일정 간단히 보기 -->
-	<template is="dom-if" if="[[viewScheduleInfo.idx]]">
-		<div class="shecule-info" shadow>
-			<h3>
+	<template is="dom-if" if="{{viewScheduleInfo.idx}}">
+		<div class="schedule-info" shadow>
+			<h2>
 				'[[viewScheduleInfo.title]]'
-			</h3>
-			<p>[[viewScheduleInfo.startTime]]</p>
-			<p>[[viewScheduleInfo.endTime]]</p>
-			<div id="content" inner-h-t-m-l="[[viewScheduleInfo.content]]">
+			</h2>
+			<div flex>
+				<div>
+					<sub>일정 시작 시간</sub>
+					[[viewScheduleInfo.startTime]]
+				</div>
+				<div>
+					<sub>일정 종료 시간</sub>
+					[[viewScheduleInfo.endTime]]
+				</div>
+			</div>
+			<div class="content" inner-h-t-m-l="[[viewScheduleInfo.content]]">
 				
 			</div>
 		</div>
@@ -116,10 +153,6 @@ Polymer({
 			}
 		}
 	},
-	showSchedule : function(e) { // 일정 간략하게 보여주기
-		this.set("viewScheduleInfo.content", e.detail.response.content);
-
-	},
 	joinSchedule : function(e) { // `참가` 버튼 tap 이벤트
 		this.scheduleInfo = {
 			idx : e.model.item.idx,
@@ -128,13 +161,14 @@ Polymer({
 		}
 
 		this.joinScheduleInfo = e.model.item;
+		//schedule-app에다가 schedule이 추가되었다고 전한다.
+		this.fire("add-schedule", e.model.item);
 		this.joinScheduleHTTP.generateRequest();
 	},
 	viewSchedule : function(e) { // `보기` 버튼 tap 이벤트
 		this.scheduleInfo = {
 			idx : e.model.item.idx
 		}
-		this.viewScheduleInfo = e.model.item;
 		this.getScheduleHTTP.generateRequest();
 	},
 	ready : function() {
@@ -145,6 +179,7 @@ Polymer({
 
 		var node = this;
 		Polymer.app.addEventListener("login", (e) => {
+			node.set("viewScheduleInfo", {});
 			node.inviteHTTP.generateRequest();
 		});
 	}

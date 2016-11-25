@@ -11,7 +11,6 @@
 <style include="common-style">
 :host{
 	display: block;
-	margin-top: 50px;
 	--checkbox--checked-color : #3f51b5;
 	--checkbox--unchecked-color : #3f51b5;
 	--paper-picker-color : #3f51b5;
@@ -274,11 +273,25 @@ Polymer({
 				if(result.success) {
 					Polymer.app.toast.alert("스케쥴 작성과 이미지 업로드가 완료되었습니다.", "/schedule/view/" + result.link);
 				}else {
-					Polymer.app.toast.alert("이미지 업로드가 실패되었습니다.")
+					Polymer.app.toast.alert("이미지 업로드가 실패되었습니다.");
 				}
 			}
 		};
 		xhr.send(formData);
+
+		var title = this.$$(".schedule-title").value;
+		var content = this.$$(".schedule-content").value;
+		var userIdx = result.link;
+		var startTime = this.$$(".start-time").value;
+		var endTime = this.$$(".end-time").value;
+		
+		//schedule-app에다가 schedule이 추가되었다고 전한다.
+		Polymer.app.fire("add-schedule", {
+			idx : userIdx,
+			title : title,
+			startTime : startTime,
+			endTime : endTime,
+		});
 	},
 	scheduleRegister : function() { // 스케쥴을 등록하는 ajax를 실행하는 함수
 		this.$$("form").submit();
@@ -288,6 +301,8 @@ Polymer({
 		this.$$(".schedule-content").value = "";
 		this.$$(".start-time")._setValue("");
 		this.$$(".end-time")._setValue("");
+		this.$.imageUpload.value = "";
+		this.toggleClass("uploaded", false, this.$$(".image-upload"));
 		this.useMap = false;
 		this.useImage = false;
 		this.shareFriend = false;
@@ -303,7 +318,7 @@ Polymer({
 		var previewImage = this.$$(".image-upload");
 		fileReader.onload = (e) => {
 			previewImage.querySelector("img").src = e.target.result;
-			this.toggleClass("uploaded", true, previewImage)
+			this.toggleClass("uploaded", true, previewImage);
 		}
 		fileReader.readAsDataURL(file)
 	},

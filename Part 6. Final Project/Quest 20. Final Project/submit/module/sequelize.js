@@ -120,11 +120,6 @@ const Friend = sequelize.define("friend", {
 // join이 false 일 경우 일정 공유 권유 목록에 true일 경우 일정 목록에 표시
 // owner가 true일 경우 해당 일정을 자신이 삭제할 수 있다.
 const UserScheduleRelation = sequelize.define("userScheduleRelation", {
-	owner : { // 자신이 주인인가(true일 경우 삭제 가능)
-		type : Sequelize.BOOLEAN,
-		defaultValue : false,
-		allowNull : false
-	},
 	join : { // 일정에 참가하기로 결정
 		type : Sequelize.BOOLEAN,
 		defaultValue : false,
@@ -149,58 +144,6 @@ Schedule.belongsToMany(User, {
 	foreignKey : "Schedule",
 	through : UserScheduleRelation
 });
-
-
-//관계 테이블 다루는 법
-/*var uss = [
-	{
-		site : "google",
-		account : "abc",
-		name : "afsdb",
-		password : "1234",
-		salt : "salt"
-	},{
-		site : "facebook",
-		account : "abc",
-		name : "afsdb",
-		password : "1234",
-		salt : "salt"
-	},{
-		site : "local",
-		account : "abc",
-		name : "afsdb",
-		password : "1234",
-		salt : "salt"
-	},
-];
-
-var users = [];
-sequelize.sync({force : true}).then(() => {
-	return User.bulkCreate(uss);
-}).then(() => {
-	return User.findAll();
-}).then((users1) => {
-	users = users1;
-	var promise = users1[0].addFriend(2, {provide : false});
-	promise = promise.then(() => {
-		return users1[1].addFriend(2, {provide : true});
-	});
-	promise = promise.then(() => {
-		return users1[0].addFriend(3, {provide : true});
-	});
-	return promise;
-}).then(() => {
-	return users[0].getFriends();
-}).then((friends) => {
-	for(var i in friends[1].get().friend){
-		console.log(i);
-	}
-	return friends[1].get().friend.update({
-		provide : false
-	});
-}).then(() => {
-	process.exit();
-});*/
 
 module.sync = () => {
 	return sequelize.sync();

@@ -1,11 +1,35 @@
+<link href="https://fonts.googleapis.com/css?family=Concert+One" rel="stylesheet">
+
 <dom-module id="page-404">
 <style include="common-style">
 :host{
 	display: block;
+	text-align: center;
+}
+*{
+	font-family: 'Concert One', cursive;
+}
+h1{
+	font-size: 10.0em;
+}
+p{
+	text-align: center;
+	margin: 20px 0;
+	font-size: 3.0em;
+}
+paper-button {
+	font-size: 1.5em;
+	background: #e22460;
+	color: #fff;
+	
 }
 </style>
 <template strip-whitespace>
-	404
+	<h1>Page 404</h1>
+	<p>Page not found.</p>
+	<a href="/">
+		<paper-button raised>Main page</paper-button>
+	</a>
 </template>
 <script>
 	Polymer({

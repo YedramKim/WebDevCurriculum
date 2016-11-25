@@ -1,5 +1,6 @@
 <link rel="import" href="/polymer/iron-icon/iron-icon.html">
 <link rel="import" href="/polymer/iron-icons/iron-icons.html">
+<link rel="import" href="/polymer/paper-ripple/paper-ripple.html">
 
 <dom-module id="paper-date-picker">
 <style include="common-style">
@@ -24,7 +25,7 @@
 .picker-body{
 	background: #fff;
 	min-height: 200px;
-	padding:0 30px 10px;
+	padding:0 10% 10px;
 }
 .year-month-selector {
 	padding: 10px 0;
@@ -39,10 +40,12 @@
 .year-month-selector .left {
 	float: left;
 	cursor: pointer;
+	position: relative;
 }
 .year-month-selector .right {
 	float: right;
 	cursor: pointer;
+	position: relative;
 }
 .date-picker-calander>* {
 	width: 14.285%;
@@ -57,26 +60,39 @@
 	-o-user-select: none;
 	user-select: none;
 }
-.date-picker-calander .week {
+.date-picker-calander > .week {
 	color: #aaa;
 }
-.date-picker-calander *:not(.week):nth-child(7n+1) {
+.date-picker-calander > *:not(.week) {
+	position: relative;
+	border-right: 100px;
+}
+.date-picker-calander > *:not(.week) paper-ripple {
+	color: #3f51b5;
+}
+.date-picker-calander > *:not(.week):nth-child(7n+1) {
 	color: #f00;
 }
-.date-picker-calander *:not(.week):nth-child(7n+7) {
+.date-picker-calander > *:not(.week):nth-child(7n+7) {
 	color: #00f;
 }
 </style>
 <template>
 	<div class="picker-header roboto">
 		<p class="year">{{year}}</p>
-		<h2>{{year}}.{{month}}.{{dates}}</h2>
+		<h2>{{year}}.{{month}}</h2>
 	</div>
 	<div class="picker-body">
 		<div class="year-month-selector">
-			<iron-icon icon="chevron-left" on-tap="prevMonth" class="left"></iron-icon>
+			<div class="left" on-tap="prevMonth">
+				<iron-icon icon="chevron-left" class="left"></iron-icon>
+				<paper-ripple></paper-ripple>
+			</div>
 			{{year}}년 {{month}}월
-			<iron-icon icon="chevron-right" on-tap="nextMonth" class="right"></iron-icon>
+			<div class="right">
+				<iron-icon icon="chevron-right" on-tap="nextMonth"></iron-icon>
+				<paper-ripple></paper-ripple>
+			</div>
 		</div>
 		<div class="date-picker-calander" flex wrap>
 			<div class="week">S</div>
@@ -87,7 +103,10 @@
 			<div class="week">F</div>
 			<div class="week">S</div>
 			<template is="dom-repeat" items="{{dateArray}}">
-				<div on-tap="selectDate" select-date$="{{item}}">{{item}}</div>
+				<div on-tap="selectDate" select-date$="{{item}}">
+					{{item}}
+					<paper-ripple></paper-ripple>
+				</div>
 			</template>
 		</div>
 	</div>

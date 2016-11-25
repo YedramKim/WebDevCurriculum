@@ -6,10 +6,10 @@ var routeBehavior = {
 		"_subPageObserver(subRouteData.subPage)"
 	],
 	_routeObserver : function(page) {
-		this.page = page ? page : "main";
+		this.page = page ? page : "redirectHome";
 	},
 	_subPageObserver : function(subPage) {
-		this.subPage = subPage ? subPage : "main";
+		this.subPage = subPage ? subPage : "page-404";
 	}
 };
 //id방식의 노드 참조의 약간 문제(?)가 있는 것 같아 만든 behavior 입니다.

@@ -1,6 +1,3 @@
-<script>
-	//Polymer.dom="shady";
-</script>
 <link rel="import" href="/polymer/polymer/polymer.html">
 <link rel="import" href="/polymer/iron-ajax/iron-ajax.html">
 <link rel="import" href="/polymer/iron-pages/iron-pages.html">
@@ -15,7 +12,6 @@
 <link rel="import" href="/elements/toast-alert.html">
 <link rel="import" href="/elements/app-navigation.html">
 <link rel="import" href="/elements/login-auth.html">
-<script src="/socket.io/socket.io.js"></script>
 
 <dom-module id="schedule-app">
 <style include="common-style">
@@ -23,7 +19,6 @@
 	display: block;
 	min-height:100vh;
 }
-
 app-drawer-layout{
 	background: var(--app-background);
 }
@@ -43,7 +38,8 @@ app-header{
 app-header app-toolbar{
 	padding-left: 10px;
 }
-.pages > .iron-selected{
+iron-pages > * {
+	padding-top: 50px;
 	margin: auto;
 	width: 80%;
 	max-width: 1000px;
@@ -74,7 +70,7 @@ app-header app-toolbar{
 			<login-auth login="{{login}}"></login-auth>
 		</template>
 		<template is="dom-if" if="{{login.login}}">
-			<iron-pages class="pages" selected="[[page]]" attr-for-selected="name" fallback-selection="page404">
+			<iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="page404">
 				<app-main name="main" route="{{subRoute}}"></app-main>
 				<schedule-page name="schedule" route="{{subRoute}}" route="{{subRoute}}"></schedule-page>
 				<friend-page name="friend" route="{{subRoute}}"></friend-page>
@@ -94,7 +90,7 @@ Polymer({
 	_loginFailed : function() { //login_redirect.html에서 사용하는 함수
 		this.toast.alert("로그인 실패");
 	},*/
-	redirect : function(path) {
+	redirect : function(path) { // 페이지를 이동하는 함수
 		this.set("route.path", path);
 	},
 	observers : [
@@ -105,14 +101,16 @@ Polymer({
 		//login 이벤트는 다른 유저로 변경되어 로그인이 되었을 경우 정보를 수정해야 할 커스텀엘리먼트에게 정보를 변경해야 된다고 알리기 위해 만든 노드 입니다.
 		if(login) {
 			this.fire("login");
-			this.loginHTTP.generateRequest
 		}
 	},
 	_pageObserver : function(page) { // 태그를 import 시키는 옵저버
+		if(page === "redirectHome") {
+			this.redirect("/schedule/view");
+			return;
+		}
+
 		var element = "";
-		if(page === "main") {
-			element = "app-main.html";
-		}else if(page === "schedule") {
+		if(page === "schedule") {
 			element = "schedule-page.html";
 		}else if(page === "friend") {
 			element = "friend-page.html";
@@ -133,18 +131,9 @@ Polymer({
 		window.toastAlert = this.toast.alert.bind(this.toast);
 
 		//페이지 커스텀 엘리먼트
-		//
 		this.appMain;
 		this.schedulePage;
 		this.friendPage;
-		this.setSocket(); //소켓 설정
-	},
-	setSocket : function() { // 소켓 설정
-		var socket = this.socket = io();
-		var app = this;
-		socket.on("connect", function() {
-			socket.emit("send user", app.login.login); // 유저 정보 전송
-		});
 	}
 });
 </script>
